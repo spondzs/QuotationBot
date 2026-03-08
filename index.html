@@ -2,51 +2,588 @@
 <html lang="th">
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>LIFF Test</title>
-  <script charset="utf-8" src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <title>Open Quotes</title>
+
   <style>
-    body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif; padding: 24px; }
-    pre { white-space: pre-wrap; font-size: 14px; }
-    button { font-size: 16px; padding: 12px 16px; }
+    :root {
+      --blue1: #2d6cdf;
+      --blue2: #4e8cff;
+      --bg: #f3f5fb;
+      --card: #ffffff;
+      --text: #1e1f24;
+      --muted: #6f7482;
+      --line: #e6e8ef;
+      --yellow2: #fff4c7;
+      --btn: #f4f5f9;
+    }
+
+    * {
+      box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    html, body {
+      width: 100%;
+      min-height: 100%;
+    }
+
+    body {
+      margin: 0;
+      background: var(--bg);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+      color: var(--text);
+      font-size: 34px;
+      line-height: 1.5;
+      padding-bottom: env(safe-area-inset-bottom);
+    }
+
+    .app {
+      width: 100%;
+      max-width: none;
+      margin: 0 auto;
+      min-height: 100vh;
+      background: var(--bg);
+    }
+
+    .topbar {
+      background: linear-gradient(135deg, var(--blue1), var(--blue2));
+      color: #fff;
+      padding: 32px 32px 36px;
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      box-shadow: 0 6px 30px rgba(45, 108, 223, .18);
+    }
+
+    .logo {
+      width: 80px;
+      height: 80px;
+      border-radius: 999px;
+      border: 4px solid rgba(255, 255, 255, .35);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 42px;
+      font-weight: 700;
+      flex: 0 0 auto;
+    }
+
+    .title {
+      font-size: 38px;
+      font-weight: 800;
+      flex: 1;
+    }
+
+    .line-badge {
+      width: 74px;
+      height: 74px;
+      border-radius: 18px;
+      background: #fff;
+      color: #00b900;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 22px;
+      font-weight: 800;
+      flex: 0 0 auto;
+    }
+
+    .content {
+      padding: 32px 32px 50px;
+    }
+
+    .search-wrap {
+      background: #fff;
+      border: 2px solid var(--line);
+      border-radius: 28px;
+      padding: 28px 30px;
+      display: flex;
+      align-items: center;
+      gap: 18px;
+      margin-bottom: 28px;
+      box-shadow: 0 4px 18px rgba(27, 39, 94, .05);
+    }
+
+    .search-icon {
+      font-size: 34px;
+      line-height: 1;
+    }
+
+    .search-input {
+      border: 0;
+      outline: none;
+      width: 100%;
+      font-size: 34px;
+      background: transparent;
+      color: var(--text);
+    }
+
+    .summary {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      background: var(--yellow2);
+      border: 2px solid #f3e19c;
+      border-radius: 26px;
+      padding: 30px;
+      margin-bottom: 26px;
+      font-size: 34px;
+      font-weight: 800;
+    }
+
+    .summary .arrow {
+      margin-left: auto;
+      font-size: 36px;
+      line-height: 1;
+    }
+
+    .status {
+      color: var(--muted);
+      font-size: 24px;
+      margin: 0 6px 26px;
+      min-height: 36px;
+    }
+
+    .card {
+      background: var(--card);
+      border: 2px solid var(--line);
+      border-radius: 36px;
+      padding: 34px;
+      margin-bottom: 32px;
+      box-shadow: 0 12px 40px rgba(27, 39, 94, .07);
+    }
+
+    .row1 {
+      display: flex;
+      gap: 16px;
+      margin-bottom: 20px;
+      flex-wrap: wrap;
+    }
+
+    .quote-no {
+      color: #23469a;
+      font-size: 32px;
+      font-weight: 800;
+      word-break: break-word;
+    }
+
+    .cust-name {
+      font-size: 34px;
+      font-weight: 800;
+      flex: 1 1 100%;
+      word-break: break-word;
+    }
+
+    .meta {
+      font-size: 32px;
+      margin-bottom: 28px;
+    }
+
+    .meta b {
+      font-size: 36px;
+    }
+
+    .item-list {
+      margin: 0 0 28px;
+      padding: 26px;
+      background: #f8f9fc;
+      border: 2px solid #eceff5;
+      border-radius: 26px;
+    }
+
+    .item-row {
+      display: flex;
+      justify-content: space-between;
+      gap: 20px;
+      font-size: 30px;
+      padding: 10px 0;
+    }
+
+    .item-row + .item-row {
+      border-top: 2px dashed #e3e7ef;
+    }
+
+    .item-model {
+      flex: 1;
+      word-break: break-word;
+    }
+
+    .item-qty {
+      font-weight: 700;
+      color: #23469a;
+      white-space: nowrap;
+    }
+
+    .btn-row {
+      display: flex;
+      gap: 18px;
+    }
+
+    .btn {
+      border: 2px solid var(--line);
+      background: var(--btn);
+      border-radius: 26px;
+      padding: 26px;
+      font-size: 32px;
+      font-weight: 700;
+      min-height: 96px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 16px;
+      text-decoration: none;
+      cursor: pointer;
+      user-select: none;
+    }
+
+    .btn:active {
+      transform: scale(.97);
+    }
+
+    .btn-copy {
+      flex: 1;
+    }
+
+    .btn-share {
+      min-width: 170px;
+      background: linear-gradient(180deg, #ffe98f, #ffd84a);
+      border-color: #e2c54c;
+      color: #513d00;
+      font-weight: 800;
+    }
+
+    .empty {
+      text-align: center;
+      color: var(--muted);
+      padding: 60px 20px;
+      font-size: 32px;
+    }
+
+    #debugBox {
+      font-size: 16px;
+      color: #444;
+      padding: 0 6px 24px;
+      white-space: pre-wrap;
+      line-height: 1.4;
+    }
   </style>
+
+  <script charset="utf-8" src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
 </head>
+
 <body>
-  <h1>LIFF Test</h1>
-  <button id="btn">Test Share</button>
-  <pre id="log"></pre>
+  <div class="app">
+    <div class="topbar">
+      <div class="logo">Q</div>
+      <div class="title">QuotationBot_68</div>
+      <div class="line-badge">LINE</div>
+    </div>
+
+    <div class="content">
+      <div class="search-wrap">
+        <div class="search-icon">⌕</div>
+        <input id="searchBox" class="search-input" placeholder="ค้นหา QuoteNo / ลูกค้า">
+      </div>
+
+      <div id="summaryBox" class="summary">
+        <div>⚠</div>
+        <div id="summaryText">พบ 0 ใบเสนอราคารอการยืนยัน</div>
+        <div class="arrow">›</div>
+      </div>
+
+      <div id="status" class="status">กำลังโหลด...</div>
+      <div id="debugBox"></div>
+      <div id="list"></div>
+    </div>
+  </div>
 
   <script>
-    const LIFF_ID = '2009366271-c0TDpvSW';
-    const log = (msg) => {
-      document.getElementById('log').textContent += '\n' + msg;
-    };
+    var API_BASE = 'https://script.google.com/macros/s/AKfycbw4jAzjWors_9dwQx1bI2RpVzm56icKOcTDYutQZIindgZb3f67MqoduccqgFnM6TzgaA/exec';
+    var LIFF_ID = '2009366271-c0TDpvSW';
 
-    async function init() {
+    var ALL_DATA = [];
+    var LIFF_READY = false;
+
+    function debugLog(msg) {
+      var el = document.getElementById('debugBox');
+      if (!el) return;
+      el.textContent += '\n' + String(msg || '');
+    }
+
+    function fmtNumber(n) {
       try {
-        log('start init');
-        await liff.init({ liffId: LIFF_ID, withLoginOnExternalBrowser: true });
-        log('init ok');
-        log('isInClient=' + liff.isInClient());
-        log('isLoggedIn=' + liff.isLoggedIn());
-        log('shareTargetPicker=' + liff.isApiAvailable('shareTargetPicker'));
-      } catch (e) {
-        log('init error: ' + (e && e.message ? e.message : JSON.stringify(e)));
+        return Number(n || 0).toLocaleString('th-TH');
+      } catch (err) {
+        return String(n || 0);
       }
     }
 
-    document.getElementById('btn').onclick = async function () {
-      try {
-        const result = await liff.shareTargetPicker([
-          { type: 'text', text: 'ทดสอบแชร์จาก LIFF' }
-        ]);
-        log(result ? 'share ok' : 'share canceled');
-      } catch (e) {
-        log('share error: ' + (e && e.message ? e.message : JSON.stringify(e)));
-      }
-    };
+    function setStatus(msg) {
+      document.getElementById('status').textContent = msg || '';
+    }
 
-    init();
+    function setSummary(count) {
+      document.getElementById('summaryText').textContent =
+        'พบ ' + count + ' ใบเสนอราคารอการยืนยัน';
+    }
+
+    function escapeHtml(str) {
+      return String(str || '')
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+    }
+
+    function copyText(text) {
+      var s = String(text || '');
+      if (!s) return;
+
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(s).then(function () {
+          setStatus('คัดลอกแล้ว ✅');
+          setTimeout(function () { setStatus(''); }, 900);
+        }).catch(function () {
+          fallbackCopy(s);
+        });
+      } else {
+        fallbackCopy(s);
+      }
+    }
+
+    function fallbackCopy(s) {
+      var ta = document.createElement('textarea');
+      ta.value = s;
+      document.body.appendChild(ta);
+      ta.select();
+      document.execCommand('copy');
+      ta.remove();
+
+      setStatus('คัดลอกแล้ว ✅');
+      setTimeout(function () { setStatus(''); }, 900);
+    }
+
+    function loadJsonp(action, params) {
+      params = params || {};
+
+      return new Promise(function(resolve, reject) {
+        var cbName = '__jsonp_cb_' + Date.now() + '_' + Math.floor(Math.random() * 100000);
+        var script = document.createElement('script');
+        var qs = 'action=' + encodeURIComponent(action) + '&callback=' + encodeURIComponent(cbName);
+
+        Object.keys(params).forEach(function(key) {
+          qs += '&' + encodeURIComponent(key) + '=' + encodeURIComponent(params[key]);
+        });
+
+        window[cbName] = function(data) {
+          try {
+            resolve(data);
+          } finally {
+            cleanup();
+          }
+        };
+
+        function cleanup() {
+          try { delete window[cbName]; } catch (e) { window[cbName] = undefined; }
+          if (script.parentNode) script.parentNode.removeChild(script);
+        }
+
+        script.onerror = function() {
+          cleanup();
+          reject(new Error('JSONP load error: ' + action));
+        };
+
+        script.src = API_BASE + '?' + qs;
+        document.body.appendChild(script);
+
+        setTimeout(function() {
+          if (window[cbName]) {
+            cleanup();
+            reject(new Error('JSONP timeout: ' + action));
+          }
+        }, 10000);
+      });
+    }
+
+    async function ensureLiffReady() {
+      if (LIFF_READY) return true;
+
+      debugLog('เริ่ม init LIFF ตอนกดแชร์');
+
+      if (!window.liff) {
+        throw new Error('ไม่พบ LIFF SDK');
+      }
+
+      await Promise.race([
+        liff.init({
+          liffId: LIFF_ID,
+          withLoginOnExternalBrowser: true
+        }),
+        new Promise(function (_, reject) {
+          setTimeout(function () {
+            reject(new Error('LIFF init timeout 8s'));
+          }, 8000);
+        })
+      ]);
+
+      LIFF_READY = true;
+
+      debugLog('LIFF init สำเร็จตอนกดแชร์');
+      debugLog('isInClient = ' + liff.isInClient());
+      debugLog('isLoggedIn = ' + liff.isLoggedIn());
+      debugLog('shareTargetPicker = ' + liff.isApiAvailable('shareTargetPicker'));
+
+      return true;
+    }
+
+    function render() {
+      var keyword = String(document.getElementById('searchBox').value || '').trim().toLowerCase();
+      var list = document.getElementById('list');
+
+      var filtered = ALL_DATA.filter(function (x) {
+        if (!keyword) return true;
+        return (
+          String(x.quoteNo || '').toLowerCase().indexOf(keyword) >= 0 ||
+          String(x.customerName || '').toLowerCase().indexOf(keyword) >= 0 ||
+          String(x.customerNo || '').toLowerCase().indexOf(keyword) >= 0
+        );
+      });
+
+      setSummary(filtered.length);
+      setStatus(filtered.length ? ('พบ ' + filtered.length + ' ใบ') : 'ไม่พบรายการ');
+      list.innerHTML = '';
+
+      if (!filtered.length) {
+        list.innerHTML = '<div class="empty">ไม่มีใบเสนอราคาค้างคอนเฟิร์ม</div>';
+        return;
+      }
+
+      filtered.forEach(function (x) {
+        var quoteNo = escapeHtml(x.quoteNo || '-');
+        var customer = escapeHtml(x.customerName || x.customerNo || '-');
+        var qty = fmtNumber(x.sumQty || 0);
+        var total = fmtNumber(x.sumTotal || 0);
+
+        var itemsHtml = '';
+        if (x.items && x.items.length) {
+          itemsHtml = '<div class="item-list">';
+          x.items.forEach(function (it) {
+            itemsHtml +=
+              '<div class="item-row">' +
+                '<span class="item-model">' + escapeHtml(it.modelBase || '-') + '</span>' +
+                '<span class="item-qty">x' + escapeHtml(it.qty || 0) + '</span>' +
+              '</div>';
+          });
+          itemsHtml += '</div>';
+        }
+
+        var card = document.createElement('div');
+        card.className = 'card';
+        card.innerHTML =
+          '<div class="row1">' +
+            '<div class="quote-no">' + quoteNo + '</div>' +
+            '<div class="cust-name">' + customer + '</div>' +
+          '</div>' +
+          '<div class="meta">' + qty + ' เครื่อง | <b>' + total + '</b></div>' +
+          itemsHtml +
+          '<div class="btn-row">' +
+            '<button class="btn btn-copy" type="button">📋 คัดลอกเลข PO</button>' +
+            '<button class="btn btn-share" type="button">🔗 แชร์ใบเสนอราคา</button>' +
+          '</div>';
+
+        var btns = card.getElementsByTagName('button');
+
+        btns[0].onclick = function () {
+          copyText(x.quoteNo || '');
+        };
+
+        btns[1].onclick = async function () {
+          setStatus('กำลังเตรียมใบเสนอราคา...');
+          debugLog('กดแชร์ ' + (x.quoteNo || ''));
+
+          try {
+            await ensureLiffReady();
+          } catch (err) {
+            console.error(err);
+            setStatus('LIFF init ไม่สำเร็จ');
+            debugLog('LIFF SHARE INIT ERROR: ' + (err && err.message ? err.message : err));
+            return;
+          }
+
+          loadJsonp('get_quote_share_payload', { quoteNo: x.quoteNo })
+            .then(async function(msg) {
+              try {
+                if (!window.liff || !LIFF_READY) {
+                  setStatus('LIFF ยังไม่พร้อม');
+                  return;
+                }
+
+                if (!liff.isInClient()) {
+                  setStatus('กรุณาเปิดผ่าน LIFF URL ใน LINE');
+                  return;
+                }
+
+                if (!liff.isApiAvailable('shareTargetPicker')) {
+                  setStatus('อุปกรณ์นี้ยังไม่รองรับการแชร์ผ่าน LINE');
+                  return;
+                }
+
+                var result = await liff.shareTargetPicker(msg);
+
+                if (result) {
+                  setStatus('แชร์ใบเสนอราคาแล้ว ✅');
+                } else {
+                  setStatus('ยกเลิกการแชร์');
+                }
+              } catch (err) {
+                console.error(err);
+                setStatus('แชร์ไม่สำเร็จ: ' + (err && err.message ? err.message : err));
+                debugLog('SHARE ERROR: ' + (err && err.message ? err.message : err));
+              }
+            })
+            .catch(function(err) {
+              console.error(err);
+              setStatus('เตรียมใบเสนอราคาไม่สำเร็จ: ' + (err && err.message ? err.message : err));
+              debugLog('PAYLOAD ERROR: ' + (err && err.message ? err.message : err));
+            });
+        };
+
+        list.appendChild(card);
+      });
+    }
+
+    function loadData() {
+      setStatus('กำลังโหลด...');
+      debugLog('เริ่ม loadData');
+      debugLog('กำลังเรียก list_open_quotes');
+
+      loadJsonp('list_open_quotes')
+        .then(function(data) {
+          debugLog('list_open_quotes success');
+          debugLog('จำนวนข้อมูล = ' + ((data && data.length) ? data.length : 0));
+
+          ALL_DATA = data || [];
+          render();
+        })
+        .catch(function(err) {
+          console.error(err);
+          setStatus('โหลดไม่สำเร็จ');
+          debugLog('list_open_quotes failure');
+          debugLog(err && err.message ? err.message : String(err));
+        });
+    }
+
+    document.getElementById('searchBox').addEventListener('input', render);
+
+    window.addEventListener('load', function () {
+      debugLog('window load');
+      loadData();
+    });
   </script>
 </body>
 </html>
