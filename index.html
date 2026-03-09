@@ -315,6 +315,45 @@
     #debugBox.show {
       display: block;
     }
+
+    .toast {
+      position: fixed;
+      left: 50%;
+      bottom: 24px;
+      transform: translateX(-50%) translateY(20px);
+      min-width: 180px;
+      max-width: calc(100vw - 32px);
+      background: rgba(30, 31, 36, 0.92);
+      color: #fff;
+      padding: 12px 16px;
+      border-radius: 14px;
+      font-size: 14px;
+      font-weight: 700;
+      line-height: 1.4;
+      text-align: center;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, .18);
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity .18s ease, transform .18s ease;
+      z-index: 9999;
+    }
+    
+    .toast.show {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+    }
+    
+    .toast.success {
+      background: rgba(32, 135, 74, 0.95);
+    }
+    
+    .toast.error {
+      background: rgba(196, 49, 49, 0.95);
+    }
+    
+    .toast.warn {
+      background: rgba(166, 113, 0, 0.95);
+    }
   </style>
 
   <script charset="utf-8" src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
@@ -351,12 +390,33 @@
     </div>
   </div>
 
+  <div id="toast" class="toast"></div>
+
   <script>
     var API_BASE = 'https://script.google.com/macros/s/AKfycbw4jAzjWors_9dwQx1bI2RpVzm56icKOcTDYutQZIindgZb3f67MqoduccqgFnM6TzgaA/exec';
     var LIFF_ID = '2009366271-c0TDpvSW';
 
     var ALL_DATA = [];
     var LIFF_READY = false;
+
+    var TOAST_TIMER = null;
+
+    function showToast(message, type, ms) {
+      var el = document.getElementById('toast');
+      if (!el) return;
+    
+      el.textContent = String(message || '');
+      el.className = 'toast show';
+    
+      if (type) {
+        el.classList.add(type);
+      }
+    
+      clearTimeout(TOAST_TIMER);
+      TOAST_TIMER = setTimeout(function () {
+        el.className = 'toast';
+      }, ms || 1600);
+    }
 
     function debugLog(msg) {
       var el = document.getElementById('debugBox');
@@ -412,11 +472,10 @@
     function copyText(text) {
       var s = String(text || '');
       if (!s) return;
-
+    
       if (navigator.clipboard && navigator.clipboard.writeText) {
         navigator.clipboard.writeText(s).then(function () {
-          setStatus('คัดลอกแล้ว ✅');
-          setTimeout(function () { setStatus(''); }, 900);
+          showToast('คัดลอกแล้ว ✅', 'success', 1200);
         }).catch(function () {
           fallbackCopy(s);
         });
@@ -432,9 +491,8 @@
       ta.select();
       document.execCommand('copy');
       ta.remove();
-
-      setStatus('คัดลอกแล้ว ✅');
-      setTimeout(function () { setStatus(''); }, 900);
+    
+      showToast('คัดลอกแล้ว ✅', 'success', 1200);
     }
 
     function flashButton(btn, text, ms) {
@@ -539,7 +597,7 @@
       });
 
       setSummary(filtered.length);
-      setStatus(filtered.length ? ('พบ ' + filtered.length + ' ใบ') : 'ไม่พบรายการ');
+      setStatus('');
       list.innerHTML = '';
 
       if (!filtered.length) {
@@ -592,14 +650,13 @@
           btns[1].textContent = 'กำลังแชร์...';
           btns[1].disabled = true;
         
-          setStatus('กำลังเตรียมใบเสนอราคา...');
           debugLog('กดแชร์ ' + (x.quoteNo || ''));
         
           try {
             await ensureLiffReady();
           } catch (err) {
             console.error(err);
-            setStatus('LIFF init ไม่สำเร็จ');
+            showToast('LIFF init ไม่สำเร็จ', 'error', 1800);
             debugLog('LIFF SHARE INIT ERROR: ' + (err && err.message ? err.message : err));
             btns[1].textContent = btns[1].dataset.oldText || '🔗 แชร์ใบเสนอราคา';
             btns[1].disabled = false;
@@ -610,21 +667,21 @@
             .then(async function(msg) {
               try {
                 if (!window.liff || !LIFF_READY) {
-                  setStatus('LIFF ยังไม่พร้อม');
+                  showToast('LIFF ยังไม่พร้อม', 'warn', 1800);
                   btns[1].textContent = btns[1].dataset.oldText || '🔗 แชร์ใบเสนอราคา';
                   btns[1].disabled = false;
                   return;
                 }
         
                 if (!liff.isInClient()) {
-                  setStatus('กรุณาเปิดผ่าน LIFF URL ใน LINE');
+                  showToast('กรุณาเปิดผ่าน LIFF URL ใน LINE', 'warn', 1800);
                   btns[1].textContent = btns[1].dataset.oldText || '🔗 แชร์ใบเสนอราคา';
                   btns[1].disabled = false;
                   return;
                 }
         
                 if (!liff.isApiAvailable('shareTargetPicker')) {
-                  setStatus('อุปกรณ์นี้ยังไม่รองรับการแชร์ผ่าน LINE');
+                  showToast('อุปกรณ์นี้ยังไม่รองรับการแชร์ผ่าน LINE', 'warn', 1800);
                   btns[1].textContent = btns[1].dataset.oldText || '🔗 แชร์ใบเสนอราคา';
                   btns[1].disabled = false;
                   return;
@@ -633,16 +690,16 @@
                 var result = await liff.shareTargetPicker(msg);
         
                 if (result) {
-                  setStatus('แชร์ใบเสนอราคาแล้ว ✅');
+                  showToast('แชร์ใบเสนอราคาแล้ว ✅', 'success', 1500);
                   flashButton(btns[1], 'แชร์แล้ว ✅', 1200);
                 } else {
-                  setStatus('ยกเลิกการแชร์');
+                  showToast('ยกเลิกการแชร์', 'warn', 1200);
                   btns[1].textContent = btns[1].dataset.oldText || '🔗 แชร์ใบเสนอราคา';
                   btns[1].disabled = false;
                 }
               } catch (err) {
                 console.error(err);
-                setStatus('แชร์ไม่สำเร็จ: ' + (err && err.message ? err.message : err));
+                showToast('แชร์ไม่สำเร็จ', 'error', 1800);
                 debugLog('SHARE ERROR: ' + (err && err.message ? err.message : err));
                 btns[1].textContent = btns[1].dataset.oldText || '🔗 แชร์ใบเสนอราคา';
                 btns[1].disabled = false;
@@ -650,7 +707,7 @@
             })
             .catch(function(err) {
               console.error(err);
-              setStatus('เตรียมใบเสนอราคาไม่สำเร็จ: ' + (err && err.message ? err.message : err));
+              showToast('เตรียมใบเสนอราคาไม่สำเร็จ', 'error', 1800);
               debugLog('PAYLOAD ERROR: ' + (err && err.message ? err.message : err));
               btns[1].textContent = btns[1].dataset.oldText || '🔗 แชร์ใบเสนอราคา';
               btns[1].disabled = false;
@@ -665,19 +722,20 @@
       setStatus('กำลังโหลด...');
       debugLog('เริ่ม loadData');
       debugLog('กำลังเรียก list_open_quotes');
-
+    
       loadJsonp('list_open_quotes')
         .then(function(data) {
           debugLog('list_open_quotes success');
           debugLog('จำนวนข้อมูล = ' + ((data && data.length) ? data.length : 0));
-
+    
           ALL_DATA = data || [];
           render();
           setStatus('');
         })
         .catch(function(err) {
           console.error(err);
-          setStatus('โหลดไม่สำเร็จ');
+          setStatus('');
+          showToast('โหลดไม่สำเร็จ', 'error', 1800);
           debugLog('list_open_quotes failure');
           debugLog(err && err.message ? err.message : String(err));
         });
