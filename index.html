@@ -365,7 +365,7 @@
       <div class="title">รวมออเดอร์สินค้า~</div>
     
       <div class="line-badge" id="profileBadge">
-        <img src="Caffe.png" alt="NongCaffe">
+        <img src="Cafe.png" alt="NongCaffe">
       </div>
     </div>
 
@@ -388,6 +388,7 @@
       </div>
       
       <div id="debugBox"></div>
+      <div id="status" class="status"></div>
     </div>
   </div>
 
@@ -453,7 +454,8 @@
     }
 
     function setStatus(msg) {
-      document.getElementById('status').textContent = msg || '';
+      var s = document.getElementById('status');
+      if (s) s.textContent = msg;
     }
 
     function setSummary(count) {
