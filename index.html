@@ -275,12 +275,45 @@
       font-size: 16px;
     }
 
+    .debug-toolbar {
+      display: flex;
+      justify-content: flex-end;
+      margin: 0 2px 10px;
+    }
+
+    .debug-toolbar {
+      opacity: 0.6;
+    }
+    
+    .debug-toolbar:hover {
+      opacity: 1;
+    }
+    
+    .debug-toggle {
+      border: 1px solid var(--line);
+      background: #fff;
+      color: #666;
+      border-radius: 10px;
+      padding: 6px 10px;
+      font-size: 12px;
+      cursor: pointer;
+    }
+    
     #debugBox {
+      display: none;
       font-size: 12px;
       color: #666;
-      padding: 0 2px 16px;
+      padding: 10px 12px;
+      margin: 0 0 16px;
       white-space: pre-wrap;
       line-height: 1.4;
+      background: #f7f8fb;
+      border: 1px dashed #d9dee8;
+      border-radius: 12px;
+    }
+    
+    #debugBox.show {
+      display: block;
     }
   </style>
 
@@ -307,9 +340,14 @@
         <div class="arrow">›</div>
       </div>
 
-      <div id="status" class="status">กำลังโหลด...</div>
-      <div id="debugBox"></div>
+      <div id="status"></div>
       <div id="list"></div>
+      
+      <div class="debug-toolbar">
+        <button id="debugToggleBtn" class="debug-toggle">Debug</button>
+      </div>
+      
+      <div id="debugBox"></div>
     </div>
   </div>
 
@@ -324,6 +362,25 @@
       var el = document.getElementById('debugBox');
       if (!el) return;
       el.textContent += '\n' + String(msg || '');
+    }
+
+    var DEBUG_VISIBLE = false;
+
+    function setDebugVisible(show) {
+      DEBUG_VISIBLE = !!show;
+    
+      var box = document.getElementById('debugBox');
+      var btn = document.getElementById('debugToggleBtn');
+    
+      if (!box || !btn) return;
+    
+      if (DEBUG_VISIBLE) {
+        box.classList.add('show');
+        btn.textContent = 'ซ่อน Debug';
+      } else {
+        box.classList.remove('show');
+        btn.textContent = 'แสดง Debug';
+      }
     }
 
     function fmtNumber(n) {
@@ -378,6 +435,21 @@
 
       setStatus('คัดลอกแล้ว ✅');
       setTimeout(function () { setStatus(''); }, 900);
+    }
+
+    function flashButton(btn, text, ms) {
+      if (!btn) return;
+    
+      var oldText = btn.dataset.oldText || btn.textContent;
+      btn.dataset.oldText = oldText;
+    
+      btn.textContent = text;
+      btn.disabled = true;
+    
+      setTimeout(function () {
+        btn.textContent = oldText;
+        btn.disabled = false;
+      }, ms || 1000);
     }
 
     function loadJsonp(action, params) {
@@ -512,57 +584,78 @@
 
         btns[0].onclick = function () {
           copyText(x.quoteNo || '');
+          flashButton(btns[0], 'คัดลอกแล้ว ✅', 5000);
         };
 
         btns[1].onclick = async function () {
+          btns[1].dataset.oldText = btns[1].textContent;
+          btns[1].textContent = 'กำลังแชร์...';
+          btns[1].disabled = true;
+        
           setStatus('กำลังเตรียมใบเสนอราคา...');
           debugLog('กดแชร์ ' + (x.quoteNo || ''));
-
+        
           try {
             await ensureLiffReady();
           } catch (err) {
             console.error(err);
             setStatus('LIFF init ไม่สำเร็จ');
             debugLog('LIFF SHARE INIT ERROR: ' + (err && err.message ? err.message : err));
+            btns[1].textContent = btns[1].dataset.oldText || '🔗 แชร์ใบเสนอราคา';
+            btns[1].disabled = false;
             return;
           }
-
+        
           loadJsonp('get_quote_share_payload', { quoteNo: x.quoteNo })
             .then(async function(msg) {
               try {
                 if (!window.liff || !LIFF_READY) {
                   setStatus('LIFF ยังไม่พร้อม');
+                  btns[1].textContent = btns[1].dataset.oldText || '🔗 แชร์ใบเสนอราคา';
+                  btns[1].disabled = false;
                   return;
                 }
-
+        
                 if (!liff.isInClient()) {
                   setStatus('กรุณาเปิดผ่าน LIFF URL ใน LINE');
+                  btns[1].textContent = btns[1].dataset.oldText || '🔗 แชร์ใบเสนอราคา';
+                  btns[1].disabled = false;
                   return;
                 }
-
+        
                 if (!liff.isApiAvailable('shareTargetPicker')) {
                   setStatus('อุปกรณ์นี้ยังไม่รองรับการแชร์ผ่าน LINE');
+                  btns[1].textContent = btns[1].dataset.oldText || '🔗 แชร์ใบเสนอราคา';
+                  btns[1].disabled = false;
                   return;
                 }
-
+        
                 var result = await liff.shareTargetPicker(msg);
-
+        
                 if (result) {
                   setStatus('แชร์ใบเสนอราคาแล้ว ✅');
+                  flashButton(btns[1], 'แชร์แล้ว ✅', 1200);
                 } else {
                   setStatus('ยกเลิกการแชร์');
+                  btns[1].textContent = btns[1].dataset.oldText || '🔗 แชร์ใบเสนอราคา';
+                  btns[1].disabled = false;
                 }
               } catch (err) {
                 console.error(err);
                 setStatus('แชร์ไม่สำเร็จ: ' + (err && err.message ? err.message : err));
                 debugLog('SHARE ERROR: ' + (err && err.message ? err.message : err));
+                btns[1].textContent = btns[1].dataset.oldText || '🔗 แชร์ใบเสนอราคา';
+                btns[1].disabled = false;
               }
             })
             .catch(function(err) {
               console.error(err);
               setStatus('เตรียมใบเสนอราคาไม่สำเร็จ: ' + (err && err.message ? err.message : err));
               debugLog('PAYLOAD ERROR: ' + (err && err.message ? err.message : err));
+              btns[1].textContent = btns[1].dataset.oldText || '🔗 แชร์ใบเสนอราคา';
+              btns[1].disabled = false;
             });
+        };
         };
 
         list.appendChild(card);
@@ -581,6 +674,7 @@
 
           ALL_DATA = data || [];
           render();
+          setStatus('');
         })
         .catch(function(err) {
           console.error(err);
@@ -591,6 +685,10 @@
     }
 
     document.getElementById('searchBox').addEventListener('input', render);
+
+    document.getElementById('debugToggleBtn').addEventListener('click', function () {
+      setDebugVisible(!DEBUG_VISIBLE);
+    });
 
     window.addEventListener('load', function () {
       debugLog('window load');
