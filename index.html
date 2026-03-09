@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <title>Open Quotes</title>
+  <title>NongCaffe</title>
 
   <style>
     :root {
@@ -67,11 +67,17 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 22px;
-      font-weight: 700;
+      overflow: hidden;
+      background: rgba(255,255,255,.08);
       flex: 0 0 auto;
     }
-
+    
+    .logo img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+    
     .title {
       font-size: 20px;
       font-weight: 800;
@@ -80,19 +86,32 @@
       overflow: hidden;
       text-overflow: ellipsis;
     }
-
+    
     .line-badge {
       width: 40px;
       height: 40px;
-      border-radius: 10px;
+      border-radius: 999px;
       background: #fff;
       color: #00b900;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 12px;
+      font-size: 11px;
       font-weight: 800;
       flex: 0 0 auto;
+      overflow: hidden;
+      border: 1px solid rgba(0,0,0,.05);
+    }
+    
+    .line-badge img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+    
+    #profileFallback {
+      font-size: 11px;
+      font-weight: 800;
     }
 
     .content {
@@ -166,24 +185,26 @@
 
     .row1 {
       display: flex;
-      gap: 8px;
+      flex-direction: column;
+      gap: 4px;
       margin-bottom: 10px;
-      flex-wrap: wrap;
     }
-
-    .quote-no {
-      color: #23469a;
-      font-size: 18px;
-      font-weight: 800;
-      word-break: break-word;
-    }
-
+    
     .cust-name {
-      font-size: 18px;
+      font-size: 20px;
       font-weight: 800;
-      flex: 1 1 100%;
       word-break: break-word;
       line-height: 1.35;
+      color: #1e1f24;
+    }
+    
+    .quote-no {
+      color: #3f5fae;
+      font-size: 15px;
+      font-weight: 600;
+      word-break: break-word;
+      line-height: 1.3;
+      letter-spacing: .1px;
     }
 
     .meta {
@@ -362,9 +383,15 @@
 <body>
   <div class="app">
     <div class="topbar">
-      <div class="logo">Q</div>
-      <div class="title">QuotationBot_68</div>
-      <div class="line-badge">LINE</div>
+      <div class="logo">
+        <img id="brandLogo" src="caffe.png" alt="NongCaffe">
+      </div>
+      
+      <div class="title">รวมออเดอร์สินค้า~</div>
+      
+      <div class="line-badge" id="profileBadge">
+        <span id="profileFallback">LINE</span>
+      </div>
     </div>
 
     <div class="content">
@@ -573,6 +600,24 @@
         })
       ]);
 
+      async function loadProfileBadge() {
+        try {
+          await ensureLiffReady();
+      
+          if (!window.liff || !liff.isLoggedIn()) return;
+      
+          var profile = await liff.getProfile();
+          if (!profile || !profile.pictureUrl) return;
+      
+          var badge = document.getElementById('profileBadge');
+          if (!badge) return;
+      
+          badge.innerHTML = '<img src="' + profile.pictureUrl + '" alt="profile">';
+        } catch (err) {
+          debugLog('PROFILE LOAD ERROR: ' + (err && err.message ? err.message : err));
+        }
+      }
+
       LIFF_READY = true;
 
       debugLog('LIFF init สำเร็จตอนกดแชร์');
@@ -628,8 +673,8 @@
         card.className = 'card';
         card.innerHTML =
           '<div class="row1">' +
-            '<div class="quote-no">' + quoteNo + '</div>' +
             '<div class="cust-name">' + customer + '</div>' +
+            '<div class="quote-no">' + quoteNo + '</div>' +
           '</div>' +
           '<div class="meta">' + qty + ' เครื่อง | <b>' + total + '</b></div>' +
           itemsHtml +
@@ -747,9 +792,10 @@
       setDebugVisible(!DEBUG_VISIBLE);
     });
 
-    window.addEventListener('load', function () {
+    window.addEventListener('load', async function () {
       debugLog('window load');
       loadData();
+      loadProfileBadge();
     });
   </script>
 </body>
