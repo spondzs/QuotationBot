@@ -365,7 +365,7 @@
       <div class="title">รวมออเดอร์สินค้า~</div>
     
       <div class="line-badge" id="profileBadge">
-        <img src="Cafe.png" alt="NongCaffe">
+        <img src="Caffe.png" alt="NongCaffe">
       </div>
     </div>
 
@@ -557,13 +557,13 @@
 
     async function ensureLiffReady() {
       if (LIFF_READY) return true;
-
+    
       debugLog('เริ่ม init LIFF ตอนกดแชร์');
-
+    
       if (!window.liff) {
         throw new Error('ไม่พบ LIFF SDK');
       }
-
+    
       await Promise.race([
         liff.init({
           liffId: LIFF_ID,
@@ -575,32 +575,14 @@
           }, 8000);
         })
       ]);
-
-      async function loadProfileBadge() {
-        try {
-          await ensureLiffReady();
-      
-          if (!window.liff || !liff.isLoggedIn()) return;
-      
-          var profile = await liff.getProfile();
-          if (!profile || !profile.pictureUrl) return;
-      
-          var badge = document.getElementById('profileBadge');
-          if (!badge) return;
-      
-          badge.innerHTML = '<img src="' + profile.pictureUrl + '" alt="profile">';
-        } catch (err) {
-          debugLog('PROFILE LOAD ERROR: ' + (err && err.message ? err.message : err));
-        }
-      }
-
+    
       LIFF_READY = true;
-
+    
       debugLog('LIFF init สำเร็จตอนกดแชร์');
       debugLog('isInClient = ' + liff.isInClient());
       debugLog('isLoggedIn = ' + liff.isLoggedIn());
       debugLog('shareTargetPicker = ' + liff.isApiAvailable('shareTargetPicker'));
-
+    
       return true;
     }
 
@@ -768,7 +750,7 @@
       setDebugVisible(!DEBUG_VISIBLE);
     });
 
-    window.addEventListener('load', async function () {
+    window.addEventListener('load', function () {
       debugLog('window load');
       loadData();
     });
