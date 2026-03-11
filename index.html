@@ -643,7 +643,13 @@
         };
         
         btns[1].onclick = async function () {
+          var oldText = btns[1].dataset.oldText || btns[1].textContent;
+          btns[1].dataset.oldText = oldText;
+        
           try {
+            btns[1].textContent = 'กำลังแชร์...';
+            btns[1].disabled = true;
+        
             await ensureLiffReady();
         
             if (!LINE_USER_ID) {
@@ -661,16 +667,22 @@
         
             if (!window.liff || !LIFF_READY) {
               showToast('LIFF ยังไม่พร้อม', 'warn', 1800);
+              btns[1].textContent = oldText;
+              btns[1].disabled = false;
               return;
             }
         
             if (!liff.isInClient()) {
               showToast('กรุณาเปิดผ่าน LINE', 'warn', 1800);
+              btns[1].textContent = oldText;
+              btns[1].disabled = false;
               return;
             }
         
             if (!liff.isApiAvailable('shareTargetPicker')) {
               showToast('อุปกรณ์นี้ยังไม่รองรับการแชร์ผ่าน LINE', 'warn', 1800);
+              btns[1].textContent = oldText;
+              btns[1].disabled = false;
               return;
             }
         
@@ -681,12 +693,16 @@
               flashButton(btns[1], 'แชร์แล้ว ✅', 1200);
             } else {
               showToast('ยกเลิกการแชร์', 'warn', 1200);
+              btns[1].textContent = oldText;
+              btns[1].disabled = false;
             }
         
           } catch (err) {
             console.error(err);
             showToast('แชร์ไม่สำเร็จ', 'error', 1800);
             debugLog('share error: ' + (err && err.message ? err.message : err));
+            btns[1].textContent = oldText;
+            btns[1].disabled = false;
           }
         };
 
