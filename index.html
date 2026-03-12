@@ -354,12 +354,100 @@
     .toast.warn {
       background: rgba(166, 113, 0, 0.95);
     }
+
+    .loading-screen {
+      position: fixed;
+      inset: 0;
+      background: #f3f5fb;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 99999;
+      transition: opacity .35s ease, visibility .35s ease;
+    }
+    
+    .loading-screen.hide {
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+    }
+    
+    .loading-inner {
+      width: min(320px, calc(100vw - 40px));
+      text-align: center;
+      padding: 20px;
+    }
+    
+    .loading-mascot {
+      width: 110px;
+      height: 110px;
+      object-fit: contain;
+      animation: caffeFloat 1.6s ease-in-out infinite;
+      filter: drop-shadow(0 8px 18px rgba(45, 108, 223, .12));
+    }
+    
+    .loading-title {
+      margin-top: 12px;
+      font-size: 24px;
+      font-weight: 800;
+      color: #2d6cdf;
+    }
+    
+    .loading-text {
+      margin-top: 8px;
+      font-size: 15px;
+      color: #6f7482;
+      min-height: 22px;
+    }
+    
+    .loading-bar {
+      margin-top: 18px;
+      width: 100%;
+      height: 10px;
+      border-radius: 999px;
+      background: #dfe6f7;
+      overflow: hidden;
+      box-shadow: inset 0 1px 3px rgba(0, 0, 0, .05);
+    }
+    
+    .loading-bar-fill {
+      width: 0%;
+      height: 100%;
+      border-radius: 999px;
+      background: linear-gradient(90deg, #2d6cdf, #4e8cff);
+      transition: width .28s ease;
+    }
+    
+    .loading-percent {
+      margin-top: 8px;
+      font-size: 14px;
+      font-weight: 700;
+      color: #5f6b85;
+    }
+    
+    @keyframes caffeFloat {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-8px); }
+    }
   </style>
 
   <script charset="utf-8" src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
 </head>
 
 <body>
+  <div id="loadingScreen" class="loading-screen">
+    <div class="loading-inner">
+      <img src="Caffe.png" alt="NongCaffe" class="loading-mascot">
+      <div class="loading-title">NongCaffe</div>
+      <div id="loadingText" class="loading-text">กำลังเตรียมออเดอร์ให้นะครับ...</div>
+  
+      <div class="loading-bar">
+        <div id="loadingBarFill" class="loading-bar-fill"></div>
+      </div>
+  
+      <div id="loadingPercent" class="loading-percent">0%</div>
+    </div>
+  </div>
   <div class="app">
     <div class="topbar">
       <div class="title">รวมออเดอร์สินค้า~</div>
@@ -403,6 +491,26 @@
     var LINE_USER_ID = '';
 
     var TOAST_TIMER = null;
+
+    function setLoadingProgress(percent, text) {
+      var p = Math.max(0, Math.min(100, Number(percent || 0)));
+      var bar = document.getElementById('loadingBarFill');
+      var label = document.getElementById('loadingPercent');
+      var txt = document.getElementById('loadingText');
+    
+      if (bar) bar.style.width = p + '%';
+      if (label) label.textContent = p + '%';
+      if (txt && text) txt.textContent = text;
+    }
+    
+    function hideLoadingScreen() {
+      var el = document.getElementById('loadingScreen');
+      if (el) el.classList.add('hide');
+    }
+    
+    function showLoadingError(text) {
+      setLoadingProgress(100, text || 'โหลดไม่สำเร็จ');
+    }
 
     function showToast(message, type, ms) {
       var el = document.getElementById('toast');
@@ -559,6 +667,8 @@
     async function ensureLiffReady() {
       if (LIFF_READY) return true;
     
+      setLoadingProgress(20, 'กำลังเชื่อมต่อ LINE...');
+    
       if (!window.liff) {
         throw new Error('ไม่พบ LIFF SDK');
       }
@@ -567,6 +677,8 @@
         liffId: LIFF_ID,
         withLoginOnExternalBrowser: true
       });
+    
+      setLoadingProgress(40, 'กำลังเข้าสู่ระบบ...');
     
       if (!liff.isLoggedIn()) {
         liff.login();
@@ -577,14 +689,17 @@
       LINE_USER_ID = String((profile && profile.userId) || '').trim();
     
       LIFF_READY = true;
+    
+      setLoadingProgress(55, 'ตรวจสอบตัวตนสำเร็จ');
       return true;
     }
 
     function render() {
       var keyword = String(document.getElementById('searchBox').value || '').trim().toLowerCase();
       var list = document.getElementById('list');
-
-      var filtered = ALL_DATA.filter(function (x) {
+      var safeData = Array.isArray(ALL_DATA) ? ALL_DATA : [];
+    
+      var filtered = safeData.filter(function (x) {
         if (!keyword) return true;
         return (
           String(x.quoteNo || '').toLowerCase().indexOf(keyword) >= 0 ||
@@ -592,22 +707,22 @@
           String(x.customerNo || '').toLowerCase().indexOf(keyword) >= 0
         );
       });
-
+    
       setSummary(filtered.length);
       setStatus('');
       list.innerHTML = '';
-
+    
       if (!filtered.length) {
         list.innerHTML = '<div class="empty">ไม่มีใบเสนอราคาค้างคอนเฟิร์ม</div>';
         return;
       }
-
+    
       filtered.forEach(function (x) {
         var quoteNo = escapeHtml(x.quoteNo || '-');
         var customer = escapeHtml(x.customerName || x.customerNo || '-');
         var qty = fmtNumber(x.sumQty || 0);
         var total = fmtNumber(x.sumTotal || 0);
-
+    
         var itemsHtml = '';
         if (x.items && x.items.length) {
           itemsHtml = '<div class="item-list">';
@@ -620,7 +735,7 @@
           });
           itemsHtml += '</div>';
         }
-
+    
         var card = document.createElement('div');
         card.className = 'card';
         card.innerHTML =
@@ -634,60 +749,60 @@
             '<button class="btn btn-copy" type="button">📋 คัดลอกเลข PO</button>' +
             '<button class="btn btn-share" type="button">🔗 แชร์ใบเสนอราคา</button>' +
           '</div>';
-
+    
         var btns = card.getElementsByTagName('button');
-
+    
         btns[0].onclick = function () {
           copyText(x.quoteNo || '');
           flashButton(btns[0], 'คัดลอกแล้ว ✅', 5000);
         };
-        
+    
         btns[1].onclick = async function () {
           var oldText = btns[1].dataset.oldText || btns[1].textContent;
           btns[1].dataset.oldText = oldText;
-        
+    
           try {
             btns[1].textContent = 'Loading...';
             btns[1].disabled = true;
-        
+    
             await ensureLiffReady();
-        
+    
             if (!LINE_USER_ID) {
               throw new Error('LINE userId not found');
             }
-        
+    
             var msg = await loadJsonp('get_quote_share_payload', {
               quoteNo: x.quoteNo,
               lineUserId: LINE_USER_ID
             });
-        
+    
             if (msg && msg.ok === false) {
               throw new Error(msg.error || 'โหลด payload ไม่สำเร็จ');
             }
-        
+    
             if (!window.liff || !LIFF_READY) {
               showToast('LIFF ยังไม่พร้อม', 'warn', 1800);
               btns[1].textContent = oldText;
               btns[1].disabled = false;
               return;
             }
-        
+    
             if (!liff.isInClient()) {
               showToast('กรุณาเปิดผ่าน LINE', 'warn', 1800);
               btns[1].textContent = oldText;
               btns[1].disabled = false;
               return;
             }
-        
+    
             if (!liff.isApiAvailable('shareTargetPicker')) {
               showToast('อุปกรณ์นี้ยังไม่รองรับการแชร์ผ่าน LINE', 'warn', 1800);
               btns[1].textContent = oldText;
               btns[1].disabled = false;
               return;
             }
-        
+    
             var result = await liff.shareTargetPicker(msg);
-        
+    
             if (result) {
               showToast('แชร์ใบเสนอราคาแล้ว ✅', 'success', 1500);
               flashButton(btns[1], 'แชร์แล้ว ✅', 1200);
@@ -696,7 +811,7 @@
               btns[1].textContent = oldText;
               btns[1].disabled = false;
             }
-        
+    
           } catch (err) {
             console.error(err);
             showToast('แชร์ไม่สำเร็จ', 'error', 1800);
@@ -705,34 +820,55 @@
             btns[1].disabled = false;
           }
         };
-
+    
         list.appendChild(card);
       });
     }
 
     async function loadData() {
       try {
+        debugLog('เริ่ม loadData');
+        debugLog('กำลังเรียก list_open_quotes');
+    
+        setLoadingProgress(60, 'กำลังตรวจสอบสิทธิ์...');
+    
         await ensureLiffReady();
     
         if (!LINE_USER_ID) {
           throw new Error('LINE userId not found');
         }
     
+        setLoadingProgress(75, 'กำลังโหลดรายการออเดอร์...');
+    
         var data = await loadJsonp('list_open_quotes', {
           lineUserId: LINE_USER_ID
         });
+    
+        debugLog('list_open_quotes success');
+        debugLog('raw type = ' + Object.prototype.toString.call(data));
+        debugLog('raw data = ' + JSON.stringify(data));
     
         if (data && data.ok === false) {
           throw new Error(data.error || 'โหลดข้อมูลไม่สำเร็จ');
         }
     
-        ALL_DATA = data || [];
+        ALL_DATA = Array.isArray(data) ? data : [];
+        debugLog('จำนวนข้อมูล = ' + ALL_DATA.length);
+    
+        setLoadingProgress(92, 'กำลังจัดหน้าจอ...');
         render();
+    
+        setLoadingProgress(100, 'พร้อมใช้งานแล้ว');
     
       } catch (err) {
         console.error(err);
+        ALL_DATA = [];
+        render();
         showToast('โหลดข้อมูลไม่สำเร็จ', 'error', 1800);
-        debugLog('loadData error: ' + (err && err.message ? err.message : err));
+        debugLog('list_open_quotes failure');
+        debugLog(err && err.message ? err.message : String(err));
+        showLoadingError('โหลดข้อมูลไม่สำเร็จ');
+        throw err;
       }
     }
 
@@ -745,7 +881,14 @@
     window.addEventListener('load', async function () {
       try {
         debugLog('window load');
+        setLoadingProgress(10, 'กำลังเปิดระบบ...');
+    
         await loadData();
+    
+        setTimeout(function () {
+          hideLoadingScreen();
+        }, 250);
+    
       } catch (err) {
         console.error(err);
         debugLog('window load error: ' + (err && err.message ? err.message : err));
