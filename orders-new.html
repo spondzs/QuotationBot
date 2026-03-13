@@ -646,6 +646,88 @@
         flex-direction: column;
       }
     }
+
+    .customer-picker {
+      position: relative;
+    }
+    
+    .customer-search-wrap {
+      position: relative;
+      z-index: 3;
+    }
+    
+    .clear-btn {
+      border: 0;
+      background: transparent;
+      color: #8a91a3;
+      font-size: 22px;
+      line-height: 1;
+      cursor: pointer;
+      padding: 0 2px;
+      min-width: 24px;
+      height: 24px;
+    }
+    
+    .customer-dropdown {
+      position: absolute;
+      left: 0;
+      right: 0;
+      top: calc(100% + 8px);
+      background: #fff;
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      box-shadow: 0 14px 30px rgba(27, 39, 94, .12);
+      overflow: hidden;
+      z-index: 15;
+      max-height: 320px;
+      overflow-y: auto;
+    }
+    
+    .customer-option {
+      padding: 12px 14px;
+      cursor: pointer;
+      transition: background .12s ease;
+      border-bottom: 1px solid #eef1f7;
+    }
+    
+    .customer-option:last-child {
+      border-bottom: 0;
+    }
+    
+    .customer-option:active,
+    .customer-option:hover {
+      background: #f7faff;
+    }
+    
+    .customer-option-name {
+      font-size: 15px;
+      font-weight: 800;
+      color: #1f2735;
+      line-height: 1.35;
+      word-break: break-word;
+    }
+    
+    .customer-option-meta {
+      margin-top: 4px;
+      font-size: 13px;
+      color: #69778f;
+      line-height: 1.35;
+      word-break: break-word;
+    }
+    
+    .customer-option-empty {
+      padding: 16px;
+      font-size: 14px;
+      color: #7a8292;
+      text-align: center;
+    }
+    
+    .selected-customer-meta {
+      margin-top: 10px;
+      font-size: 13px;
+      color: #60708e;
+      line-height: 1.4;
+    }
   </style>
 
   <script charset="utf-8" src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
@@ -682,14 +764,18 @@
       <div class="section-card">
         <div class="section-title">เลือกลูกค้า</div>
         <div class="section-sub">ค้นหาด้วยชื่อลูกค้า รหัสลูกค้า หรือเบอร์โทร</div>
-
-        <div class="search-wrap">
-          <div class="search-icon">⌕</div>
-          <input id="customerSearchBox" class="search-input" placeholder="ค้นหาลูกค้า">
+      
+        <div class="customer-picker">
+          <div class="search-wrap customer-search-wrap">
+            <div class="search-icon">⌕</div>
+            <input id="customerSearchBox" class="search-input" placeholder="ค้นหาลูกค้า" autocomplete="off">
+            <button id="clearCustomerBtn" class="clear-btn" type="button" style="display:none;">×</button>
+          </div>
+      
+          <div id="customerDropdown" class="customer-dropdown" style="display:none;"></div>
         </div>
-
-        <div id="selectedCustomerBox" class="stack-12"></div>
-        <div id="customerResults" class="list-box"></div>
+      
+        <div id="selectedCustomerMeta" class="selected-customer-meta" style="display:none;"></div>
       </div>
 
       <div class="section-card">
@@ -815,7 +901,8 @@
         keyword: '',
         loading: false,
         options: [],
-        selected: null
+        selected: null,
+        dropdownOpen: false
       },
 
       catalog: {
@@ -1072,19 +1159,21 @@
 
     async function loadCustomers(keyword) {
       state.customer.loading = true;
+      state.customer.keyword = String(keyword || '');
+    
       try {
         var data = await loadJsonp('list_customers', {
           lineUserId: state.auth.lineUserId,
           keyword: keyword || ''
         });
-
+    
         if (data && data.ok === false) {
           throw new Error(data.error || 'โหลดลูกค้าไม่สำเร็จ');
         }
-
+    
         state.customer.options = Array.isArray(data) ? data : [];
-        renderCustomerResults();
-
+        renderCustomerDropdown();
+    
       } catch (err) {
         console.error(err);
         debugLog('loadCustomers error: ' + (err && err.message ? err.message : err));
@@ -1120,8 +1209,69 @@
 
     function selectCustomer(customer) {
       state.customer.selected = customer || null;
-      renderSelectedCustomer();
-      renderCustomerResults();
+      renderSelectedCustomerMeta();
+      renderCustomerDropdown();
+    }
+
+    function openCustomerDropdown() {
+      state.customer.dropdownOpen = true;
+      renderCustomerDropdown();
+    }
+    
+    function closeCustomerDropdown() {
+      state.customer.dropdownOpen = false;
+      renderCustomerDropdown();
+    }
+    
+    function clearSelectedCustomer() {
+      state.customer.selected = null;
+      state.customer.keyword = '';
+      var input = document.getElementById('customerSearchBox');
+      if (input) input.value = '';
+      renderSelectedCustomerMeta();
+      closeCustomerDropdown();
+      toggleCustomerClearButton();
+    }
+    
+    function toggleCustomerClearButton() {
+      var btn = document.getElementById('clearCustomerBtn');
+      var input = document.getElementById('customerSearchBox');
+      if (!btn || !input) return;
+    
+      var hasValue = !!String(input.value || '').trim();
+      btn.style.display = hasValue ? 'block' : 'none';
+    }
+    
+    function selectCustomer(customer) {
+      state.customer.selected = customer || null;
+      state.customer.keyword = customer ? String(customer.name || '') : '';
+    
+      var input = document.getElementById('customerSearchBox');
+      if (input) {
+        input.value = customer ? String(customer.name || '') : '';
+      }
+    
+      renderSelectedCustomerMeta();
+      closeCustomerDropdown();
+      toggleCustomerClearButton();
+    }
+    
+    function renderSelectedCustomerMeta() {
+      var box = document.getElementById('selectedCustomerMeta');
+      var c = state.customer.selected;
+    
+      if (!box) return;
+    
+      if (!c) {
+        box.style.display = 'none';
+        box.innerHTML = '';
+        return;
+      }
+    
+      box.style.display = 'block';
+      box.innerHTML =
+        'รหัสลูกค้า: ' + escapeHtml(c.customerNo || '-') +
+        (c.phone ? ' | โทร: ' + escapeHtml(c.phone) : '');
     }
 
     function addProductToCart(product) {
@@ -1277,46 +1427,41 @@
       }
     }
 
-    function renderSelectedCustomer() {
-      var box = document.getElementById('selectedCustomerBox');
-      var c = state.customer.selected;
-
-      if (!c) {
-        box.innerHTML = '<div class="empty-box">ยังไม่ได้เลือกลูกค้า</div>';
-        return;
-      }
-
-      box.innerHTML =
-        '<div class="selected-box">' +
-          '<div class="selected-label">ลูกค้าที่เลือก</div>' +
-          '<div class="selected-main">' + escapeHtml(c.name || '-') + '</div>' +
-          '<div class="selected-sub">รหัสลูกค้า: ' + escapeHtml(c.customerNo || '-') + '</div>' +
-        '</div>';
-    }
-
-    function renderCustomerResults() {
-      var list = document.getElementById('customerResults');
+    function renderCustomerDropdown() {
+      var box = document.getElementById('customerDropdown');
+      if (!box) return;
+    
       var items = state.customer.options || [];
-
-      if (!items.length) {
-        list.innerHTML = '<div class="empty-box">ยังไม่มีผลลัพธ์ลูกค้า</div>';
+      var keyword = String(state.customer.keyword || '').trim();
+    
+      if (!state.customer.dropdownOpen || !keyword) {
+        box.style.display = 'none';
+        box.innerHTML = '';
         return;
       }
-
+    
+      box.style.display = 'block';
+    
+      if (!items.length) {
+        box.innerHTML = '<div class="customer-option-empty">ไม่พบลูกค้าที่ค้นหา</div>';
+        return;
+      }
+    
       var html = '';
       items.forEach(function (c) {
         html +=
-          '<div class="customer-item" data-customer-no="' + escapeHtml(c.customerNo || '') + '">' +
-            '<div class="customer-name">' + escapeHtml(c.name || '-') + '</div>' +
-            '<div class="customer-meta">รหัสลูกค้า: ' + escapeHtml(c.customerNo || '-') +
+          '<div class="customer-option" data-customer-no="' + escapeHtml(c.customerNo || '') + '">' +
+            '<div class="customer-option-name">' + escapeHtml(c.name || '-') + '</div>' +
+            '<div class="customer-option-meta">' +
+              'รหัสลูกค้า: ' + escapeHtml(c.customerNo || '-') +
               (c.phone ? ' | โทร: ' + escapeHtml(c.phone) : '') +
             '</div>' +
           '</div>';
       });
-
-      list.innerHTML = html;
-
-      Array.prototype.forEach.call(list.querySelectorAll('.customer-item'), function (el) {
+    
+      box.innerHTML = html;
+    
+      Array.prototype.forEach.call(box.querySelectorAll('.customer-option'), function (el) {
         el.addEventListener('click', function () {
           var customerNo = this.getAttribute('data-customer-no');
           var c = items.find(function (x) {
@@ -1620,50 +1765,85 @@
       document.getElementById('backBtn').addEventListener('click', function () {
         window.location.href = './index.html';
       });
-
+    
       document.getElementById('debugToggleBtn').addEventListener('click', function () {
         setDebugVisible(!DEBUG_VISIBLE);
       });
-
-      document.getElementById('customerSearchBox').addEventListener('input', function () {
-        state.customer.keyword = String(this.value || '');
-        loadCustomers(state.customer.keyword);
+    
+      var customerInput = document.getElementById('customerSearchBox');
+      var clearCustomerBtn = document.getElementById('clearCustomerBtn');
+    
+      customerInput.addEventListener('focus', function () {
+        if (String(this.value || '').trim()) {
+          openCustomerDropdown();
+        }
       });
-
+    
+      customerInput.addEventListener('input', function () {
+        var v = String(this.value || '');
+        state.customer.keyword = v;
+        toggleCustomerClearButton();
+    
+        if (!v.trim()) {
+          state.customer.options = [];
+          state.customer.selected = null;
+          renderSelectedCustomerMeta();
+          closeCustomerDropdown();
+          return;
+        }
+    
+        openCustomerDropdown();
+        loadCustomers(v);
+      });
+    
+      clearCustomerBtn.addEventListener('click', function () {
+        clearSelectedCustomer();
+        customerInput.focus();
+      });
+    
+      document.addEventListener('click', function (e) {
+        var picker = document.querySelector('.customer-picker');
+        if (!picker) return;
+    
+        if (!picker.contains(e.target)) {
+          closeCustomerDropdown();
+        }
+      });
+    
       document.getElementById('catalogSearchBox').addEventListener('input', function () {
         state.catalog.keyword = String(this.value || '');
         loadCatalog(state.catalog.keyword);
       });
-
+    
       document.getElementById('orderNoteBox').addEventListener('input', function () {
         setOrderNote(this.value);
       });
-
+    
       document.getElementById('submitOrderBtn').addEventListener('click', submitCreateOrder);
       document.getElementById('addDiscountBtn').addEventListener('click', addDiscountRow);
-
+    
       Array.prototype.forEach.call(document.querySelectorAll('#warehousePills .pill'), function (el) {
         el.addEventListener('click', function () {
           var v = this.getAttribute('data-wh') || 'RemainQuota';
           state.catalog.selectedWarehouseKey = v;
-
+    
           Array.prototype.forEach.call(document.querySelectorAll('#warehousePills .pill'), function (x) {
             x.classList.remove('active');
           });
           this.classList.add('active');
         });
       });
-
+    
       Array.prototype.forEach.call(document.querySelectorAll('#priceModePills .pill'), function (el) {
         el.addEventListener('click', function () {
           var v = this.getAttribute('data-price-mode') || 'wholesale';
           state.catalog.selectedPriceMode = v;
-
+    
           Array.prototype.forEach.call(document.querySelectorAll('#priceModePills .pill'), function (x) {
             x.classList.remove('active');
           });
           this.classList.add('active');
-
+    
           renderCatalogResults();
         });
       });
