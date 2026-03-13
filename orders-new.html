@@ -877,76 +877,78 @@
       box-shadow: 0 6px 18px rgba(92, 116, 242, .08);
     }
     
-    .qty-stepper {
-      display: inline-flex;
-      align-items: center;
-      gap: 0;
-      border: 1px solid #cfd8ea;
-      border-radius: 14px;
-      overflow: hidden;
-      background: #fff;
-      min-height: 42px;
-    }
-    
-    .qty-btn {
-      border: 0;
-      background: #f4f7fd;
-      color: #23304d;
-      width: 42px;
-      height: 42px;
-      font-size: 24px;
-      font-weight: 800;
-      cursor: pointer;
-      line-height: 1;
-    }
-    
-    .qty-btn:active {
-      background: #e8eefb;
-    }
-    
-    .qty-input {
-      width: 64px;
-      height: 42px;
-      border: 0;
-      outline: none;
-      text-align: center;
-      font-size: 18px;
-      font-weight: 800;
-      color: #1f2735;
-      background: #fff;
-      -moz-appearance: textfield;
-    }
-    
-    .qty-input::-webkit-outer-spin-button,
-    .qty-input::-webkit-inner-spin-button {
-      -webkit-appearance: none;
-      margin: 0;
-    }
-    
+   .qty-stepper {
+    display: inline-flex;
+    align-items: center;
+    border: 1px solid #cfe0d8;
+    border-radius: 999px;
+    overflow: hidden;
+    background: #f4fbf7;
+    min-height: 34px;
+    height: 34px;
+    flex: 0 0 auto;
+  }
+  
+  .qty-btn {
+    border: 0;
+    background: transparent;
+    color: #1fa84f;
+    width: 34px;
+    height: 34px;
+    font-size: 22px;
+    font-weight: 800;
+    cursor: pointer;
+    line-height: 1;
+  }
+  
+  .qty-btn:active {
+    background: rgba(31, 168, 79, 0.08);
+  }
+  
+  .qty-input {
+    width: 42px;
+    height: 34px;
+    border: 0;
+    outline: none;
+    text-align: center;
+    font-size: 18px;
+    font-weight: 800;
+    color: #1fa84f;
+    background: transparent;
+    -moz-appearance: textfield;
+  }
+  
+  .qty-input::-webkit-outer-spin-button,
+  .qty-input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
+  
+  .product-foot {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 10px;
+    margin-top: 10px;
+  }
+  
+  .quota-text {
+    font-size: 12px;
+    color: #69778f;
+    line-height: 1.4;
+    flex: 1;
+  }
+  
+  @media (max-width: 560px) {
     .product-foot {
-      display: flex;
-      justify-content: space-between;
-      gap: 10px;
+      flex-direction: row;
       align-items: center;
-      margin-top: 10px;
     }
-    
-    @media (max-width: 560px) {
-      .product-foot {
-        flex-direction: column;
-        align-items: stretch;
-      }
-    
-      .qty-stepper {
-        width: 100%;
-        justify-content: space-between;
-      }
-    
-      .qty-input {
-        flex: 1;
-        width: auto;
-      }      
+  
+    .qty-stepper {
+      min-width: 116px;
     }
+  }
   </style>
 
   <script charset="utf-8" src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
@@ -1988,10 +1990,20 @@
             '<div class="product-foot">' +
               '<div class="quota-text">' +
                 'พร้อมขาย ' + escapeHtml(warehouseLabelOf(selectedWh)) + ': ' + fmtNumber(availableQty) +
-                '<br>หลัก: ' + fmtNumber(p.quota && p.quota.RemainQuota || 0) +
-                ' | ลำปาง: ' + fmtNumber(p.quota && p.quota.RemainQuota2 || 0) +
-                ' | ลำพูน: ' + fmtNumber(p.quota && p.quota.RemainQuota3 || 0) +
               '</div>' +
+            
+              '<div class="qty-stepper" data-model-base="' + escapeHtml(p.modelBase || '') + '">' +
+                '<button class="qty-btn qty-minus" type="button">−</button>' +
+                '<input class="qty-input" type="number" min="0" value="' + escapeHtml(currentQty) + '">' +
+                '<button class="qty-btn qty-plus" type="button">+</button>' +
+              '</div>' +
+            '</div>' +
+            
+            '<div class="quota-text stack-8">' +
+              'หลัก: ' + fmtNumber(p.quota && p.quota.RemainQuota || 0) +
+              ' | ลำปาง: ' + fmtNumber(p.quota && p.quota.RemainQuota2 || 0) +
+              ' | ลำพูน: ' + fmtNumber(p.quota && p.quota.RemainQuota3 || 0) +
+            '</div>' +
     
               '<div class="qty-stepper" data-model-base="' + escapeHtml(p.modelBase || '') + '">' +
                 '<button class="qty-btn qty-minus" type="button">−</button>' +
