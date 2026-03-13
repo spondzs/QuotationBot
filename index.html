@@ -437,6 +437,74 @@
       line-height: 1.3;
       letter-spacing: .1px;
     }
+
+    .new-order-card {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      background: linear-gradient(135deg, #5c74f2, #6f89ff);
+      border: 1px solid rgba(60, 89, 210, .22);
+      border-radius: 22px;
+      padding: 16px 16px;
+      margin-bottom: 16px;
+      box-shadow: 0 8px 20px rgba(64, 95, 221, .16);
+    }
+    
+    .new-order-copy {
+      flex: 1;
+      min-width: 0;
+    }
+    
+    .new-order-title {
+      color: #ffffff;
+      font-size: 20px;
+      font-weight: 800;
+      line-height: 1.25;
+      letter-spacing: .1px;
+      margin-bottom: 4px;
+    }
+    
+    .new-order-subtitle {
+      color: rgba(255,255,255,.9);
+      font-size: 14px;
+      line-height: 1.35;
+    }
+    
+    .new-order-btn {
+      flex: 0 0 auto;
+      border: 0;
+      outline: none;
+      border-radius: 16px;
+      background: #ffffff;
+      color: #4763e6;
+      font-size: 18px;
+      font-weight: 800;
+      min-width: 108px;
+      min-height: 52px;
+      padding: 0 18px;
+      cursor: pointer;
+      box-shadow: 0 4px 12px rgba(0,0,0,.08);
+    }
+    
+    .new-order-btn:active {
+      transform: scale(.97);
+    }
+    
+    .new-order-btn.loading {
+      background: rgba(255,255,255,.88);
+      color: #6a77af;
+    }
+    
+    @media (max-width: 560px) {
+      .new-order-card {
+        align-items: stretch;
+        flex-direction: column;
+      }
+    
+      .new-order-btn {
+        width: 100%;
+      }
+    }
   </style>
 
   <script charset="utf-8" src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
@@ -466,6 +534,13 @@
     </div>
 
     <div class="content">
+      <div id="newOrderCard" class="new-order-card">
+        <div class="new-order-copy">
+          <div class="new-order-title">สร้างออเดอร์ใหม่~</div>
+          <div class="new-order-subtitle">จิ้มสินค้า เลือกลูกค้า แล้วเปิดใบเสนอราคาได้เลย</div>
+        </div>
+        <button id="newOrderBtn" class="new-order-btn" type="button">+ สร้าง</button>
+      </div>
       <div class="search-wrap">
         <div class="search-icon">⌕</div>
         <input id="searchBox" class="search-input" placeholder="ค้นหา QuoteNo / ลูกค้า">
@@ -881,6 +956,36 @@
         throw err;
       }
     }
+
+    document.getElementById('newOrderBtn').addEventListener('click', async function () {
+      var btn = document.getElementById('newOrderBtn');
+      var oldText = btn.textContent;
+    
+      try {
+        btn.textContent = 'Loading...';
+        btn.disabled = true;
+        btn.classList.add('loading');
+    
+        await ensureLiffReady();
+    
+        // TODO: เปลี่ยนเป็น route จริงภายหลัง
+        // ตัวอย่างแนวทาง:
+        // window.location.href = './orders-new.html';
+        // หรือ
+        // window.location.href = '?page=orders-new';
+    
+        showToast('หน้า "สร้างออเดอร์" กำลังจะมา 😆', 'success', 1400);
+    
+      } catch (err) {
+        console.error(err);
+        debugLog('new order click error: ' + (err && err.message ? err.message : err));
+        showToast('เปิดหน้าใหม่ไม่สำเร็จ', 'error', 1800);
+      } finally {
+        btn.textContent = oldText;
+        btn.disabled = false;
+        btn.classList.remove('loading');
+      }
+    });
 
     document.getElementById('searchBox').addEventListener('input', render);
 
