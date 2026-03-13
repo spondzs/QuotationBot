@@ -2383,11 +2383,13 @@
         el.addEventListener('click', function () {
           var v = this.getAttribute('data-wh') || 'RemainQuota';
           state.catalog.selectedWarehouseKey = v;
-    
+      
           Array.prototype.forEach.call(document.querySelectorAll('#warehousePills .pill'), function (x) {
             x.classList.remove('active');
           });
           this.classList.add('active');
+      
+          loadCatalog(state.catalog.keyword || '');
         });
       });
     
