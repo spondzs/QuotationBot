@@ -1740,24 +1740,26 @@
     async function initOrdersNewPage() {
       setLoadingProgress(12, 'กำลังเปิดหน้าใหม่...');
       await ensureLiffReady();
-
+    
       if (!LINE_USER_ID) {
         throw new Error('LINE userId not found');
       }
-
+    
       setLoadingProgress(55, 'กำลังโหลดลูกค้า...');
       await loadCustomers('');
-
+    
       setLoadingProgress(75, 'กำลังโหลดสินค้า...');
       await loadCatalog('');
-
+    
       setLoadingProgress(100, 'พร้อมใช้งานแล้ว');
-
-      renderSelectedCustomer();
+    
+      renderSelectedCustomerMeta();
+      renderCustomerDropdown();
       renderDiscounts();
       renderCart();
-      renderSummary();
-
+      recomputeSummary();
+      renderResult(null);
+    
       state.page.ready = true;
     }
 
