@@ -2218,7 +2218,29 @@
           renderCatalogResults();
         });
       });
-    
+    });
+  }
+
+  window.addEventListener('load', async function () {
+    try {
+      bindEvents();
+      debugLog('orders-new window load');
+
+      await initOrdersNewPage();
+
+      setTimeout(function () {
+        hideLoadingScreen();
+      }, 250);
+
+    } catch (err) {
+      console.error(err);
+      debugLog('orders-new init error: ' + (err && err.message ? err.message : err));
+      showToast('เปิดหน้าใหม่ไม่สำเร็จ', 'error', 1800);
+      hideLoadingScreen();
+    }
+  });
   </script>
+  </div>
 </body>
 </html>
+
