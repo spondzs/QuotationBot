@@ -870,6 +870,83 @@
     .sticky-mini-summary-row b {
       color: #23304d;
     }
+
+    .selected-product {
+      border-color: #bfd0ff;
+      background: #f8fbff;
+      box-shadow: 0 6px 18px rgba(92, 116, 242, .08);
+    }
+    
+    .qty-stepper {
+      display: inline-flex;
+      align-items: center;
+      gap: 0;
+      border: 1px solid #cfd8ea;
+      border-radius: 14px;
+      overflow: hidden;
+      background: #fff;
+      min-height: 42px;
+    }
+    
+    .qty-btn {
+      border: 0;
+      background: #f4f7fd;
+      color: #23304d;
+      width: 42px;
+      height: 42px;
+      font-size: 24px;
+      font-weight: 800;
+      cursor: pointer;
+      line-height: 1;
+    }
+    
+    .qty-btn:active {
+      background: #e8eefb;
+    }
+    
+    .qty-input {
+      width: 64px;
+      height: 42px;
+      border: 0;
+      outline: none;
+      text-align: center;
+      font-size: 18px;
+      font-weight: 800;
+      color: #1f2735;
+      background: #fff;
+      -moz-appearance: textfield;
+    }
+    
+    .qty-input::-webkit-outer-spin-button,
+    .qty-input::-webkit-inner-spin-button {
+      -webkit-appearance: none;
+      margin: 0;
+    }
+    
+    .product-foot {
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      align-items: center;
+      margin-top: 10px;
+    }
+    
+    @media (max-width: 560px) {
+      .product-foot {
+        flex-direction: column;
+        align-items: stretch;
+      }
+    
+      .qty-stepper {
+        width: 100%;
+        justify-content: space-between;
+      }
+    
+      .qty-input {
+        flex: 1;
+        width: auto;
+      }      
+    }
   </style>
 
   <script charset="utf-8" src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
@@ -1605,6 +1682,69 @@
         (c.phone ? ' | โทร: ' + escapeHtml(c.phone) : '');
     }
 
+    function getCartItemByModelBase(modelBase) {
+      return (state.cart.items || []).find(function (it) {
+        return String(it.modelBase || '') === String(modelBase || '');
+      }) || null;
+    }
+    
+    function getCartQtyByModelBase(modelBase) {
+      var it = getCartItemByModelBase(modelBase);
+      return it ? Number(it.qty || 0) : 0;
+    }
+    
+    function setCartQtyFromCatalog(product, qty) {
+      var targetQty = Math.max(0, Number(qty || 0));
+      var existing = getCartItemByModelBase(product.modelBase);
+    
+      if (!existing && targetQty <= 0) {
+        return;
+      }
+    
+      // ยังไม่มีใน cart และ qty > 0 => add ใหม่
+      if (!existing && targetQty > 0) {
+        var price = Number((product.priceModes && product.priceModes[state.catalog.selectedPriceMode]) || 0);
+    
+        state.cart.items.push({
+          uid: 'tmp_' + Date.now() + '_' + Math.floor(Math.random() * 1000),
+          modelBase: product.modelBase,
+          qty: targetQty,
+          warehouseKey: state.catalog.selectedWarehouseKey,
+          warehouseLabel: warehouseLabelOf(state.catalog.selectedWarehouseKey),
+          priceMode: state.catalog.selectedPriceMode,
+          price: price
+        });
+    
+        recomputeSummary();
+        renderCart();
+        renderCatalogResults();
+        return;
+      }
+    
+      // มีอยู่แล้ว และ qty = 0 => remove
+      if (existing && targetQty <= 0) {
+        state.cart.items = state.cart.items.filter(function (it) {
+          return it.uid !== existing.uid;
+        });
+    
+        recomputeSummary();
+        renderCart();
+        renderCatalogResults();
+        return;
+      }
+    
+      // มีอยู่แล้ว และ qty > 0 => update qty
+      state.cart.items = state.cart.items.map(function (it) {
+        if (it.uid !== existing.uid) return it;
+        it.qty = targetQty;
+        return it;
+      });
+    
+      recomputeSummary();
+      renderCart();
+      renderCatalogResults();
+    }
+
     function addProductToCart(product) {
       var uid = 'tmp_' + Date.now() + '_' + Math.floor(Math.random() * 1000);
       var price = Number((product.priceModes && product.priceModes[state.catalog.selectedPriceMode]) || 0);
@@ -1642,28 +1782,32 @@
         it.warehouseLabel = warehouseLabelOf(warehouseKey);
         return it;
       });
-
+    
       renderCart();
+      renderCatalogResults();
+      renderPreviewBox();
     }
 
     function updateCartPriceMode(uid, priceMode) {
       state.cart.items = state.cart.items.map(function (it) {
         if (it.uid !== uid) return it;
         it.priceMode = priceMode;
-
+    
         var ref = state.catalog.options.find(function (x) {
           return String(x.modelBase || '') === String(it.modelBase || '');
         });
-
+    
         if (ref && ref.priceModes) {
           it.price = Number(ref.priceModes[priceMode] || 0);
         }
-
+    
         return it;
       });
-
+    
       recomputeSummary();
       renderCart();
+      renderCatalogResults();
+      renderPreviewBox();
     }
 
     function removeCartItem(uid) {
@@ -1805,21 +1949,28 @@
 
     function renderCatalogResults() {
       var list = document.getElementById('catalogResults');
+      if (!list) return;
+    
       var items = state.catalog.options || [];
-
+      var mode = state.catalog.selectedPriceMode;
+      var selectedWh = state.catalog.selectedWarehouseKey || 'RemainQuota';
+    
       if (!items.length) {
         list.innerHTML = '<div class="empty-box">ยังไม่มีผลลัพธ์สินค้า</div>';
         return;
       }
-
-      var mode = state.catalog.selectedPriceMode;
+    
       var html = '';
-
+    
       items.forEach(function (p) {
         var price = Number((p.priceModes && p.priceModes[mode]) || 0);
-
+        var currentQty = getCartQtyByModelBase(p.modelBase);
+        var selectedClass = currentQty > 0 ? ' selected-product' : '';
+    
+        var availableQty = Number((p.quota && p.quota[selectedWh]) || 0);
+    
         html +=
-          '<div class="product-item" data-model-base="' + escapeHtml(p.modelBase || '') + '">' +
+          '<div class="product-item' + selectedClass + '" data-model-base="' + escapeHtml(p.modelBase || '') + '">' +
             '<div class="product-head">' +
               '<div>' +
                 '<div class="product-name">' + escapeHtml(p.modelBase || '-') + '</div>' +
@@ -1830,30 +1981,62 @@
               '</div>' +
               '<div class="product-price">' + fmtNumber(price) + ' บาท</div>' +
             '</div>' +
+    
             '<div class="product-foot">' +
               '<div class="quota-text">' +
-                'หลัก: ' + fmtNumber(p.quota && p.quota.RemainQuota || 0) +
+                'พร้อมขาย ' + escapeHtml(warehouseLabelOf(selectedWh)) + ': ' + fmtNumber(availableQty) +
+                '<br>หลัก: ' + fmtNumber(p.quota && p.quota.RemainQuota || 0) +
                 ' | ลำปาง: ' + fmtNumber(p.quota && p.quota.RemainQuota2 || 0) +
                 ' | ลำพูน: ' + fmtNumber(p.quota && p.quota.RemainQuota3 || 0) +
               '</div>' +
-              '<button class="mini-btn primary add-product-btn" type="button">+ เพิ่ม</button>' +
+    
+              '<div class="qty-stepper" data-model-base="' + escapeHtml(p.modelBase || '') + '">' +
+                '<button class="qty-btn qty-minus" type="button">−</button>' +
+                '<input class="qty-input" type="number" min="0" value="' + escapeHtml(currentQty) + '">' +
+                '<button class="qty-btn qty-plus" type="button">+</button>' +
+              '</div>' +
             '</div>' +
           '</div>';
       });
-
+    
       list.innerHTML = html;
-
+    
       Array.prototype.forEach.call(list.querySelectorAll('.product-item'), function (el) {
-        var btn = el.querySelector('.add-product-btn');
-        if (!btn) return;
-
-        btn.addEventListener('click', function () {
-          var modelBase = el.getAttribute('data-model-base');
-          var p = items.find(function (x) {
-            return String(x.modelBase || '') === String(modelBase || '');
-          });
-          if (p) addProductToCart(p);
+        var modelBase = el.getAttribute('data-model-base');
+        var product = items.find(function (x) {
+          return String(x.modelBase || '') === String(modelBase || '');
         });
+        if (!product) return;
+    
+        var minusBtn = el.querySelector('.qty-minus');
+        var plusBtn = el.querySelector('.qty-plus');
+        var qtyInput = el.querySelector('.qty-input');
+    
+        if (minusBtn) {
+          minusBtn.addEventListener('click', function () {
+            var currentQty = getCartQtyByModelBase(product.modelBase);
+            setCartQtyFromCatalog(product, currentQty - 1);
+          });
+        }
+    
+        if (plusBtn) {
+          plusBtn.addEventListener('click', function () {
+            var currentQty = getCartQtyByModelBase(product.modelBase);
+            setCartQtyFromCatalog(product, currentQty + 1);
+          });
+        }
+    
+        if (qtyInput) {
+          qtyInput.addEventListener('change', function () {
+            setCartQtyFromCatalog(product, this.value);
+          });
+    
+          qtyInput.addEventListener('blur', function () {
+            var v = Math.max(0, Number(this.value || 0));
+            this.value = v;
+            setCartQtyFromCatalog(product, v);
+          });
+        }
       });
     }
 
