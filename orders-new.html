@@ -1207,12 +1207,6 @@
       }
     }
 
-    function selectCustomer(customer) {
-      state.customer.selected = customer || null;
-      renderSelectedCustomerMeta();
-      renderCustomerDropdown();
-    }
-
     function openCustomerDropdown() {
       state.customer.dropdownOpen = true;
       renderCustomerDropdown();
@@ -1855,17 +1849,18 @@
       try {
         bindEvents();
         debugLog('orders-new window load');
-
+    
         await initOrdersNewPage();
-
+    
         setTimeout(function () {
           hideLoadingScreen();
         }, 250);
-
+    
       } catch (err) {
         console.error(err);
         debugLog('orders-new init error: ' + (err && err.message ? err.message : err));
         showToast('เปิดหน้าใหม่ไม่สำเร็จ', 'error', 1800);
+        hideLoadingScreen();
       }
     });
   </script>
