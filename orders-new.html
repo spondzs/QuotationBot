@@ -1611,12 +1611,14 @@
         }
     
         state.catalog.options = Array.isArray(data) ? data : [];
+        debugLog('search_catalog success, items=' + state.catalog.options.length);
         renderCatalogResults();
     
       } catch (err) {
         console.error(err);
-        debugLog('loadCatalog error: ' + (err && err.message ? err.message : err));
-        showToast('โหลดสินค้าไม่สำเร็จ', 'error', 1800);
+        var msg = err && err.message ? err.message : String(err);
+        debugLog('loadCatalog error: ' + msg);
+        showToast(msg, 'error', 2600);
       } finally {
         state.catalog.loading = false;
       }
