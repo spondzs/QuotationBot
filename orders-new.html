@@ -1602,16 +1602,17 @@
       try {
         var data = await loadJsonp('search_catalog', {
           lineUserId: state.auth.lineUserId,
-          keyword: keyword || ''
+          keyword: keyword || '',
+          warehouseKey: state.catalog.selectedWarehouseKey || 'RemainQuota'
         });
-
+    
         if (data && data.ok === false) {
           throw new Error(data.error || 'โหลดสินค้าไม่สำเร็จ');
         }
-
+    
         state.catalog.options = Array.isArray(data) ? data : [];
         renderCatalogResults();
-
+    
       } catch (err) {
         console.error(err);
         debugLog('loadCatalog error: ' + (err && err.message ? err.message : err));
