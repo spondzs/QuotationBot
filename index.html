@@ -187,13 +187,13 @@
     }
 
     .meta {
-      font-size: 17px;
+      font-size: 15px;
       margin-bottom: 14px;
       color: #2d313b;
     }
 
     .meta b {
-      font-size: 20px;
+      font-size: 18px;
       color: #111318;
     }
 
@@ -428,6 +428,14 @@
     @keyframes caffeFloat {
       0%, 100% { transform: translateY(0); }
       50% { transform: translateY(-8px); }
+    }
+
+    .sales-name {
+      color: #5f6b85;
+      font-size: 13px;
+      font-weight: 600;
+      line-height: 1.3;
+      letter-spacing: .1px;
     }
   </style>
 
@@ -727,10 +735,11 @@
         if (x.items && x.items.length) {
           itemsHtml = '<div class="item-list">';
           x.items.forEach(function (it) {
+            var itemQty = Number(it.qty || 0);
             itemsHtml +=
               '<div class="item-row">' +
                 '<span class="item-model">' + escapeHtml(it.modelBase || '-') + '</span>' +
-                '<span class="item-qty">x' + escapeHtml(it.qty || 0) + '</span>' +
+                '<span class="item-qty">' + fmtNumber(itemQty) + ' เครื่อง</span>' +
               '</div>';
           });
           itemsHtml += '</div>';
@@ -742,8 +751,9 @@
           '<div class="row1">' +
             '<div class="cust-name">' + customer + '</div>' +
             '<div class="quote-no">' + quoteNo + '</div>' +
+            '<div class="sales-name">Sales: ' + escapeHtml(x.salesName || '-') + '</div>' +
           '</div>' +
-          '<div class="meta">' + qty + ' เครื่อง | <b>' + total + '</b></div>' +
+          '<div class="meta">' + qty + ' เครื่อง | <b>' + total + '</b> บาท</div>' +
           itemsHtml +
           '<div class="btn-row">' +
             '<button class="btn btn-copy" type="button">📋 คัดลอกเลข PO</button>' +
