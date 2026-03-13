@@ -728,6 +728,148 @@
       color: #60708e;
       line-height: 1.4;
     }
+
+    .stepper {
+      display: flex;
+      gap: 8px;
+      margin: 0 0 16px;
+      flex-wrap: wrap;
+    }
+    
+    .step-chip {
+      flex: 1;
+      min-width: 88px;
+      border: 1px solid var(--line);
+      background: #fff;
+      color: #6a7284;
+      border-radius: 999px;
+      padding: 10px 12px;
+      font-size: 13px;
+      font-weight: 800;
+      text-align: center;
+      transition: all .18s ease;
+    }
+    
+    .step-chip.active {
+      background: linear-gradient(135deg, #5c74f2, #7b8eff);
+      border-color: transparent;
+      color: #fff;
+      box-shadow: 0 8px 18px rgba(92, 116, 242, .16);
+    }
+    
+    .step-chip.done {
+      background: #eef5ff;
+      border-color: #cddcff;
+      color: #355fc7;
+    }
+    
+    .step-panel {
+      display: none;
+    }
+    
+    .step-panel.active {
+      display: block;
+    }
+    
+    .wizard-nav {
+      display: flex;
+      gap: 10px;
+      margin-top: 14px;
+    }
+    
+    .wizard-nav .mini-btn,
+    .wizard-nav .submit-btn {
+      flex: 1;
+    }
+    
+    .preview-card {
+      border: 1px solid #dbe3f3;
+      border-radius: 18px;
+      background: #fbfcff;
+      padding: 14px;
+    }
+    
+    .preview-block + .preview-block {
+      margin-top: 14px;
+      padding-top: 14px;
+      border-top: 1px dashed #dbe3f3;
+    }
+    
+    .preview-title {
+      font-size: 13px;
+      font-weight: 800;
+      color: #69738a;
+      margin-bottom: 6px;
+    }
+    
+    .preview-main {
+      font-size: 15px;
+      font-weight: 800;
+      color: #1f2735;
+      line-height: 1.35;
+      word-break: break-word;
+    }
+    
+    .preview-sub {
+      font-size: 13px;
+      color: #69778f;
+      line-height: 1.45;
+      margin-top: 4px;
+      white-space: pre-wrap;
+    }
+    
+    .preview-item {
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      padding: 8px 0;
+      border-bottom: 1px dashed #e7edf8;
+    }
+    
+    .preview-item:last-child {
+      border-bottom: 0;
+    }
+    
+    .preview-item-name {
+      flex: 1;
+      font-size: 14px;
+      color: #24304f;
+      line-height: 1.35;
+    }
+    
+    .preview-item-meta {
+      font-size: 13px;
+      color: #5f6f91;
+      margin-top: 2px;
+    }
+    
+    .preview-item-right {
+      text-align: right;
+      white-space: nowrap;
+      font-size: 14px;
+      font-weight: 800;
+      color: #24304f;
+    }
+    
+    .sticky-mini-summary {
+      margin-top: 12px;
+      border: 1px solid #dce4f5;
+      background: #f8fbff;
+      border-radius: 16px;
+      padding: 12px 14px;
+    }
+    
+    .sticky-mini-summary-row {
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      font-size: 13px;
+      color: #60708e;
+    }
+    
+    .sticky-mini-summary-row b {
+      color: #23304d;
+    }
   </style>
 
   <script charset="utf-8" src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
@@ -761,115 +903,140 @@
     </div>
 
     <div class="content">
-      <div class="section-card">
-        <div class="section-title">เลือกลูกค้า</div>
-        <div class="section-sub">ค้นหาด้วยชื่อลูกค้า รหัสลูกค้า หรือเบอร์โทร</div>
-      
-        <div class="customer-picker">
-          <div class="search-wrap customer-search-wrap">
+      <div class="stepper">
+        <div id="stepChip1" class="step-chip active">1. ลูกค้า + สินค้า</div>
+        <div id="stepChip2" class="step-chip">2. ตั้งค่าออเดอร์</div>
+        <div id="stepChip3" class="step-chip">3. พรีวิว + สร้าง</div>
+      </div>
+    
+      <!-- STEP 1 -->
+      <div id="stepPanel1" class="step-panel active">
+        <div class="section-card">
+          <div class="section-title">เลือกลูกค้า</div>
+          <div class="section-sub">ค้นหาด้วยชื่อลูกค้า รหัสลูกค้า หรือเบอร์โทร</div>
+    
+          <div class="customer-picker">
+            <div class="search-wrap customer-search-wrap">
+              <div class="search-icon">⌕</div>
+              <input id="customerSearchBox" class="search-input" placeholder="ค้นหาลูกค้า" autocomplete="off">
+              <button id="clearCustomerBtn" class="clear-btn" type="button" style="display:none;">×</button>
+            </div>
+    
+            <div id="customerDropdown" class="customer-dropdown" style="display:none;"></div>
+          </div>
+    
+          <div id="selectedCustomerMeta" class="selected-customer-meta" style="display:none;"></div>
+        </div>
+    
+        <div class="section-card">
+          <div class="section-title">เลือกสินค้า</div>
+          <div class="section-sub">ค้นหารุ่นแล้วกดเพิ่มเข้าตะกร้าได้ทันที</div>
+    
+          <div class="search-wrap">
             <div class="search-icon">⌕</div>
-            <input id="customerSearchBox" class="search-input" placeholder="ค้นหาลูกค้า" autocomplete="off">
-            <button id="clearCustomerBtn" class="clear-btn" type="button" style="display:none;">×</button>
+            <input id="catalogSearchBox" class="search-input" placeholder="ค้นหารุ่นสินค้า เช่น Y05, V50, iQOO">
           </div>
-      
-          <div id="customerDropdown" class="customer-dropdown" style="display:none;"></div>
-        </div>
-      
-        <div id="selectedCustomerMeta" class="selected-customer-meta" style="display:none;"></div>
-      </div>
-
-      <div class="section-card">
-        <div class="section-title">ตั้งค่าเริ่มต้น</div>
-        <div class="section-sub">ค่าเริ่มต้นนี้จะใช้ตอนกดเพิ่มสินค้าเข้าตะกร้า</div>
-
-        <div class="field">
-          <div class="field-label">เลือกคลัง</div>
-          <div id="warehousePills" class="pill-row">
-            <button class="pill active" data-wh="RemainQuota" type="button">คลังหลัก</button>
-            <button class="pill" data-wh="RemainQuota2" type="button">คลังลำปาง</button>
-            <button class="pill" data-wh="RemainQuota3" type="button">คลังลำพูน</button>
-          </div>
-        </div>
-
-        <div class="field stack-12">
-          <div class="field-label">เลือกราคา</div>
-          <div id="priceModePills" class="pill-row">
-            <button class="pill active" data-price-mode="wholesale" type="button">ส่ง</button>
-            <button class="pill" data-price-mode="mbs" type="button">MBS</button>
-            <button class="pill" data-price-mode="dk" type="button">DK</button>
-            <button class="pill" data-price-mode="extra2" type="button">Extra2</button>
-            <button class="pill" data-price-mode="extra3" type="button">Extra3</button>
-            <button class="pill" data-price-mode="wh_bkk" type="button">BKK</button>
-            <button class="pill" data-price-mode="retail" type="button">ปลีก</button>
+    
+          <div id="catalogResults" class="list-box"></div>
+    
+          <div class="sticky-mini-summary">
+            <div class="sticky-mini-summary-row">
+              <span>ลูกค้า</span>
+              <b id="step1MiniCustomer">ยังไม่ได้เลือก</b>
+            </div>
+            <div class="sticky-mini-summary-row stack-8">
+              <span>สินค้าในตะกร้า</span>
+              <b id="step1MiniQty">0 เครื่อง</b>
+            </div>
+    
+            <div class="wizard-nav">
+              <button id="toStep2Btn" class="submit-btn" type="button">ถัดไป: ตั้งค่าออเดอร์</button>
+            </div>
           </div>
         </div>
       </div>
-
-      <div class="section-card">
-        <div class="section-title">ค้นหาสินค้า</div>
-        <div class="section-sub">ค้นหาจากรุ่น สี หรือ modelBase แล้วกดเพิ่มเข้าตะกร้า</div>
-
-        <div class="search-wrap">
-          <div class="search-icon">⌕</div>
-          <input id="catalogSearchBox" class="search-input" placeholder="ค้นหารุ่นสินค้า เช่น Y05, V50, iQOO">
+    
+      <!-- STEP 2 -->
+      <div id="stepPanel2" class="step-panel">
+        <div class="section-card">
+          <div class="section-title">ตั้งค่าเริ่มต้น</div>
+          <div class="section-sub">ค่าเริ่มต้นนี้จะใช้ตอนกดเพิ่มสินค้าเข้าตะกร้า</div>
+    
+          <div class="field">
+            <div class="field-label">เลือกคลัง</div>
+            <div id="warehousePills" class="pill-row">
+              <button class="pill active" data-wh="RemainQuota" type="button">คลังหลัก</button>
+              <button class="pill" data-wh="RemainQuota2" type="button">คลังลำปาง</button>
+              <button class="pill" data-wh="RemainQuota3" type="button">คลังลำพูน</button>
+            </div>
+          </div>
+    
+          <div class="field stack-12">
+            <div class="field-label">เลือกราคา</div>
+            <div id="priceModePills" class="pill-row">
+              <button class="pill active" data-price-mode="wholesale" type="button">ส่ง</button>
+              <button class="pill" data-price-mode="mbs" type="button">MBS</button>
+              <button class="pill" data-price-mode="dk" type="button">DK</button>
+              <button class="pill" data-price-mode="extra2" type="button">Extra2</button>
+              <button class="pill" data-price-mode="extra3" type="button">Extra3</button>
+              <button class="pill" data-price-mode="wh_bkk" type="button">BKK</button>
+              <button class="pill" data-price-mode="retail" type="button">ปลีก</button>
+            </div>
+          </div>
         </div>
-
-        <div id="catalogResults" class="list-box"></div>
-      </div>
-
-      <div class="section-card">
-        <div class="section-title">ตะกร้าออเดอร์</div>
-        <div class="section-sub">ตรวจสอบจำนวน คลัง และราคา ก่อนสร้างใบเสนอราคา</div>
-
-        <div id="cartList" class="list-box"></div>
-      </div>
-
-      <div class="section-card">
-        <div class="section-title">ส่วนลด / หมายเหตุ</div>
-
-        <div id="discountList" class="list-box"></div>
-
-        <div class="stack-12">
-          <button id="addDiscountBtn" class="mini-btn primary" type="button">+ เพิ่มส่วนลด</button>
+    
+        <div class="section-card">
+          <div class="section-title">ตะกร้าออเดอร์</div>
+          <div class="section-sub">ตรวจสอบจำนวน คลัง และราคา ก่อนสร้างใบเสนอราคา</div>
+          <div id="cartList" class="list-box"></div>
         </div>
-
-        <div class="field stack-12">
-          <div class="field-label">หมายเหตุ</div>
-          <textarea id="orderNoteBox" placeholder="เช่น ลูกค้ารับเอง / นัดส่งพรุ่งนี้ / หมายเหตุเพิ่มเติม"></textarea>
+    
+        <div class="section-card">
+          <div class="section-title">ส่วนลด / หมายเหตุ</div>
+    
+          <div id="discountList" class="list-box"></div>
+    
+          <div class="stack-12">
+            <button id="addDiscountBtn" class="mini-btn primary" type="button">+ เพิ่มส่วนลด</button>
+          </div>
+    
+          <div class="field stack-12">
+            <div class="field-label">หมายเหตุ</div>
+            <textarea id="orderNoteBox" placeholder="เช่น ลูกค้ารับเอง / นัดส่งพรุ่งนี้ / หมายเหตุเพิ่มเติม"></textarea>
+          </div>
+    
+          <div class="wizard-nav">
+            <button id="backToStep1Btn" class="mini-btn" type="button">ย้อนกลับ</button>
+            <button id="toStep3Btn" class="submit-btn" type="button">ถัดไป: ตรวจทาน</button>
+          </div>
         </div>
       </div>
-
-      <div class="section-card">
-        <div class="section-title">ผลลัพธ์ล่าสุด</div>
-        <div id="resultBox" class="empty-box">ยังไม่มีการสร้างใบเสนอราคา</div>
+    
+      <!-- STEP 3 -->
+      <div id="stepPanel3" class="step-panel">
+        <div class="section-card">
+          <div class="section-title">ตรวจทานก่อนสร้างเอกสาร</div>
+          <div class="section-sub">ตรวจสอบลูกค้า รายการสินค้า ราคา ส่วนลด และยอดรวม</div>
+    
+          <div id="previewBox" class="preview-card"></div>
+    
+          <div class="wizard-nav">
+            <button id="backToStep2Btn" class="mini-btn" type="button">ย้อนกลับแก้ไข</button>
+            <button id="submitOrderBtn" class="submit-btn" type="button">สร้างใบเสนอราคา</button>
+          </div>
+        </div>
+    
+        <div class="section-card">
+          <div class="section-title">ผลลัพธ์ล่าสุด</div>
+          <div id="resultBox" class="empty-box">ยังไม่มีการสร้างใบเสนอราคา</div>
+        </div>
       </div>
-
+    
       <div class="debug-toolbar">
         <button id="debugToggleBtn" class="debug-toggle">Debug</button>
       </div>
       <div id="debugBox"></div>
     </div>
-  </div>
-
-  <div class="summary-sticky">
-    <div class="summary-card">
-      <div class="summary-grid">
-        <div class="summary-label">รวมจำนวน</div>
-        <div id="summaryQty" class="summary-value">0 เครื่อง</div>
-
-        <div class="summary-label">รวมราคาสินค้า</div>
-        <div id="summaryPrice" class="summary-value">0 บาท</div>
-
-        <div class="summary-label">รวมส่วนลด</div>
-        <div id="summaryDiscount" class="summary-value">0 บาท</div>
-
-        <div class="summary-label"><b>รวมสุทธิ</b></div>
-        <div id="summaryGrand" class="summary-value total">0 บาท</div>
-      </div>
-
-      <button id="submitOrderBtn" class="submit-btn" type="button">สร้างใบเสนอราคา</button>
-    </div>
-  </div>
 
   <div id="toast" class="toast"></div>
 
@@ -895,6 +1062,11 @@
         displayName: '',
         groupId: '',
         scopes: []
+      },
+
+       wizard: {
+        currentStep: 1,
+        maxStep: 3
       },
 
       customer: {
@@ -1075,6 +1247,169 @@
       return true;
     }
 
+    function setStep(step) {
+      var s = Math.max(1, Math.min(state.wizard.maxStep, Number(step || 1)));
+      state.wizard.currentStep = s;
+    
+      [1, 2, 3].forEach(function (n) {
+        var panel = document.getElementById('stepPanel' + n);
+        var chip = document.getElementById('stepChip' + n);
+    
+        if (panel) panel.classList.toggle('active', n === s);
+        if (chip) {
+          chip.classList.remove('active', 'done');
+          if (n === s) chip.classList.add('active');
+          else if (n < s) chip.classList.add('done');
+        }
+      });
+    
+      renderStepMiniSummary();
+      renderPreviewBox();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+    
+    function goNextStep() {
+      setStep(state.wizard.currentStep + 1);
+    }
+    
+    function goPrevStep() {
+      setStep(state.wizard.currentStep - 1);
+    }
+    
+    function validateStep1() {
+      if (!state.customer.selected || !state.customer.selected.customerNo) {
+        return { ok: false, message: 'กรุณาเลือกลูกค้าก่อน' };
+      }
+    
+      if (!state.cart.items.length) {
+        return { ok: false, message: 'กรุณาเพิ่มสินค้าอย่างน้อย 1 รายการ' };
+      }
+    
+      return { ok: true };
+    }
+    
+    function validateStep2() {
+      if (!state.cart.items.length) {
+        return { ok: false, message: 'ยังไม่มีสินค้าในตะกร้า' };
+      }
+    
+      var bad = state.cart.items.find(function (it) {
+        return !it.modelBase || Number(it.qty || 0) <= 0;
+      });
+    
+      if (bad) {
+        return { ok: false, message: 'พบรายการสินค้าไม่สมบูรณ์' };
+      }
+    
+      return { ok: true };
+    }
+    
+    function renderStepMiniSummary() {
+      var cEl = document.getElementById('step1MiniCustomer');
+      var qEl = document.getElementById('step1MiniQty');
+    
+      if (cEl) {
+        cEl.textContent = state.customer.selected
+          ? String(state.customer.selected.name || state.customer.selected.customerNo || '-')
+          : 'ยังไม่ได้เลือก';
+      }
+    
+      if (qEl) {
+        qEl.textContent = fmtNumber(state.summary.totalQty || 0) + ' เครื่อง';
+      }
+    }
+    
+    function renderPreviewBox() {
+      var box = document.getElementById('previewBox');
+      if (!box) return;
+    
+      var customer = state.customer.selected;
+      var items = state.cart.items || [];
+      var discounts = state.cart.discounts || [];
+    
+      if (!customer || !items.length) {
+        box.innerHTML = '<div class="empty-box">ยังไม่มีข้อมูลสำหรับพรีวิว</div>';
+        return;
+      }
+    
+      var itemHtml = '';
+      items.forEach(function (it) {
+        var subtotal = Number(it.qty || 0) * Number(it.price || 0);
+        itemHtml +=
+          '<div class="preview-item">' +
+            '<div class="preview-item-name">' +
+              escapeHtml(it.modelBase || '-') +
+              '<div class="preview-item-meta">' +
+                escapeHtml(it.warehouseLabel || '-') +
+                ' | ราคา ' + escapeHtml(it.priceMode || '-') +
+                ' | ' + fmtNumber(it.qty || 0) + ' เครื่อง' +
+              '</div>' +
+            '</div>' +
+            '<div class="preview-item-right">' + fmtNumber(subtotal) + ' บาท</div>' +
+          '</div>';
+      });
+    
+      var discountHtml = '';
+      if (discounts.length) {
+        discounts.forEach(function (d) {
+          var amt = Number(d.amount || 0) * Number(d.count || 1);
+          discountHtml +=
+            '<div class="preview-item">' +
+              '<div class="preview-item-name">' +
+                escapeHtml(d.title || 'ส่วนลด') +
+                '<div class="preview-item-meta">จำนวน ' + fmtNumber(d.count || 1) + ' ครั้ง</div>' +
+              '</div>' +
+              '<div class="preview-item-right">-' + fmtNumber(amt) + ' บาท</div>' +
+            '</div>';
+        });
+      } else {
+        discountHtml = '<div class="preview-sub">ไม่มีส่วนลด</div>';
+      }
+    
+      box.innerHTML =
+        '<div class="preview-block">' +
+          '<div class="preview-title">ลูกค้า</div>' +
+          '<div class="preview-main">' + escapeHtml(customer.name || '-') + '</div>' +
+          '<div class="preview-sub">' +
+            'รหัสลูกค้า: ' + escapeHtml(customer.customerNo || '-') +
+            (customer.phone ? '\nโทร: ' + escapeHtml(customer.phone) : '') +
+            (customer.address ? '\nที่อยู่: ' + escapeHtml(customer.address) : '') +
+          '</div>' +
+        '</div>' +
+    
+        '<div class="preview-block">' +
+          '<div class="preview-title">รายการสินค้า</div>' +
+          itemHtml +
+        '</div>' +
+    
+        '<div class="preview-block">' +
+          '<div class="preview-title">ส่วนลด</div>' +
+          discountHtml +
+        '</div>' +
+    
+        '<div class="preview-block">' +
+          '<div class="preview-title">สรุปยอด</div>' +
+          '<div class="summary-grid" style="margin-bottom:0;">' +
+            '<div class="summary-label">รวมจำนวน</div>' +
+            '<div class="summary-value">' + fmtNumber(state.summary.totalQty || 0) + ' เครื่อง</div>' +
+    
+            '<div class="summary-label">รวมราคาสินค้า</div>' +
+            '<div class="summary-value">' + fmtNumber(state.summary.totalPrice || 0) + ' บาท</div>' +
+    
+            '<div class="summary-label">รวมส่วนลด</div>' +
+            '<div class="summary-value">' + fmtNumber(state.summary.totalDiscount || 0) + ' บาท</div>' +
+    
+            '<div class="summary-label"><b>รวมสุทธิ</b></div>' +
+            '<div class="summary-value total">' + fmtNumber(state.summary.grandTotal || 0) + ' บาท</div>' +
+          '</div>' +
+        '</div>' +
+    
+        '<div class="preview-block">' +
+          '<div class="preview-title">หมายเหตุ</div>' +
+          '<div class="preview-sub">' + escapeHtml(state.cart.note || 'ไม่มีหมายเหตุ') + '</div>' +
+        '</div>';
+    }
+
     function warehouseLabelOf(key) {
       return key === 'RemainQuota2' ? 'คลังลำปาง'
         : key === 'RemainQuota3' ? 'คลังลำพูน'
@@ -1085,21 +1420,23 @@
       var totalQty = state.cart.items.reduce(function (s, it) {
         return s + Number(it.qty || 0);
       }, 0);
-
+    
       var totalPrice = state.cart.items.reduce(function (s, it) {
         return s + (Number(it.qty || 0) * Number(it.price || 0));
       }, 0);
-
+    
       var totalDiscount = state.cart.discounts.reduce(function (s, d) {
         return s + (Number(d.amount || 0) * Number(d.count || 1));
       }, 0);
-
+    
       state.summary.totalQty = totalQty;
       state.summary.totalPrice = totalPrice;
       state.summary.totalDiscount = totalDiscount;
       state.summary.grandTotal = totalPrice - totalDiscount;
-
+    
       renderSummary();
+      renderStepMiniSummary();
+      renderPreviewBox();
     }
 
     function buildCreateOrderPayload() {
@@ -1687,10 +2024,15 @@
     }
 
     function renderSummary() {
-      document.getElementById('summaryQty').textContent = fmtNumber(state.summary.totalQty) + ' เครื่อง';
-      document.getElementById('summaryPrice').textContent = fmtNumber(state.summary.totalPrice) + ' บาท';
-      document.getElementById('summaryDiscount').textContent = fmtNumber(state.summary.totalDiscount) + ' บาท';
-      document.getElementById('summaryGrand').textContent = fmtNumber(state.summary.grandTotal) + ' บาท';
+      var qtyEl = document.getElementById('summaryQty');
+      var priceEl = document.getElementById('summaryPrice');
+      var discountEl = document.getElementById('summaryDiscount');
+      var grandEl = document.getElementById('summaryGrand');
+    
+      if (qtyEl) qtyEl.textContent = fmtNumber(state.summary.totalQty) + ' เครื่อง';
+      if (priceEl) priceEl.textContent = fmtNumber(state.summary.totalPrice) + ' บาท';
+      if (discountEl) discountEl.textContent = fmtNumber(state.summary.totalDiscount) + ' บาท';
+      if (grandEl) grandEl.textContent = fmtNumber(state.summary.grandTotal) + ' บาท';
     }
 
     function renderResult(res) {
@@ -1753,12 +2095,17 @@
       renderCart();
       recomputeSummary();
       renderResult(null);
+      setStep(1);
     
       state.page.ready = true;
     }
 
     function bindEvents() {
       document.getElementById('backBtn').addEventListener('click', function () {
+        if (state.wizard.currentStep > 1) {
+          goPrevStep();
+          return;
+        }
         window.location.href = './index.html';
       });
     
@@ -1785,6 +2132,7 @@
           state.customer.selected = null;
           renderSelectedCustomerMeta();
           closeCustomerDropdown();
+          renderStepMiniSummary();
           return;
         }
     
@@ -1813,10 +2161,37 @@
     
       document.getElementById('orderNoteBox').addEventListener('input', function () {
         setOrderNote(this.value);
+        renderPreviewBox();
       });
     
-      document.getElementById('submitOrderBtn').addEventListener('click', submitCreateOrder);
       document.getElementById('addDiscountBtn').addEventListener('click', addDiscountRow);
+      document.getElementById('submitOrderBtn').addEventListener('click', submitCreateOrder);
+    
+      document.getElementById('toStep2Btn').addEventListener('click', function () {
+        var v = validateStep1();
+        if (!v.ok) {
+          showToast(v.message, 'warn', 1800);
+          return;
+        }
+        setStep(2);
+      });
+    
+      document.getElementById('backToStep1Btn').addEventListener('click', function () {
+        setStep(1);
+      });
+    
+      document.getElementById('toStep3Btn').addEventListener('click', function () {
+        var v = validateStep2();
+        if (!v.ok) {
+          showToast(v.message, 'warn', 1800);
+          return;
+        }
+        setStep(3);
+      });
+    
+      document.getElementById('backToStep2Btn').addEventListener('click', function () {
+        setStep(2);
+      });
     
       Array.prototype.forEach.call(document.querySelectorAll('#warehousePills .pill'), function (el) {
         el.addEventListener('click', function () {
@@ -1843,26 +2218,7 @@
           renderCatalogResults();
         });
       });
-    }
-
-    window.addEventListener('load', async function () {
-      try {
-        bindEvents();
-        debugLog('orders-new window load');
     
-        await initOrdersNewPage();
-    
-        setTimeout(function () {
-          hideLoadingScreen();
-        }, 250);
-    
-      } catch (err) {
-        console.error(err);
-        debugLog('orders-new init error: ' + (err && err.message ? err.message : err));
-        showToast('เปิดหน้าใหม่ไม่สำเร็จ', 'error', 1800);
-        hideLoadingScreen();
-      }
-    });
   </script>
 </body>
 </html>
