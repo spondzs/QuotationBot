@@ -1099,7 +1099,9 @@
         lineUserId: '',
         displayName: '',
         groupId: '',
-        scopes: []
+        scopes: [],
+        role: '',
+        allowedPriceModes: []
       },
 
        wizard: {
@@ -1462,6 +1464,66 @@
       return key === 'RemainQuota2' ? 'คลังลำปาง'
         : key === 'RemainQuota3' ? 'คลังลำพูน'
         : 'คลังหลัก';
+    }
+
+    function getAllPriceModeOptions() {
+      return [
+        { value: 'wholesale', label: 'ส่ง' },
+        { value: 'mbs', label: 'MBS' },
+        { value: 'dk', label: 'DK' },
+        { value: 'extra2', label: 'Extra2' },
+        { value: 'extra3', label: 'Extra3' },
+        { value: 'wh_bkk', label: 'BKK' },
+        { value: 'retail', label: 'ปลีก' }
+      ];
+    }
+
+    function renderPriceModePills() {
+      var wrap = document.getElementById('priceModePills');
+      if (!wrap) return;
+    
+      var allowed = Array.isArray(state.auth.allowedPriceModes) && state.auth.allowedPriceModes.length
+        ? state.auth.allowedPriceModes
+        : ['wholesale'];
+    
+      var allModes = getAllPriceModeOptions();
+      var visibleModes = allModes.filter(function (x) {
+        return allowed.indexOf(x.value) > -1;
+      });
+    
+      if (!visibleModes.length) {
+        visibleModes = [{ value: 'wholesale', label: 'ส่ง' }];
+      }
+    
+      if (visibleModes.map(function(x){ return x.value; }).indexOf(state.catalog.selectedPriceMode) === -1) {
+        state.catalog.selectedPriceMode = visibleModes[0].value;
+      }
+    
+      wrap.innerHTML = visibleModes.map(function (m) {
+        var activeClass = state.catalog.selectedPriceMode === m.value ? ' active' : '';
+        return (
+          '<button class="pill' + activeClass + '" data-price-mode="' + escapeHtml(m.value) + '" type="button">' +
+            escapeHtml(m.label) +
+          '</button>'
+        );
+      }).join('');
+    
+      Array.prototype.forEach.call(wrap.querySelectorAll('.pill'), function (el) {
+        el.addEventListener('click', function () {
+          var v = this.getAttribute('data-price-mode') || 'wholesale';
+          state.catalog.selectedPriceMode = v;
+    
+          Array.prototype.forEach.call(wrap.querySelectorAll('.pill'), function (x) {
+            x.classList.remove('active');
+          });
+          this.classList.add('active');
+    
+          renderCatalogResults();
+          renderCart();
+          renderPreviewBox();
+          recomputeSummary();
+        });
+      });
     }
 
     function recomputeSummary() {
@@ -2265,13 +2327,28 @@
         throw new Error('LINE userId not found');
       }
     
+      setLoadingProgress(30, 'กำลังโหลดสิทธิ์ผู้ใช้งาน...');
+      var initRes = await loadJsonp('get_orders_new_init', {
+        lineUserId: LINE_USER_ID
+      });
+    
+      if (!initRes || initRes.ok !== true) {
+        throw new Error((initRes && initRes.error) || 'โหลดข้อมูลเริ่มต้นไม่สำเร็จ');
+      }
+    
+      state.auth.lineUserId = String((initRes.auth && initRes.auth.lineUserId) || LINE_USER_ID || '');
+      state.auth.role = String((initRes.auth && initRes.auth.role) || '').trim().toLowerCase();
+      state.auth.scopes = Array.isArray(initRes.auth && initRes.auth.scopes) ? initRes.auth.scopes : [];
+      state.auth.allowedPriceModes = Array.isArray(initRes.auth && initRes.auth.allowedPriceModes)
+        ? initRes.auth.allowedPriceModes
+        : ['wholesale'];
+    
+      renderPriceModePills();
+    
       setLoadingProgress(55, 'กำลังโหลดลูกค้า...');
       await loadCustomers('');
     
       setLoadingProgress(75, 'กำลังโหลดสินค้า...');
-      state.catalog.keyword = '';
-      var catalogInput = document.getElementById('catalogSearchBox');
-      if (catalogInput) catalogInput.value = '';
       await loadCatalog('');
     
       setLoadingProgress(100, 'พร้อมใช้งานแล้ว');
@@ -2392,21 +2469,8 @@
       
           loadCatalog(state.catalog.keyword || '');
         });
-      });
-    
-      Array.prototype.forEach.call(document.querySelectorAll('#priceModePills .pill'), function (el) {
-        el.addEventListener('click', function () {
-          var v = this.getAttribute('data-price-mode') || 'wholesale';
-          state.catalog.selectedPriceMode = v;
-    
-          Array.prototype.forEach.call(document.querySelectorAll('#priceModePills .pill'), function (x) {
-            x.classList.remove('active');
-          });
-          this.classList.add('active');
-    
-          renderCatalogResults();
-        });
-      });
+      });    
+      
   }
 
   window.addEventListener('load', async function () {
