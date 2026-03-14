@@ -1225,8 +1225,8 @@
     <div class="content">
       <div class="stepper">
         <div id="stepChip1" class="step-chip active">1. ลูกค้า + สินค้า</div>
-        <div id="stepChip2" class="step-chip">2. ตั้งค่าออเดอร์</div>
-        <div id="stepChip3" class="step-chip">3. พรีวิว + สร้าง</div>
+        <div id="stepChip2" class="step-chip">2. เลือกคลัง + ราคา</div>
+        <div id="stepChip3" class="step-chip">3. ตรวจสอบรายการ</div>
       </div>
     
       <!-- STEP 1 -->
@@ -1319,19 +1319,20 @@
           <div id="cartList" class="list-box"></div>
         </div>
     
-        <div class="section-card">
-          <div class="section-title">ส่วนลด / หมายเหตุ</div>
-    
+        <div class="section-card" id="discountSectionCard">
+          <div class="section-title">ส่วนลด / ของแถม / หมายเหตุ</div>
+        
           <div id="discountList" class="list-box"></div>
-    
-          <div class="stack-12">
-            <button id="addDiscountBtn" class="mini-btn primary" type="button">+ เพิ่มส่วนลด</button>
+        
+          <div class="stack-12" id="discountAddWrap">
+            <button id="addDiscountBtn" class="mini-btn primary" type="button">+ เพิ่มรายการ</button>
           </div>
-    
+        
           <div class="field stack-12">
             <div class="field-label">หมายเหตุ</div>
             <textarea id="orderNoteBox" placeholder="เช่น ลูกค้ารับเอง / นัดส่งพรุ่งนี้ / หมายเหตุเพิ่มเติม"></textarea>
           </div>
+        </div>
     
           <div class="wizard-nav">
             <button id="backToStep1Btn" class="mini-btn" type="button">ย้อนกลับ</button>
@@ -1392,6 +1393,15 @@
         scopes: [],
         role: '',
         allowedPriceModes: []
+      },
+
+      permission: {
+        discount: {
+          canView: true,
+          canAdd: false,
+          canEdit: false,
+          canDelete: false
+        }
       },
 
        wizard: {
@@ -1689,9 +1699,17 @@
           '</div>';
       });
     
+      var discountRows = discounts.filter(function (d) {
+        return String(d.type || 'discount') === 'discount';
+      });
+      
+      var freebieRows = discounts.filter(function (d) {
+        return String(d.type || 'discount') === 'freebie';
+      });
+      
       var discountHtml = '';
-      if (discounts.length) {
-        discounts.forEach(function (d) {
+      if (discountRows.length) {
+        discountRows.forEach(function (d) {
           var amt = Number(d.amount || 0) * Number(d.count || 1);
           discountHtml +=
             '<div class="preview-item">' +
@@ -1704,6 +1722,22 @@
         });
       } else {
         discountHtml = '<div class="preview-sub">ไม่มีส่วนลด</div>';
+      }
+      
+      var freebieHtml = '';
+      if (freebieRows.length) {
+        freebieRows.forEach(function (d) {
+          freebieHtml +=
+            '<div class="preview-item">' +
+              '<div class="preview-item-name">' +
+                escapeHtml(d.title || 'ของแถม') +
+                '<div class="preview-item-meta">ของแถม / ไม่คิดเงิน</div>' +
+              '</div>' +
+              '<div class="preview-item-right">แถม</div>' +
+            '</div>';
+        });
+      } else {
+        freebieHtml = '<div class="preview-sub">ไม่มีของแถม</div>';
       }
     
       box.innerHTML =
@@ -1725,6 +1759,11 @@
         '<div class="preview-block">' +
           '<div class="preview-title">ส่วนลด</div>' +
           discountHtml +
+        '</div>' +
+
+        '<div class="preview-block">' +
+          '<div class="preview-title">ของแถม</div>' +
+          freebieHtml +
         '</div>' +
     
         '<div class="preview-block">' +
@@ -1768,53 +1807,57 @@
       ];
     }
 
-    function renderPriceModePills() {
-      var wrap = document.getElementById('priceModePills');
-      if (!wrap) return;
+    function getPriceModeLabel(mode) {
+      var map = {
+        wholesale: 'ส่ง',
+        mbs: 'MBS',
+        dk: 'DK',
+        extra2: 'Extra2',
+        extra3: 'Extra3',
+        wh_bkk: 'BKK',
+        retail: 'ปลีก'
+      };
+      return map[mode] || mode;
+    }
     
-      var allowed = Array.isArray(state.auth.allowedPriceModes) && state.auth.allowedPriceModes.length
-        ? state.auth.allowedPriceModes
+    function renderPriceModePills() {
+      var box = document.getElementById('priceModePills');
+      if (!box) return;
+    
+      var allowed = Array.isArray(state.catalog.allowedPriceModes) && state.catalog.allowedPriceModes.length
+        ? state.catalog.allowedPriceModes
         : ['wholesale'];
     
-      var allModes = getAllPriceModeOptions();
-      var visibleModes = allModes.filter(function (x) {
-        return allowed.indexOf(x.value) > -1;
+      if (allowed.indexOf(state.catalog.selectedPriceMode) === -1) {
+        state.catalog.selectedPriceMode = allowed[0];
+      }
+    
+      var html = '';
+      allowed.forEach(function (mode) {
+        var active = state.catalog.selectedPriceMode === mode ? ' active' : '';
+        html += '<button class="pill' + active + '" data-price-mode="' + escapeHtml(mode) + '" type="button">' +
+          escapeHtml(getPriceModeLabel(mode)) +
+          '</button>';
       });
     
-      if (!visibleModes.length) {
-        visibleModes = [{ value: 'wholesale', label: 'ส่ง' }];
-      }
+      box.innerHTML = html;
     
-      if (visibleModes.map(function(x){ return x.value; }).indexOf(state.catalog.selectedPriceMode) === -1) {
-        state.catalog.selectedPriceMode = visibleModes[0].value;
-      }
-    
-      wrap.innerHTML = visibleModes.map(function (m) {
-        var activeClass = state.catalog.selectedPriceMode === m.value ? ' active' : '';
-        return (
-          '<button class="pill' + activeClass + '" data-price-mode="' + escapeHtml(m.value) + '" type="button">' +
-            escapeHtml(m.label) +
-          '</button>'
-        );
-      }).join('');
-    
-      Array.prototype.forEach.call(wrap.querySelectorAll('.pill'), function (el) {
+      Array.prototype.forEach.call(box.querySelectorAll('.pill'), function (el) {
         el.addEventListener('click', function () {
           var v = this.getAttribute('data-price-mode') || 'wholesale';
           state.catalog.selectedPriceMode = v;
     
-          Array.prototype.forEach.call(wrap.querySelectorAll('.pill'), function (x) {
+          Array.prototype.forEach.call(box.querySelectorAll('.pill'), function (x) {
             x.classList.remove('active');
           });
           this.classList.add('active');
     
           renderCatalogResults();
           renderCart();
-          renderPreviewBox();
           recomputeSummary();
         });
       });
-    }
+    }    
 
     function recomputeSummary() {
       var totalQty = state.cart.items.reduce(function (s, it) {
@@ -1826,6 +1869,7 @@
       }, 0);
     
       var totalDiscount = state.cart.discounts.reduce(function (s, d) {
+        if (String(d.type || 'discount') !== 'discount') return s;
         return s + (Number(d.amount || 0) * Number(d.count || 1));
       }, 0);
     
@@ -1861,6 +1905,7 @@
         }),
         discounts: state.cart.discounts.map(function (d) {
           return {
+            type: String(d.type || 'discount'),
             title: d.title,
             amount: Number(d.amount || 0),
             count: Number(d.count || 1)
@@ -2145,14 +2190,45 @@
       renderCart();
     }
 
+    async function loadOrdersNewInit() {
+      var data = await loadJsonp('orders_new_init', {
+        lineUserId: state.auth.lineUserId
+      });
+    
+      if (!data || data.ok !== true) {
+        throw new Error((data && data.error) || 'โหลดสิทธิ์เริ่มต้นไม่สำเร็จ');
+      }
+    
+      state.auth.role = String((data.employee && data.employee.role) || 'viewer').toLowerCase();
+    
+      state.permission.discount = data.discountPermission || {
+        canView: true,
+        canAdd: false,
+        canEdit: false,
+        canDelete: false
+      };
+    
+      state.catalog.allowedPriceModes = Array.isArray(data.priceModes) ? data.priceModes : ['wholesale'];
+    
+      renderPriceModePills();
+      renderDiscountSection();
+    }
+
     function addDiscountRow() {
+      var perm = state.permission.discount || {};
+      if (!perm.canAdd) {
+        showToast('ไม่มีสิทธิ์เพิ่มส่วนลด', 'warn', 1600);
+        return;
+      }
+    
       state.cart.discounts.push({
         uid: 'disc_' + Date.now() + '_' + Math.floor(Math.random() * 1000),
+        type: 'discount', // discount | freebie
         title: '',
         amount: 0,
         count: 1
       });
-
+    
       recomputeSummary();
       renderDiscounts();
     }
@@ -2160,12 +2236,21 @@
     function updateDiscount(uid, patch) {
       state.cart.discounts = state.cart.discounts.map(function (d) {
         if (d.uid !== uid) return d;
+    
         Object.keys(patch || {}).forEach(function (k) {
           d[k] = patch[k];
         });
+    
+        if (String(d.type || 'discount') === 'freebie') {
+          d.amount = 0;
+        }
+    
+        d.count = Math.max(1, Number(d.count || 1));
+        d.amount = Math.max(0, Number(d.amount || 0));
+    
         return d;
       });
-
+    
       recomputeSummary();
       renderDiscounts();
     }
@@ -2526,67 +2611,110 @@
 
     function renderDiscounts() {
       var list = document.getElementById('discountList');
+      if (!list) return;
+    
       var items = state.cart.discounts || [];
-
+      var perm = state.permission.discount || {};
+      var canEdit = !!perm.canEdit;
+      var canDelete = !!perm.canDelete;
+    
       if (!items.length) {
-        list.innerHTML = '<div class="empty-box">ยังไม่มีส่วนลด</div>';
+        list.innerHTML = '<div class="empty-box">ยังไม่มีส่วนลดหรือของแถม</div>';
         return;
       }
-
+    
       var html = '';
+    
       items.forEach(function (d) {
+        var type = String(d.type || 'discount');
+        var isFreebie = type === 'freebie';
+        var disabledAttr = canEdit ? '' : ' disabled';
+        var readOnlyAttr = canEdit ? '' : ' readonly';
+    
         html +=
           '<div class="discount-item" data-uid="' + escapeHtml(d.uid) + '">' +
+    
             '<div class="cart-controls">' +
+    
               '<div class="field">' +
-                '<div class="field-label">ชื่อส่วนลด</div>' +
-                '<input class="discount-title-input" type="text" value="' + escapeHtml(d.title || '') + '" placeholder="เช่น ส่วนลดพิเศษ">' +
+                '<div class="field-label">ประเภท</div>' +
+                '<select class="discount-type-input"' + disabledAttr + '>' +
+                  '<option value="discount"' + (type === 'discount' ? ' selected' : '') + '>ส่วนลด</option>' +
+                  '<option value="freebie"' + (type === 'freebie' ? ' selected' : '') + '>ของแถม</option>' +
+                '</select>' +
               '</div>' +
+    
+              '<div class="field">' +
+                '<div class="field-label">ชื่อรายการ</div>' +
+                '<input class="discount-title-input" type="text" value="' + escapeHtml(d.title || '') + '" placeholder="เช่น ส่วนลดพิเศษ / แถมเคสใส"' + readOnlyAttr + '>' +
+              '</div>' +
+    
               '<div class="field">' +
                 '<div class="field-label">จำนวนเงิน</div>' +
-                '<input class="discount-amount-input" type="number" min="0" value="' + escapeHtml(d.amount || 0) + '">' +
+                '<input class="discount-amount-input" type="number" min="0" value="' + escapeHtml(d.amount || 0) + '"' + (isFreebie ? ' disabled' : disabledAttr) + '>' +
               '</div>' +
+    
               '<div class="field">' +
                 '<div class="field-label">จำนวนครั้ง</div>' +
-                '<input class="discount-count-input" type="number" min="1" value="' + escapeHtml(d.count || 1) + '">' +
+                '<input class="discount-count-input" type="number" min="1" value="' + escapeHtml(d.count || 1) + '"' + disabledAttr + '>' +
               '</div>' +
-              '<div class="field">' +
-                '<div class="field-label">ลบ</div>' +
-                '<button class="mini-btn danger remove-discount-btn" type="button">ลบ</button>' +
-              '</div>' +
+    
+              (canDelete
+                ? '<div class="field">' +
+                    '<div class="field-label">ลบ</div>' +
+                    '<button class="mini-btn danger remove-discount-btn" type="button">ลบ</button>' +
+                  '</div>'
+                : ''
+              ) +
+    
             '</div>' +
+    
           '</div>';
       });
-
+    
       list.innerHTML = html;
-
+    
       Array.prototype.forEach.call(list.querySelectorAll('.discount-item'), function (el) {
         var uid = el.getAttribute('data-uid');
-
+    
+        var typeInput = el.querySelector('.discount-type-input');
         var titleInput = el.querySelector('.discount-title-input');
         var amountInput = el.querySelector('.discount-amount-input');
         var countInput = el.querySelector('.discount-count-input');
         var removeBtn = el.querySelector('.remove-discount-btn');
-
-        if (titleInput) {
+    
+        if (typeInput && canEdit) {
+          typeInput.addEventListener('change', function () {
+            var nextType = String(this.value || 'discount');
+            var patch = { type: nextType };
+    
+            if (nextType === 'freebie') {
+              patch.amount = 0;
+            }
+    
+            updateDiscount(uid, patch);
+          });
+        }
+    
+        if (titleInput && canEdit) {
           titleInput.addEventListener('change', function () {
             updateDiscount(uid, { title: this.value });
           });
         }
-
-        if (amountInput) {
+    
+        if (amountInput && canEdit) {
           amountInput.addEventListener('change', function () {
-            updateDiscount(uid, { amount: Number(this.value || 0) });
+            updateDiscount(uid, { amount: Math.max(0, Number(this.value || 0)) });
           });
         }
-
-        if (countInput) {
+    
+        if (countInput && canEdit) {
           countInput.addEventListener('change', function () {
             updateDiscount(uid, { count: Math.max(1, Number(this.value || 1)) });
           });
         }
-
-        if (removeBtn) {
+    
+        if (removeBtn && canDelete) {
           removeBtn.addEventListener('click', function () {
             removeDiscount(uid);
           });
