@@ -1027,6 +1027,8 @@
       
       .cart-qty-btn.delete {
         color: #d14848;
+        font-size: 14px;
+        font-weight: 800;
       }
       
       .cart-qty-value {
@@ -2345,7 +2347,7 @@
             '<div class="cart-bottom">' +
               '<div class="cart-qty-stepper">' +
                 '<button class="cart-qty-btn cart-qty-minus ' + (isDeleteState ? 'delete' : '') + '" type="button">' +
-                  (isDeleteState ? '🗑' : '−') +
+                  (isDeleteState ? 'ลบ' : '−') +
                 '</button>' +
                 '<div class="cart-qty-value">' + fmtNumber(qty) + '</div>' +
                 '<button class="cart-qty-btn cart-qty-plus" type="button">+</button>' +
