@@ -1225,8 +1225,8 @@
     <div class="content">
       <div class="stepper">
         <div id="stepChip1" class="step-chip active">1. ลูกค้า + สินค้า</div>
-        <div id="stepChip2" class="step-chip">2. เลือกคลัง + ราคา</div>
-        <div id="stepChip3" class="step-chip">3. ตรวจสอบรายการ</div>
+        <div id="stepChip2" class="step-chip">2. คลัง + ราคา</div>
+        <div id="stepChip3" class="step-chip">3. ตรวจสอบ</div>
       </div>
     
       <!-- STEP 1 -->
@@ -2191,24 +2191,30 @@
     }
 
     async function loadOrdersNewInit() {
-      var data = await loadJsonp('orders_new_init', {
+      var data = await loadJsonp('get_orders_new_init', {
         lineUserId: state.auth.lineUserId
       });
     
+      debugLog('get_orders_new_init raw = ' + JSON.stringify(data));
+    
       if (!data || data.ok !== true) {
-        throw new Error((data && data.error) || 'โหลดสิทธิ์เริ่มต้นไม่สำเร็จ');
+        throw new Error((data && data.error) || 'โหลดข้อมูลเริ่มต้นไม่สำเร็จ');
       }
     
+      state.auth.employee = data.employee || {};
       state.auth.role = String((data.employee && data.employee.role) || 'viewer').toLowerCase();
     
+      state.catalog.allowedPriceModes = Array.isArray(data.priceModes)
+        ? data.priceModes
+        : ['wholesale'];
+    
+      state.permission = state.permission || {};
       state.permission.discount = data.discountPermission || {
         canView: true,
         canAdd: false,
         canEdit: false,
         canDelete: false
       };
-    
-      state.catalog.allowedPriceModes = Array.isArray(data.priceModes) ? data.priceModes : ['wholesale'];
     
       renderPriceModePills();
       renderDiscountSection();
@@ -2780,23 +2786,8 @@
         throw new Error('LINE userId not found');
       }
     
-      setLoadingProgress(30, 'กำลังโหลดสิทธิ์ผู้ใช้งาน...');
-      var initRes = await loadJsonp('get_orders_new_init', {
-        lineUserId: LINE_USER_ID
-      });
-    
-      if (!initRes || initRes.ok !== true) {
-        throw new Error((initRes && initRes.error) || 'โหลดข้อมูลเริ่มต้นไม่สำเร็จ');
-      }
-    
-      state.auth.lineUserId = String((initRes.auth && initRes.auth.lineUserId) || LINE_USER_ID || '');
-      state.auth.role = String((initRes.auth && initRes.auth.role) || '').trim().toLowerCase();
-      state.auth.scopes = Array.isArray(initRes.auth && initRes.auth.scopes) ? initRes.auth.scopes : [];
-      state.auth.allowedPriceModes = Array.isArray(initRes.auth && initRes.auth.allowedPriceModes)
-        ? initRes.auth.allowedPriceModes
-        : ['wholesale'];
-    
-      renderPriceModePills();
+      setLoadingProgress(28, 'กำลังโหลดสิทธิ์...');
+      await loadOrdersNewInit();
     
       setLoadingProgress(55, 'กำลังโหลดลูกค้า...');
       await loadCustomers('');
