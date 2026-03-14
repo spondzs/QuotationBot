@@ -945,6 +945,120 @@
         background: linear-gradient(135deg, #5b73f1, #7a8dff);
         box-shadow: 0 10px 20px rgba(91, 115, 241, .16);
       }
+
+      .cart-item.clean-cart {
+        padding: 14px 14px 12px;
+        border: 1px solid #dfe5f2;
+        border-radius: 20px;
+        background: linear-gradient(180deg, #ffffff, #fbfcff);
+        box-shadow: 0 6px 18px rgba(27, 39, 94, .05);
+      }
+      
+      .cart-item.clean-cart .cart-top {
+        align-items: flex-start;
+      }
+      
+      .cart-main {
+        flex: 1;
+        min-width: 0;
+      }
+      
+      .cart-name {
+        font-size: 15px;
+        font-weight: 800;
+        color: #1f2735;
+        line-height: 1.35;
+      }
+      
+      .cart-meta {
+        margin-top: 4px;
+        font-size: 13px;
+        color: #6d7890;
+        line-height: 1.4;
+      }
+      
+      .cart-subtotal {
+        font-size: 15px;
+        font-weight: 800;
+        color: #315bc8;
+        white-space: nowrap;
+        margin-left: 10px;
+      }
+      
+      .cart-bottom {
+        margin-top: 12px;
+        display: flex;
+        justify-content: flex-end;
+      }
+      
+      .cart-qty-stepper {
+        display: inline-flex;
+        align-items: center;
+        border: 1px solid #d8e0f2;
+        border-radius: 999px;
+        overflow: hidden;
+        background: linear-gradient(180deg, #fbfcff, #f3f7ff);
+        min-height: 40px;
+        height: 40px;
+        box-shadow: inset 0 1px 0 rgba(255,255,255,.9);
+      }
+      
+      .cart-qty-btn {
+        width: 42px;
+        height: 40px;
+        border: 0;
+        background: transparent;
+        color: #4f6fe8;
+        font-size: 22px;
+        font-weight: 800;
+        line-height: 1;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+      
+      .cart-qty-btn:active {
+        background: rgba(79, 111, 232, 0.08);
+      }
+      
+      .cart-qty-btn.delete {
+        color: #d14848;
+      }
+      
+      .cart-qty-value {
+        min-width: 48px;
+        height: 40px;
+        padding: 0 8px;
+        border: 0;
+        outline: none;
+        background: transparent;
+        text-align: center;
+        font-size: 18px;
+        font-weight: 800;
+        color: #355fc7;
+        -moz-appearance: textfield;
+      }
+      
+      .cart-qty-value::-webkit-outer-spin-button,
+      .cart-qty-value::-webkit-inner-spin-button {
+        -webkit-appearance: none;
+        margin: 0;
+      }
+      
+      @media (max-width: 560px) {
+        .cart-top {
+          gap: 8px;
+        }
+      
+        .cart-bottom {
+          justify-content: flex-end;
+        }
+      
+        .cart-qty-stepper {
+          min-width: 132px;
+        }
+      }
       
     }    
   </style>
@@ -2150,97 +2264,128 @@
       });
     }
 
+    function increaseCartQty(uid) {
+      state.cart.items = state.cart.items.map(function (it) {
+        if (it.uid !== uid) return it;
+        it.qty = Math.max(1, Number(it.qty || 0) + 1);
+        return it;
+      });
+    
+      recomputeSummary();
+      renderCart();
+    }
+    
+    function decreaseCartQty(uid) {
+      var target = null;
+    
+      state.cart.items = state.cart.items.map(function (it) {
+        if (it.uid !== uid) return it;
+        target = it;
+        return it;
+      });
+    
+      if (!target) return;
+    
+      var qty = Number(target.qty || 0);
+    
+      if (qty <= 1) {
+        removeCartItem(uid);
+        return;
+      }
+    
+      state.cart.items = state.cart.items.map(function (it) {
+        if (it.uid !== uid) return it;
+        it.qty = qty - 1;
+        return it;
+      });
+    
+      recomputeSummary();
+      renderCart();
+    }
+    
+    function setCartQtyDirect(uid, qty) {
+      var n = Math.max(1, Number(qty || 1));
+    
+      state.cart.items = state.cart.items.map(function (it) {
+        if (it.uid !== uid) return it;
+        it.qty = n;
+        return it;
+      });
+    
+      recomputeSummary();
+      renderCart();
+    }
+
     function renderCart() {
       var list = document.getElementById('cartList');
       var items = state.cart.items || [];
-
+    
+      if (!list) return;
+    
       if (!items.length) {
         list.innerHTML = '<div class="empty-box">ยังไม่มีสินค้าในตะกร้า</div>';
         return;
       }
-
+    
       var html = '';
-
+    
       items.forEach(function (it) {
         var subtotal = Number(it.qty || 0) * Number(it.price || 0);
-
+        var leftBtnClass = Number(it.qty || 0) <= 1 ? 'delete' : '';
+        var leftBtnSymbol = Number(it.qty || 0) <= 1 ? '🗑' : '−';
+    
         html +=
-          '<div class="cart-item" data-uid="' + escapeHtml(it.uid) + '">' +
+          '<div class="cart-item clean-cart" data-uid="' + escapeHtml(it.uid) + '">' +
             '<div class="cart-top">' +
-              '<div>' +
+              '<div class="cart-main">' +
                 '<div class="cart-name">' + escapeHtml(it.modelBase || '-') + '</div>' +
-                '<div class="cart-meta">ราคา: ' + fmtNumber(it.price || 0) + ' บาท | ' + escapeHtml(it.warehouseLabel || '-') + '</div>' +
+                '<div class="cart-meta">' +
+                  'ราคา ' + fmtNumber(it.price || 0) + ' บาท' +
+                  ' | ' + escapeHtml(it.warehouseLabel || '-') +
+                '</div>' +
               '</div>' +
               '<div class="cart-subtotal">' + fmtNumber(subtotal) + ' บาท</div>' +
             '</div>' +
-
-            '<div class="cart-controls">' +
-              '<div class="field">' +
-                '<div class="field-label">จำนวน</div>' +
-                '<input class="cart-qty-input" type="number" min="1" value="' + escapeHtml(it.qty) + '">' +
-              '</div>' +
-
-              '<div class="field">' +
-                '<div class="field-label">คลัง</div>' +
-                '<select class="cart-wh-select">' +
-                  '<option value="RemainQuota"' + (it.warehouseKey === 'RemainQuota' ? ' selected' : '') + '>คลังหลัก</option>' +
-                  '<option value="RemainQuota2"' + (it.warehouseKey === 'RemainQuota2' ? ' selected' : '') + '>คลังลำปาง</option>' +
-                  '<option value="RemainQuota3"' + (it.warehouseKey === 'RemainQuota3' ? ' selected' : '') + '>คลังลำพูน</option>' +
-                '</select>' +
-              '</div>' +
-
-              '<div class="field">' +
-                '<div class="field-label">ราคา</div>' +
-                '<select class="cart-price-mode-select">' +
-                  '<option value="wholesale"' + (it.priceMode === 'wholesale' ? ' selected' : '') + '>ส่ง</option>' +
-                  '<option value="mbs"' + (it.priceMode === 'mbs' ? ' selected' : '') + '>MBS</option>' +
-                  '<option value="dk"' + (it.priceMode === 'dk' ? ' selected' : '') + '>DK</option>' +
-                  '<option value="extra2"' + (it.priceMode === 'extra2' ? ' selected' : '') + '>Extra2</option>' +
-                  '<option value="extra3"' + (it.priceMode === 'extra3' ? ' selected' : '') + '>Extra3</option>' +
-                  '<option value="wh_bkk"' + (it.priceMode === 'wh_bkk' ? ' selected' : '') + '>BKK</option>' +
-                  '<option value="retail"' + (it.priceMode === 'retail' ? ' selected' : '') + '>ปลีก</option>' +
-                '</select>' +
-              '</div>' +
-
-              '<div class="field">' +
-                '<div class="field-label">ลบรายการ</div>' +
-                '<button class="mini-btn danger remove-cart-btn" type="button">ลบ</button>' +
+    
+            '<div class="cart-bottom">' +
+              '<div class="cart-qty-stepper">' +
+                '<button class="cart-qty-btn cart-qty-minus ' + leftBtnClass + '" type="button">' + leftBtnSymbol + '</button>' +
+                '<input class="cart-qty-value" type="number" min="1" value="' + escapeHtml(it.qty) + '">' +
+                '<button class="cart-qty-btn cart-qty-plus" type="button">+</button>' +
               '</div>' +
             '</div>' +
           '</div>';
       });
-
+    
       list.innerHTML = html;
-
+    
       Array.prototype.forEach.call(list.querySelectorAll('.cart-item'), function (el) {
         var uid = el.getAttribute('data-uid');
-
-        var qtyInput = el.querySelector('.cart-qty-input');
-        var whSelect = el.querySelector('.cart-wh-select');
-        var pmSelect = el.querySelector('.cart-price-mode-select');
-        var rmBtn = el.querySelector('.remove-cart-btn');
-
+        var minusBtn = el.querySelector('.cart-qty-minus');
+        var plusBtn = el.querySelector('.cart-qty-plus');
+        var qtyInput = el.querySelector('.cart-qty-value');
+    
+        if (minusBtn) {
+          minusBtn.addEventListener('click', function () {
+            decreaseCartQty(uid);
+          });
+        }
+    
+        if (plusBtn) {
+          plusBtn.addEventListener('click', function () {
+            increaseCartQty(uid);
+          });
+        }
+    
         if (qtyInput) {
           qtyInput.addEventListener('change', function () {
-            updateCartQty(uid, this.value);
+            setCartQtyDirect(uid, this.value);
           });
-        }
-
-        if (whSelect) {
-          whSelect.addEventListener('change', function () {
-            updateCartWarehouse(uid, this.value);
-          });
-        }
-
-        if (pmSelect) {
-          pmSelect.addEventListener('change', function () {
-            updateCartPriceMode(uid, this.value);
-          });
-        }
-
-        if (rmBtn) {
-          rmBtn.addEventListener('click', function () {
-            removeCartItem(uid);
+    
+          qtyInput.addEventListener('blur', function () {
+            var v = Math.max(1, Number(this.value || 1));
+            this.value = v;
+            setCartQtyDirect(uid, v);
           });
         }
       });
