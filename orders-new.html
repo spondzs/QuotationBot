@@ -2786,8 +2786,23 @@
         throw new Error('LINE userId not found');
       }
     
-      setLoadingProgress(28, 'กำลังโหลดสิทธิ์...');
-      await loadOrdersNewInit();
+      setLoadingProgress(30, 'กำลังโหลดสิทธิ์ผู้ใช้งาน...');
+      var initRes = await loadJsonp('get_orders_new_init', {
+        lineUserId: LINE_USER_ID
+      });
+    
+      if (!initRes || initRes.ok !== true) {
+        throw new Error((initRes && initRes.error) || 'โหลดข้อมูลเริ่มต้นไม่สำเร็จ');
+      }
+    
+      state.auth.lineUserId = String((initRes.auth && initRes.auth.lineUserId) || LINE_USER_ID || '');
+      state.auth.role = String((initRes.auth && initRes.auth.role) || '').trim().toLowerCase();
+      state.auth.scopes = Array.isArray(initRes.auth && initRes.auth.scopes) ? initRes.auth.scopes : [];
+      state.auth.allowedPriceModes = Array.isArray(initRes.auth && initRes.auth.allowedPriceModes)
+        ? initRes.auth.allowedPriceModes
+        : ['wholesale'];
+    
+      renderPriceModePills();
     
       setLoadingProgress(55, 'กำลังโหลดลูกค้า...');
       await loadCustomers('');
