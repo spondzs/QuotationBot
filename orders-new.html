@@ -898,7 +898,55 @@
       .sticky-mini-summary-row b {
         font-size: 13px;
       }
-    }
+
+      .order-setting-card {
+        padding: 18px 16px;
+        background: linear-gradient(180deg, #ffffff, #fbfcff);
+        border: 1px solid #dfe6f5;
+        box-shadow: 0 8px 22px rgba(27, 39, 94, .06);
+      }
+      
+      .setting-group + .setting-group {
+        margin-top: 14px;
+      }
+      
+      .setting-label {
+        font-size: 14px;
+        font-weight: 800;
+        color: #4f5f84;
+        margin-bottom: 10px;
+        letter-spacing: .1px;
+      }
+      
+      .setting-divider {
+        height: 1px;
+        background: linear-gradient(90deg, rgba(210,220,242,0), rgba(210,220,242,1), rgba(210,220,242,0));
+        margin: 14px 0;
+      }
+      
+      .setting-pill-row {
+        gap: 10px;
+      }
+      
+      .setting-pill-row .pill {
+        min-height: 44px;
+        padding: 0 16px;
+        font-size: 14px;
+        font-weight: 800;
+        border: 1px solid #d8dfef;
+        background: #fff;
+        color: #4d5873;
+        box-shadow: 0 1px 0 rgba(255,255,255,.9) inset;
+      }
+      
+      .setting-pill-row .pill.active {
+        color: #fff;
+        border-color: transparent;
+        background: linear-gradient(135deg, #5b73f1, #7a8dff);
+        box-shadow: 0 10px 20px rgba(91, 115, 241, .16);
+      }
+      
+    }    
   </style>
 
   <script charset="utf-8" src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
@@ -996,29 +1044,28 @@
     
       <!-- STEP 2 -->
       <div id="stepPanel2" class="step-panel">
-        <div class="section-card">
-          <div class="section-title">ตั้งค่าเริ่มต้น</div>
-          <div class="section-sub">ค่าเริ่มต้นนี้จะใช้ตอนกดเพิ่มสินค้าเข้าตะกร้า</div>
-    
-          <div class="field">
-            <div class="field-label">เลือกคลัง</div>
-            <div id="warehousePills" class="pill-row">
+        <div class="section-card order-setting-card">
+          <div class="setting-group">
+            <div class="setting-label">เลือกคลัง</div>
+            <div id="warehousePills" class="pill-row setting-pill-row">
               <button class="pill active" data-wh="RemainQuota" type="button">คลังหลัก</button>
               <button class="pill" data-wh="RemainQuota2" type="button">คลังลำปาง</button>
               <button class="pill" data-wh="RemainQuota3" type="button">คลังลำพูน</button>
             </div>
           </div>
-    
-          <div class="field stack-12">
-            <div class="field-label">เลือกราคา</div>
-            <div id="priceModePills" class="pill-row">
+        
+          <div class="setting-divider"></div>
+        
+          <div class="setting-group">
+            <div class="setting-label">เลือกราคา</div>
+            <div id="priceModePills" class="pill-row setting-pill-row">
               <button class="pill active" data-price-mode="wholesale" type="button">ส่ง</button>
-              <button class="pill" data-price-mode="mbs" type="button">MBS</button>
-              <button class="pill" data-price-mode="dk" type="button">DK</button>
-              <button class="pill" data-price-mode="extra2" type="button">Extra2</button>
-              <button class="pill" data-price-mode="extra3" type="button">Extra3</button>
-              <button class="pill" data-price-mode="wh_bkk" type="button">BKK</button>
-              <button class="pill" data-price-mode="retail" type="button">ปลีก</button>
+                <button class="pill" data-price-mode="mbs" type="button">MBS</button>
+                <button class="pill" data-price-mode="dk" type="button">DK</button>
+                <button class="pill" data-price-mode="extra2" type="button">Extra2</button>
+                <button class="pill" data-price-mode="extra3" type="button">Extra3</button>
+                <button class="pill" data-price-mode="wh_bkk" type="button">BKK</button>
+                <button class="pill" data-price-mode="retail" type="button">ปลีก</button>
             </div>
           </div>
         </div>
