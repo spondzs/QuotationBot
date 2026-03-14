@@ -293,32 +293,6 @@
       color: var(--danger);
     }
   
-    .cart-item {
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-    }
-  
-    .cart-top {
-      display: flex;
-      justify-content: space-between;
-      align-items: flex-start;
-      gap: 10px;
-    }
-  
-    .cart-subtotal {
-      white-space: nowrap;
-      font-size: 14px;
-      font-weight: 800;
-      color: #24304f;
-    }
-  
-    .cart-controls {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 8px;
-    }
-  
     .field {
       display: flex;
       flex-direction: column;
@@ -862,6 +836,156 @@
       margin: 0;
     }
   
+    .order-setting-card {
+      padding: 18px 16px;
+      background: linear-gradient(180deg, #ffffff, #fbfcff);
+      border: 1px solid #dfe6f5;
+      box-shadow: 0 8px 22px rgba(27, 39, 94, .06);
+    }
+  
+    .setting-group + .setting-group {
+      margin-top: 14px;
+    }
+  
+    .setting-label {
+      margin-bottom: 10px;
+      font-size: 14px;
+      font-weight: 800;
+      color: #4f5f84;
+      letter-spacing: .1px;
+    }
+  
+    .setting-divider {
+      height: 1px;
+      margin: 14px 0;
+      background: linear-gradient(
+        90deg,
+        rgba(210,220,242,0),
+        rgba(210,220,242,1),
+        rgba(210,220,242,0)
+      );
+    }
+  
+    .setting-pill-row {
+      gap: 10px;
+    }
+  
+    .setting-pill-row .pill {
+      min-height: 44px;
+      padding: 0 16px;
+      border: 1px solid #d8dfef;
+      background: #fff;
+      color: #4d5873;
+      font-size: 14px;
+      font-weight: 800;
+      box-shadow: 0 1px 0 rgba(255,255,255,.9) inset;
+    }
+  
+    .setting-pill-row .pill.active {
+      color: #fff;
+      border-color: transparent;
+      background: linear-gradient(135deg, #5b73f1, #7a8dff);
+      box-shadow: 0 10px 20px rgba(91, 115, 241, .16);
+    }
+  
+    .cart-item.clean-cart {
+      padding: 16px;
+      border: 1px solid #dfe5f2;
+      border-radius: 20px;
+      background: linear-gradient(180deg, #ffffff, #fbfcff);
+      box-shadow: 0 6px 18px rgba(27, 39, 94, .05);
+    }
+  
+    .cart-item.clean-cart .cart-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 12px;
+    }
+  
+    .cart-main {
+      flex: 1;
+      min-width: 0;
+    }
+  
+    .cart-item.clean-cart .cart-name {
+      font-size: 15px;
+      font-weight: 800;
+      color: #1f2735;
+      line-height: 1.35;
+    }
+  
+    .cart-item.clean-cart .cart-meta {
+      margin-top: 4px;
+      font-size: 13px;
+      color: #6d7890;
+      line-height: 1.4;
+    }
+  
+    .cart-item.clean-cart .cart-subtotal {
+      font-size: 15px;
+      font-weight: 800;
+      color: #315bc8;
+      white-space: nowrap;
+    }
+  
+    .cart-bottom {
+      margin-top: 12px;
+      display: flex;
+      justify-content: flex-end;
+    }
+  
+    .cart-qty-stepper {
+      display: grid;
+      grid-template-columns: 42px 42px 42px;
+      align-items: stretch;
+      justify-items: stretch;
+      border: 1px solid #d7e0f4;
+      border-radius: 999px;
+      overflow: hidden;
+      background: linear-gradient(180deg, #fbfcff, #f3f7ff);
+      height: 42px;
+      box-shadow: inset 0 1px 0 rgba(255,255,255,.9);
+    }
+  
+    .cart-qty-btn {
+      width: 42px;
+      height: 42px;
+      border: 0;
+      background: transparent;
+      color: #4f6fe8;
+      font-size: 24px;
+      font-weight: 800;
+      line-height: 42px;
+      text-align: center;
+      cursor: pointer;
+      padding: 0;
+    }
+  
+    .cart-qty-btn:active {
+      background: rgba(79, 111, 232, 0.08);
+    }
+  
+    .cart-qty-btn.delete {
+      color: #d14848;
+      font-size: 14px;
+      font-weight: 800;
+      line-height: 42px;
+    }
+  
+    .cart-qty-value {
+      width: 42px;
+      height: 42px;
+      display: block;
+      line-height: 42px;
+      text-align: center;
+      font-size: 18px;
+      font-weight: 800;
+      color: #355fc7;
+      padding: 0;
+      margin: 0;
+    }
+  
     @media (max-width: 560px) {
       .cart-controls {
         grid-template-columns: 1fr;
@@ -898,298 +1022,19 @@
       .sticky-mini-summary-row b {
         font-size: 13px;
       }
-
-      .order-setting-card {
-        padding: 18px 16px;
-        background: linear-gradient(180deg, #ffffff, #fbfcff);
-        border: 1px solid #dfe6f5;
-        box-shadow: 0 8px 22px rgba(27, 39, 94, .06);
-      }
-      
-      .setting-group + .setting-group {
-        margin-top: 14px;
-      }
-      
-      .setting-label {
-        font-size: 14px;
-        font-weight: 800;
-        color: #4f5f84;
-        margin-bottom: 10px;
-        letter-spacing: .1px;
-      }
-      
-      .setting-divider {
-        height: 1px;
-        background: linear-gradient(90deg, rgba(210,220,242,0), rgba(210,220,242,1), rgba(210,220,242,0));
-        margin: 14px 0;
-      }
-      
-      .setting-pill-row {
-        gap: 10px;
-      }
-      
-      .setting-pill-row .pill {
-        min-height: 44px;
-        padding: 0 16px;
-        font-size: 14px;
-        font-weight: 800;
-        border: 1px solid #d8dfef;
-        background: #fff;
-        color: #4d5873;
-        box-shadow: 0 1px 0 rgba(255,255,255,.9) inset;
-      }
-      
-      .setting-pill-row .pill.active {
-        color: #fff;
-        border-color: transparent;
-        background: linear-gradient(135deg, #5b73f1, #7a8dff);
-        box-shadow: 0 10px 20px rgba(91, 115, 241, .16);
-      }
-
+  
       .cart-item.clean-cart {
-        padding: 16px;
-        border: 1px solid #dfe5f2;
-        border-radius: 20px;
-        background: linear-gradient(180deg, #ffffff, #fbfcff);
-        box-shadow: 0 6px 18px rgba(27, 39, 94, .05);
+        padding: 14px;
       }
-      
-      .cart-item.clean-cart .cart-top {
-        display: flex;
-        justify-content: space-between;
-        align-items: flex-start;
-        gap: 12px;
+  
+      .cart-item.clean-cart .cart-subtotal {
+        font-size: 14px;
       }
-      
-      .cart-main {
-        flex: 1;
-        min-width: 0;
-      }
-      
-      .cart-name {
-        font-size: 15px;
-        font-weight: 800;
-        color: #1f2735;
-        line-height: 1.35;
-      }
-      
-      .cart-meta {
-        margin-top: 4px;
-        font-size: 13px;
-        color: #6d7890;
-        line-height: 1.4;
-      }
-      
-      .cart-subtotal {
-        font-size: 15px;
-        font-weight: 800;
-        color: #315bc8;
-        white-space: nowrap;
-      }
-      
-      .cart-bottom {
-        margin-top: 12px;
-        display: flex;
-        justify-content: flex-end;
-      }
-      
-      .cart-item.clean-cart {
-        padding: 16px;
-        border: 1px solid #dfe5f2;
-        border-radius: 20px;
-        background: linear-gradient(180deg, #ffffff, #fbfcff);
-        box-shadow: 0 6px 18px rgba(27, 39, 94, .05);
-      }
-      
-      .cart-item.clean-cart .cart-top {
-        display: flex;
-        justify-content: space-between;
-        align-items: flex-start;
-        gap: 12px;
-      }
-      
-      .cart-main {
-        flex: 1;
-        min-width: 0;
-      }
-      
-      .cart-name {
-        font-size: 15px;
-        font-weight: 800;
-        color: #1f2735;
-        line-height: 1.35;
-      }
-      
-      .cart-meta {
-        margin-top: 4px;
-        font-size: 13px;
-        color: #6d7890;
-        line-height: 1.4;
-      }
-      
-      .cart-subtotal {
-        font-size: 15px;
-        font-weight: 800;
-        color: #315bc8;
-        white-space: nowrap;
-      }
-      
-      .cart-bottom {
-        margin-top: 12px;
-        display: flex;
-        justify-content: flex-end;
-      }
-      
+  
       .cart-qty-stepper {
-        display: grid;
-        grid-template-columns: 42px 42px 42px;
-        align-items: stretch;
-        justify-items: stretch;
-        border: 1px solid #d7e0f4;
-        border-radius: 999px;
-        overflow: hidden;
-        background: linear-gradient(180deg, #fbfcff, #f3f7ff);
-        height: 42px;
-        box-shadow: inset 0 1px 0 rgba(255,255,255,.9);
+        min-width: 126px;
       }
-      
-      .cart-qty-btn {
-        width: 42px;
-        height: 42px;
-        border: 0;
-        background: transparent;
-        color: #4f6fe8;
-        font-size: 24px;
-        font-weight: 800;
-        line-height: 42px;
-        text-align: center;
-        cursor: pointer;
-        padding: 0;
-      }
-      
-      .cart-qty-btn:active {
-        background: rgba(79, 111, 232, 0.08);
-      }
-      
-      .cart-qty-btn.delete {
-        color: #d14848;
-        font-size: 14px;
-        font-weight: 800;
-        line-height: 42px;
-      }
-      
-      .cart-qty-value {
-        width: 42px;
-        height: 42px;
-        display: block;
-        line-height: 42px;
-        text-align: center;
-        font-size: 18px;
-        font-weight: 800;
-        color: #355fc7;
-        padding: 0;
-        margin: 0;
-      }
-      
-      .order-setting-card {
-        padding: 18px 16px;
-        background: linear-gradient(180deg, #ffffff, #fbfcff);
-        border: 1px solid #dfe6f5;
-        box-shadow: 0 8px 22px rgba(27, 39, 94, .06);
-      }
-      
-      .setting-group + .setting-group {
-        margin-top: 14px;
-      }
-      
-      .setting-label {
-        margin-bottom: 10px;
-        font-size: 14px;
-        font-weight: 800;
-        color: #4f5f84;
-        letter-spacing: .1px;
-      }
-      
-      .setting-divider {
-        height: 1px;
-        margin: 14px 0;
-        background: linear-gradient(
-          90deg,
-          rgba(210,220,242,0),
-          rgba(210,220,242,1),
-          rgba(210,220,242,0)
-        );
-      }
-      
-      .setting-pill-row {
-        gap: 10px;
-      }
-      
-      .setting-pill-row .pill {
-        min-height: 44px;
-        padding: 0 16px;
-        border: 1px solid #d8dfef;
-        background: #fff;
-        color: #4d5873;
-        font-size: 14px;
-        font-weight: 800;
-        box-shadow: 0 1px 0 rgba(255,255,255,.9) inset;
-      }
-      
-      .setting-pill-row .pill.active {
-        color: #fff;
-        border-color: transparent;
-        background: linear-gradient(135deg, #5b73f1, #7a8dff);
-        box-shadow: 0 10px 20px rgba(91, 115, 241, .16);
-      }
-      
-      @media (max-width: 560px) {
-        .cart-controls {
-          grid-template-columns: 1fr;
-        }
-      
-        .success-actions {
-          flex-direction: column;
-        }
-      
-        .product-foot {
-          flex-direction: row;
-          align-items: center;
-        }
-      
-        #stepPanel1 {
-          padding-bottom: 136px;
-        }
-      
-        .step-bottom-card {
-          padding: 12px;
-          border-radius: 18px;
-        }
-      
-        .step-bottom-summary {
-          row-gap: 5px;
-          margin-bottom: 10px;
-        }
-      
-        .sticky-mini-summary-row span,
-        .sticky-mini-summary-row b {
-          font-size: 13px;
-        }
-      
-        .cart-item.clean-cart {
-          padding: 14px;
-        }
-      
-        .cart-subtotal {
-          font-size: 14px;
-        }
-      
-        .cart-qty-stepper {
-          min-width: 126px;
-        }
-      }
-      
-    }    
+    }
   </style>
 
   <script charset="utf-8" src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
@@ -1296,48 +1141,47 @@
               <button class="pill" data-wh="RemainQuota3" type="button">คลังลำพูน</button>
             </div>
           </div>
-        
+      
           <div class="setting-divider"></div>
-        
+      
           <div class="setting-group">
             <div class="setting-label">เลือกราคา</div>
             <div id="priceModePills" class="pill-row setting-pill-row">
               <button class="pill active" data-price-mode="wholesale" type="button">ส่ง</button>
-                <button class="pill" data-price-mode="mbs" type="button">MBS</button>
-                <button class="pill" data-price-mode="dk" type="button">DK</button>
-                <button class="pill" data-price-mode="extra2" type="button">Extra2</button>
-                <button class="pill" data-price-mode="extra3" type="button">Extra3</button>
-                <button class="pill" data-price-mode="wh_bkk" type="button">BKK</button>
-                <button class="pill" data-price-mode="retail" type="button">ปลีก</button>
+              <button class="pill" data-price-mode="mbs" type="button">MBS</button>
+              <button class="pill" data-price-mode="dk" type="button">DK</button>
+              <button class="pill" data-price-mode="extra2" type="button">Extra2</button>
+              <button class="pill" data-price-mode="extra3" type="button">Extra3</button>
+              <button class="pill" data-price-mode="wh_bkk" type="button">BKK</button>
+              <button class="pill" data-price-mode="retail" type="button">ปลีก</button>
             </div>
           </div>
         </div>
-    
+      
         <div class="section-card">
           <div class="section-title">ตะกร้าออเดอร์</div>
           <div class="section-sub">ตรวจสอบจำนวน คลัง และราคา ก่อนสร้างใบเสนอราคา</div>
           <div id="cartList" class="list-box"></div>
         </div>
-    
+      
         <div class="section-card" id="discountSectionCard">
           <div class="section-title">ส่วนลด / ของแถม / หมายเหตุ</div>
-        
+      
           <div id="discountList" class="list-box"></div>
-        
+      
           <div class="stack-12" id="discountAddWrap">
             <button id="addDiscountBtn" class="mini-btn primary" type="button">+ เพิ่มรายการ</button>
           </div>
-        
+      
           <div class="field stack-12">
             <div class="field-label">หมายเหตุ</div>
             <textarea id="orderNoteBox" placeholder="เช่น ลูกค้ารับเอง / นัดส่งพรุ่งนี้ / หมายเหตุเพิ่มเติม"></textarea>
           </div>
         </div>
-    
-          <div class="wizard-nav">
-            <button id="backToStep1Btn" class="mini-btn" type="button">ย้อนกลับ</button>
-            <button id="toStep3Btn" class="submit-btn" type="button">ถัดไป: ตรวจทาน</button>
-          </div>
+      
+        <div class="wizard-nav">
+          <button id="backToStep1Btn" class="mini-btn" type="button">ย้อนกลับ</button>
+          <button id="toStep3Btn" class="submit-btn" type="button">ถัดไป: ตรวจทาน</button>
         </div>
       </div>
     
@@ -1824,8 +1668,8 @@
       var box = document.getElementById('priceModePills');
       if (!box) return;
     
-      var allowed = Array.isArray(state.catalog.allowedPriceModes) && state.catalog.allowedPriceModes.length
-        ? state.catalog.allowedPriceModes
+      var allowed = Array.isArray(state.auth.allowedPriceModes) && state.auth.allowedPriceModes.length
+        ? state.auth.allowedPriceModes
         : ['wholesale'];
     
       if (allowed.indexOf(state.catalog.selectedPriceMode) === -1) {
@@ -1833,31 +1677,45 @@
       }
     
       var html = '';
-      allowed.forEach(function (mode) {
+      allowed.forEach(function(mode) {
         var active = state.catalog.selectedPriceMode === mode ? ' active' : '';
-        html += '<button class="pill' + active + '" data-price-mode="' + escapeHtml(mode) + '" type="button">' +
-          escapeHtml(getPriceModeLabel(mode)) +
+        html +=
+          '<button class="pill' + active + '" data-price-mode="' + escapeHtml(mode) + '" type="button">' +
+            escapeHtml(getPriceModeLabel(mode)) +
           '</button>';
       });
     
       box.innerHTML = html;
     
-      Array.prototype.forEach.call(box.querySelectorAll('.pill'), function (el) {
-        el.addEventListener('click', function () {
+      Array.prototype.forEach.call(box.querySelectorAll('.pill'), function(el) {
+        el.addEventListener('click', function() {
           var v = this.getAttribute('data-price-mode') || 'wholesale';
           state.catalog.selectedPriceMode = v;
     
-          Array.prototype.forEach.call(box.querySelectorAll('.pill'), function (x) {
+          Array.prototype.forEach.call(box.querySelectorAll('.pill'), function(x) {
             x.classList.remove('active');
           });
           this.classList.add('active');
     
+          applyCurrentDefaultsToCart();
           renderCatalogResults();
-          renderCart();
-          recomputeSummary();
         });
       });
-    }    
+    }
+
+    function renderDiscountSection() {
+      var card = document.getElementById('discountSectionCard');
+      var addWrap = document.getElementById('discountAddWrap');
+      var perm = (state.permission && state.permission.discount) || {};
+    
+      if (card) {
+        card.style.display = (perm.canView === false) ? 'none' : '';
+      }
+    
+      if (addWrap) {
+        addWrap.style.display = perm.canAdd ? '' : 'none';
+      }
+    }
 
     function recomputeSummary() {
       var totalQty = state.cart.items.reduce(function (s, it) {
@@ -2116,49 +1974,6 @@
       renderCatalogResults();
     }
 
-    function addProductToCart(product) {
-      var uid = 'tmp_' + Date.now() + '_' + Math.floor(Math.random() * 1000);
-      var price = Number((product.priceModes && product.priceModes[state.catalog.selectedPriceMode]) || 0);
-
-      state.cart.items.push({
-        uid: uid,
-        modelBase: product.modelBase,
-        qty: 1,
-        warehouseKey: state.catalog.selectedWarehouseKey,
-        warehouseLabel: warehouseLabelOf(state.catalog.selectedWarehouseKey),
-        priceMode: state.catalog.selectedPriceMode,
-        price: price
-      });
-
-      recomputeSummary();
-      renderCart();
-      showToast('เพิ่มสินค้าแล้ว ✅', 'success', 1200);
-    }
-
-    function updateCartQty(uid, qty) {
-      state.cart.items = state.cart.items.map(function (it) {
-        if (it.uid !== uid) return it;
-        it.qty = Math.max(1, Number(qty || 1));
-        return it;
-      });
-    
-      recomputeSummary();
-      renderCart();
-    }
-
-    function updateCartWarehouse(uid, warehouseKey) {
-      state.cart.items = state.cart.items.map(function (it) {
-        if (it.uid !== uid) return it;
-        it.warehouseKey = warehouseKey;
-        it.warehouseLabel = warehouseLabelOf(warehouseKey);
-        return it;
-      });
-    
-      renderCart();
-      renderCatalogResults();
-      renderPreviewBox();
-    }
-
     function updateCartPriceMode(uid, priceMode) {
       state.cart.items = state.cart.items.map(function (it) {
         if (it.uid !== uid) return it;
@@ -2188,36 +2003,6 @@
 
       recomputeSummary();
       renderCart();
-    }
-
-    async function loadOrdersNewInit() {
-      var data = await loadJsonp('get_orders_new_init', {
-        lineUserId: state.auth.lineUserId
-      });
-    
-      debugLog('get_orders_new_init raw = ' + JSON.stringify(data));
-    
-      if (!data || data.ok !== true) {
-        throw new Error((data && data.error) || 'โหลดข้อมูลเริ่มต้นไม่สำเร็จ');
-      }
-    
-      state.auth.employee = data.employee || {};
-      state.auth.role = String((data.employee && data.employee.role) || 'viewer').toLowerCase();
-    
-      state.catalog.allowedPriceModes = Array.isArray(data.priceModes)
-        ? data.priceModes
-        : ['wholesale'];
-    
-      state.permission = state.permission || {};
-      state.permission.discount = data.discountPermission || {
-        canView: true,
-        canAdd: false,
-        canEdit: false,
-        canDelete: false
-      };
-    
-      renderPriceModePills();
-      renderDiscounts();
     }
 
     function addDiscountRow() {
@@ -2483,59 +2268,7 @@
         }
       });
     }
-
-    function increaseCartQty(uid) {
-      state.cart.items = state.cart.items.map(function (it) {
-        if (it.uid !== uid) return it;
-        it.qty = Math.max(1, Number(it.qty || 0) + 1);
-        return it;
-      });
-    
-      recomputeSummary();
-      renderCart();
-    }
-    
-    function decreaseCartQty(uid) {
-      var target = null;
-    
-      state.cart.items = state.cart.items.map(function (it) {
-        if (it.uid !== uid) return it;
-        target = it;
-        return it;
-      });
-    
-      if (!target) return;
-    
-      var qty = Number(target.qty || 0);
-    
-      if (qty <= 1) {
-        removeCartItem(uid);
-        return;
-      }
-    
-      state.cart.items = state.cart.items.map(function (it) {
-        if (it.uid !== uid) return it;
-        it.qty = qty - 1;
-        return it;
-      });
-    
-      recomputeSummary();
-      renderCart();
-    }
-    
-    function setCartQtyDirect(uid, qty) {
-      var n = Math.max(1, Number(qty || 1));
-    
-      state.cart.items = state.cart.items.map(function (it) {
-        if (it.uid !== uid) return it;
-        it.qty = n;
-        return it;
-      });
-    
-      recomputeSummary();
-      renderCart();
-    }
-
+ 
     function renderCart() {
       var list = document.getElementById('cartList');
       var items = state.cart.items || [];
@@ -2728,6 +2461,36 @@
       });
     }
 
+    function applyCurrentDefaultsToCart() {
+      var whKey = state.catalog.selectedWarehouseKey || 'RemainQuota';
+      var priceMode = state.catalog.selectedPriceMode || 'wholesale';
+    
+      state.cart.items = (state.cart.items || []).map(function(it) {
+        var ref = (state.catalog.options || []).find(function(x) {
+          return String(x.modelBase || '') === String(it.modelBase || '');
+        });
+    
+        var nextPrice = it.price || 0;
+        if (ref && ref.priceModes) {
+          nextPrice = Number(ref.priceModes[priceMode] || 0);
+        }
+    
+        return {
+          uid: it.uid,
+          modelBase: it.modelBase,
+          qty: Number(it.qty || 0),
+          warehouseKey: whKey,
+          warehouseLabel: warehouseLabelOf(whKey),
+          priceMode: priceMode,
+          price: nextPrice
+        };
+      });
+    
+      recomputeSummary();
+      renderCart();
+      renderPreviewBox();
+    }
+
     function renderSummary() {
       var qtyEl = document.getElementById('summaryQty');
       var priceEl = document.getElementById('summaryPrice');
@@ -2802,7 +2565,17 @@
         ? initRes.auth.allowedPriceModes
         : ['wholesale'];
     
+      state.permission.discount = (initRes.permission && initRes.permission.discount)
+        ? initRes.permission.discount
+        : {
+            canView: true,
+            canAdd: state.auth.role === 'admin',
+            canEdit: state.auth.role === 'admin',
+            canDelete: state.auth.role === 'admin'
+          };
+    
       renderPriceModePills();
+      renderDiscountSection();
     
       setLoadingProgress(55, 'กำลังโหลดลูกค้า...');
       await loadCustomers('');
@@ -2815,6 +2588,7 @@
       renderSelectedCustomerMeta();
       renderCustomerDropdown();
       renderDiscounts();
+      renderDiscountSection();
       renderCart();
       recomputeSummary();
       renderResult(null);
@@ -2824,7 +2598,7 @@
     }
 
     function bindEvents() {
-      document.getElementById('backBtn').addEventListener('click', function () {
+      document.getElementById('backBtn').addEventListener('click', function() {
         if (state.wizard.currentStep > 1) {
           goPrevStep();
           return;
@@ -2832,20 +2606,20 @@
         window.location.href = './index.html';
       });
     
-      document.getElementById('debugToggleBtn').addEventListener('click', function () {
+      document.getElementById('debugToggleBtn').addEventListener('click', function() {
         setDebugVisible(!DEBUG_VISIBLE);
       });
     
       var customerInput = document.getElementById('customerSearchBox');
       var clearCustomerBtn = document.getElementById('clearCustomerBtn');
     
-      customerInput.addEventListener('focus', function () {
+      customerInput.addEventListener('focus', function() {
         if (String(this.value || '').trim()) {
           openCustomerDropdown();
         }
       });
     
-      customerInput.addEventListener('input', function () {
+      customerInput.addEventListener('input', function() {
         var v = String(this.value || '');
         state.customer.keyword = v;
         toggleCustomerClearButton();
@@ -2863,12 +2637,12 @@
         loadCustomers(v);
       });
     
-      clearCustomerBtn.addEventListener('click', function () {
+      clearCustomerBtn.addEventListener('click', function() {
         clearSelectedCustomer();
         customerInput.focus();
       });
     
-      document.addEventListener('click', function (e) {
+      document.addEventListener('click', function(e) {
         var picker = document.querySelector('.customer-picker');
         if (!picker) return;
     
@@ -2877,12 +2651,12 @@
         }
       });
     
-      document.getElementById('catalogSearchBox').addEventListener('input', function () {
+      document.getElementById('catalogSearchBox').addEventListener('input', function() {
         state.catalog.keyword = String(this.value || '');
         loadCatalog(state.catalog.keyword);
       });
     
-      document.getElementById('orderNoteBox').addEventListener('input', function () {
+      document.getElementById('orderNoteBox').addEventListener('input', function() {
         setOrderNote(this.value);
         renderPreviewBox();
       });
@@ -2890,7 +2664,7 @@
       document.getElementById('addDiscountBtn').addEventListener('click', addDiscountRow);
       document.getElementById('submitOrderBtn').addEventListener('click', submitCreateOrder);
     
-      document.getElementById('toStep2Btn').addEventListener('click', function () {
+      document.getElementById('toStep2Btn').addEventListener('click', function() {
         var v = validateStep1();
         if (!v.ok) {
           showToast(v.message, 'warn', 1800);
@@ -2899,11 +2673,11 @@
         setStep(2);
       });
     
-      document.getElementById('backToStep1Btn').addEventListener('click', function () {
+      document.getElementById('backToStep1Btn').addEventListener('click', function() {
         setStep(1);
       });
     
-      document.getElementById('toStep3Btn').addEventListener('click', function () {
+      document.getElementById('toStep3Btn').addEventListener('click', function() {
         var v = validateStep2();
         if (!v.ok) {
           showToast(v.message, 'warn', 1800);
@@ -2912,25 +2686,25 @@
         setStep(3);
       });
     
-      document.getElementById('backToStep2Btn').addEventListener('click', function () {
+      document.getElementById('backToStep2Btn').addEventListener('click', function() {
         setStep(2);
       });
     
-      Array.prototype.forEach.call(document.querySelectorAll('#warehousePills .pill'), function (el) {
-        el.addEventListener('click', function () {
+      Array.prototype.forEach.call(document.querySelectorAll('#warehousePills .pill'), function(el) {
+        el.addEventListener('click', function() {
           var v = this.getAttribute('data-wh') || 'RemainQuota';
           state.catalog.selectedWarehouseKey = v;
-      
-          Array.prototype.forEach.call(document.querySelectorAll('#warehousePills .pill'), function (x) {
+    
+          Array.prototype.forEach.call(document.querySelectorAll('#warehousePills .pill'), function(x) {
             x.classList.remove('active');
           });
           this.classList.add('active');
-      
+    
+          applyCurrentDefaultsToCart();
           loadCatalog(state.catalog.keyword || '');
         });
-      });    
-      
-  }
+      });
+    }
 
   window.addEventListener('load', async function () {
     try {
