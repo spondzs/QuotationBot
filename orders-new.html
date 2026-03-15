@@ -23,7 +23,8 @@
       -webkit-tap-highlight-color: transparent;
     }
   
-    html, body {
+    html,
+    body {
       width: 100%;
       min-height: 100%;
     }
@@ -55,7 +56,7 @@
       padding: 16px 16px 18px;
       color: #fff;
       background: linear-gradient(135deg, var(--blue1), var(--blue2));
-      box-shadow: 0 4px 16px rgba(45, 108, 223, .18);
+      box-shadow: 0 4px 16px rgba(45, 108, 223, 0.18);
     }
   
     .back-btn {
@@ -64,7 +65,7 @@
       border: 0;
       outline: none;
       border-radius: 12px;
-      background: rgba(255,255,255,.18);
+      background: rgba(255, 255, 255, 0.18);
       color: #fff;
       font-size: 20px;
       font-weight: 800;
@@ -88,7 +89,7 @@
     .subtitle {
       margin-top: 3px;
       font-size: 12px;
-      color: rgba(255,255,255,.9);
+      color: rgba(255, 255, 255, 0.9);
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
@@ -103,8 +104,8 @@
       justify-content: center;
       overflow: hidden;
       border-radius: 999px;
-      background: rgba(255,255,255,.95);
-      box-shadow: 0 2px 8px rgba(0,0,0,.08);
+      background: rgba(255, 255, 255, 0.95);
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
     }
   
     .line-badge img {
@@ -123,7 +124,7 @@
       border: 1px solid var(--line);
       border-radius: 20px;
       background: var(--card);
-      box-shadow: 0 6px 18px rgba(27, 39, 94, .06);
+      box-shadow: 0 6px 18px rgba(27, 39, 94, 0.06);
     }
   
     .section-title {
@@ -150,7 +151,7 @@
       border: 1px solid var(--line);
       border-radius: 16px;
       background: #fff;
-      box-shadow: 0 2px 10px rgba(27, 39, 94, .04);
+      box-shadow: 0 2px 10px rgba(27, 39, 94, 0.04);
     }
   
     .search-icon {
@@ -169,8 +170,13 @@
       font-size: 16px;
     }
   
-    .stack-12 { margin-top: 12px; }
-    .stack-8 { margin-top: 8px; }
+    .stack-12 {
+      margin-top: 12px;
+    }
+  
+    .stack-8 {
+      margin-top: 8px;
+    }
   
     .pill-row {
       display: flex;
@@ -213,7 +219,7 @@
     }
   
     .product-item:active {
-      transform: scale(.99);
+      transform: scale(0.99);
     }
   
     .product-name,
@@ -346,11 +352,11 @@
       font-size: 17px;
       font-weight: 800;
       cursor: pointer;
-      box-shadow: 0 8px 18px rgba(92, 116, 242, .18);
+      box-shadow: 0 8px 18px rgba(92, 116, 242, 0.18);
     }
   
     .submit-btn:disabled {
-      opacity: .7;
+      opacity: 0.7;
       cursor: default;
     }
   
@@ -436,11 +442,11 @@
       font-weight: 700;
       line-height: 1.4;
       text-align: center;
-      box-shadow: 0 8px 24px rgba(0, 0, 0, .18);
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.18);
       opacity: 0;
       pointer-events: none;
       transform: translateX(-50%) translateY(20px);
-      transition: opacity .18s ease, transform .18s ease;
+      transition: opacity 0.18s ease, transform 0.18s ease;
     }
   
     .toast.show {
@@ -448,9 +454,17 @@
       transform: translateX(-50%) translateY(0);
     }
   
-    .toast.success { background: rgba(32, 135, 74, 0.95); }
-    .toast.error { background: rgba(196, 49, 49, 0.95); }
-    .toast.warn { background: rgba(166, 113, 0, 0.95); }
+    .toast.success {
+      background: rgba(32, 135, 74, 0.95);
+    }
+  
+    .toast.error {
+      background: rgba(196, 49, 49, 0.95);
+    }
+  
+    .toast.warn {
+      background: rgba(166, 113, 0, 0.95);
+    }
   
     .loading-screen {
       position: fixed;
@@ -460,7 +474,7 @@
       align-items: center;
       justify-content: center;
       background: #f3f5fb;
-      transition: opacity .35s ease, visibility .35s ease;
+      transition: opacity 0.35s ease, visibility 0.35s ease;
     }
   
     .loading-screen.hide {
@@ -480,7 +494,7 @@
       height: 110px;
       object-fit: contain;
       animation: caffeFloat 1.6s ease-in-out infinite;
-      filter: drop-shadow(0 8px 18px rgba(45, 108, 223, .12));
+      filter: drop-shadow(0 8px 18px rgba(45, 108, 223, 0.12));
     }
   
     .loading-title {
@@ -504,7 +518,7 @@
       overflow: hidden;
       border-radius: 999px;
       background: #dfe6f7;
-      box-shadow: inset 0 1px 3px rgba(0, 0, 0, .05);
+      box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.05);
     }
   
     .loading-bar-fill {
@@ -512,7 +526,7 @@
       height: 100%;
       border-radius: 999px;
       background: linear-gradient(90deg, #2d6cdf, #4e8cff);
-      transition: width .28s ease;
+      transition: width 0.28s ease;
     }
   
     .loading-percent {
@@ -523,8 +537,13 @@
     }
   
     @keyframes caffeFloat {
-      0%, 100% { transform: translateY(0); }
-      50% { transform: translateY(-8px); }
+      0%,
+      100% {
+        transform: translateY(0);
+      }
+      50% {
+        transform: translateY(-8px);
+      }
     }
   
     .customer-picker {
@@ -559,14 +578,14 @@
       border: 1px solid var(--line);
       border-radius: 16px;
       background: #fff;
-      box-shadow: 0 14px 30px rgba(27, 39, 94, .12);
+      box-shadow: 0 14px 30px rgba(27, 39, 94, 0.12);
     }
   
     .customer-option {
       padding: 12px 14px;
       border-bottom: 1px solid #eef1f7;
       cursor: pointer;
-      transition: background .12s ease;
+      transition: background 0.12s ease;
     }
   
     .customer-option:last-child {
@@ -626,14 +645,14 @@
       font-size: 13px;
       font-weight: 800;
       text-align: center;
-      transition: all .18s ease;
+      transition: all 0.18s ease;
     }
   
     .step-chip.active {
       border-color: transparent;
       background: linear-gradient(135deg, #5c74f2, #7b8eff);
       color: #fff;
-      box-shadow: 0 8px 18px rgba(92, 116, 242, .16);
+      box-shadow: 0 8px 18px rgba(92, 116, 242, 0.16);
     }
   
     .step-chip.done {
@@ -659,6 +678,262 @@
     .wizard-nav .mini-btn,
     .wizard-nav .submit-btn {
       flex: 1;
+    }
+  
+    #stepPanel1 {
+      padding-bottom: 128px;
+    }
+  
+    .step-bottom-bar {
+      position: fixed;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      z-index: 35;
+      padding: 10px 12px calc(10px + env(safe-area-inset-bottom));
+      background: linear-gradient(180deg, rgba(243, 245, 251, 0), rgba(243, 245, 251, 1) 22%);
+    }
+  
+    .step-bottom-card {
+      padding: 14px;
+      border: 1px solid var(--line);
+      border-radius: 20px;
+      background: rgba(255, 255, 255, 0.96);
+      box-shadow: 0 10px 24px rgba(27, 39, 94, 0.12);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+    }
+  
+    .step-bottom-summary {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      row-gap: 6px;
+      column-gap: 12px;
+      align-items: center;
+      margin-bottom: 12px;
+    }
+  
+    .sticky-mini-summary-row {
+      display: contents;
+    }
+  
+    .sticky-mini-summary-row span {
+      font-size: 13px;
+      color: #6b7484;
+    }
+  
+    .sticky-mini-summary-row b {
+      text-align: right;
+      font-size: 14px;
+      font-weight: 800;
+      color: #23304d;
+    }
+  
+    .step-bottom-next {
+      min-height: 52px;
+    }
+  
+    .qty-stepper {
+      flex: 0 0 auto;
+      display: inline-flex;
+      align-items: center;
+      min-height: 36px;
+      height: 36px;
+      border: 1px solid #d7e0f4;
+      border-radius: 999px;
+      overflow: hidden;
+      background: linear-gradient(180deg, #fbfcff, #f3f7ff);
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.9);
+    }
+  
+    .qty-btn {
+      width: 36px;
+      height: 36px;
+      border: 0;
+      background: transparent;
+      color: #4f6fe8;
+      font-size: 22px;
+      font-weight: 800;
+      line-height: 1;
+      cursor: pointer;
+    }
+  
+    .qty-btn:active {
+      background: rgba(78, 111, 232, 0.08);
+    }
+  
+    .qty-input {
+      width: 44px;
+      height: 36px;
+      border: 0;
+      outline: none;
+      background: transparent;
+      color: #355fc7;
+      text-align: center;
+      font-size: 18px;
+      font-weight: 800;
+      -moz-appearance: textfield;
+    }
+  
+    .qty-input::placeholder {
+      color: #9aa7c7;
+      font-weight: 700;
+    }
+  
+    .qty-input::-webkit-outer-spin-button,
+    .qty-input::-webkit-inner-spin-button {
+      -webkit-appearance: none;
+      margin: 0;
+    }
+  
+    .order-setting-card {
+      padding: 18px 16px;
+      background: linear-gradient(180deg, #ffffff, #fbfcff);
+      border: 1px solid #dfe6f5;
+      box-shadow: 0 8px 22px rgba(27, 39, 94, 0.06);
+    }
+  
+    .setting-group + .setting-group {
+      margin-top: 14px;
+    }
+  
+    .setting-label {
+      margin-bottom: 10px;
+      font-size: 14px;
+      font-weight: 800;
+      color: #4f5f84;
+      letter-spacing: 0.1px;
+    }
+  
+    .setting-divider {
+      height: 1px;
+      margin: 14px 0;
+      background: linear-gradient(
+        90deg,
+        rgba(210, 220, 242, 0),
+        rgba(210, 220, 242, 1),
+        rgba(210, 220, 242, 0)
+      );
+    }
+  
+    .setting-pill-row {
+      gap: 10px;
+    }
+  
+    .setting-pill-row .pill {
+      min-height: 44px;
+      padding: 0 16px;
+      border: 1px solid #d8dfef;
+      background: #fff;
+      color: #4d5873;
+      font-size: 14px;
+      font-weight: 800;
+      box-shadow: 0 1px 0 rgba(255, 255, 255, 0.9) inset;
+    }
+  
+    .setting-pill-row .pill.active {
+      color: #fff;
+      border-color: transparent;
+      background: linear-gradient(135deg, #5b73f1, #7a8dff);
+      box-shadow: 0 10px 20px rgba(91, 115, 241, 0.16);
+    }
+  
+    .cart-item.clean-cart {
+      padding: 16px;
+      border: 1px solid #dfe5f2;
+      border-radius: 20px;
+      background: linear-gradient(180deg, #ffffff, #fbfcff);
+      box-shadow: 0 6px 18px rgba(27, 39, 94, 0.05);
+    }
+  
+    .cart-item.clean-cart .cart-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 12px;
+    }
+  
+    .cart-main {
+      flex: 1;
+      min-width: 0;
+    }
+  
+    .cart-item.clean-cart .cart-name {
+      font-size: 15px;
+      font-weight: 800;
+      color: #1f2735;
+      line-height: 1.35;
+    }
+  
+    .cart-item.clean-cart .cart-meta {
+      margin-top: 4px;
+      font-size: 13px;
+      color: #6d7890;
+      line-height: 1.4;
+    }
+  
+    .cart-item.clean-cart .cart-subtotal {
+      font-size: 15px;
+      font-weight: 800;
+      color: #315bc8;
+      white-space: nowrap;
+    }
+  
+    .cart-bottom {
+      margin-top: 12px;
+      display: flex;
+      justify-content: flex-end;
+    }
+  
+    .cart-qty-stepper {
+      display: grid;
+      grid-template-columns: 42px 42px 42px;
+      align-items: stretch;
+      justify-items: stretch;
+      border: 1px solid #d7e0f4;
+      border-radius: 999px;
+      overflow: hidden;
+      background: linear-gradient(180deg, #fbfcff, #f3f7ff);
+      height: 42px;
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.9);
+    }
+  
+    .cart-qty-btn {
+      width: 42px;
+      height: 42px;
+      border: 0;
+      background: transparent;
+      color: #4f6fe8;
+      font-size: 24px;
+      font-weight: 800;
+      line-height: 42px;
+      text-align: center;
+      cursor: pointer;
+      padding: 0;
+    }
+  
+    .cart-qty-btn:active {
+      background: rgba(79, 111, 232, 0.08);
+    }
+  
+    .cart-qty-btn.delete {
+      color: #d14848;
+      font-size: 14px;
+      font-weight: 800;
+      line-height: 42px;
+    }
+  
+    .cart-qty-value {
+      width: 42px;
+      height: 42px;
+      display: block;
+      line-height: 42px;
+      text-align: center;
+      font-size: 18px;
+      font-weight: 800;
+      color: #355fc7;
+      padding: 0;
+      margin: 0;
     }
   
     .preview-card {
@@ -730,260 +1005,167 @@
       color: #24304f;
     }
   
-    #stepPanel1 {
-      padding-bottom: 128px;
-    }
-  
-    .step-bottom-bar {
-      position: fixed;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      z-index: 35;
-      padding: 10px 12px calc(10px + env(safe-area-inset-bottom));
-      background: linear-gradient(180deg, rgba(243,245,251,0), rgba(243,245,251,1) 22%);
-    }
-  
-    .step-bottom-card {
-      padding: 14px;
-      border: 1px solid var(--line);
-      border-radius: 20px;
-      background: rgba(255,255,255,.96);
-      box-shadow: 0 10px 24px rgba(27, 39, 94, .12);
-      backdrop-filter: blur(8px);
-      -webkit-backdrop-filter: blur(8px);
-    }
-  
-    .step-bottom-summary {
-      display: grid;
-      grid-template-columns: 1fr auto;
-      row-gap: 6px;
-      column-gap: 12px;
-      align-items: center;
-      margin-bottom: 12px;
-    }
-  
-    .sticky-mini-summary-row {
-      display: contents;
-    }
-  
-    .sticky-mini-summary-row span {
-      font-size: 13px;
-      color: #6b7484;
-    }
-  
-    .sticky-mini-summary-row b {
-      text-align: right;
-      font-size: 14px;
-      font-weight: 800;
-      color: #23304d;
-    }
-  
-    .step-bottom-next {
-      min-height: 52px;
-    }
-  
-    .qty-stepper {
-      flex: 0 0 auto;
-      display: inline-flex;
-      align-items: center;
-      min-height: 36px;
-      height: 36px;
-      border: 1px solid #d7e0f4;
-      border-radius: 999px;
-      overflow: hidden;
-      background: linear-gradient(180deg, #fbfcff, #f3f7ff);
-      box-shadow: inset 0 1px 0 rgba(255,255,255,.9);
-    }
-  
-    .qty-btn {
-      width: 36px;
-      height: 36px;
-      border: 0;
-      background: transparent;
-      color: #4f6fe8;
-      font-size: 22px;
-      font-weight: 800;
-      line-height: 1;
-      cursor: pointer;
-    }
-  
-    .qty-btn:active {
-      background: rgba(78, 111, 232, 0.08);
-    }
-  
-    .qty-input {
-      width: 44px;
-      height: 36px;
-      border: 0;
-      outline: none;
-      background: transparent;
-      color: #355fc7;
-      text-align: center;
-      font-size: 18px;
-      font-weight: 800;
-      -moz-appearance: textfield;
-    }
-  
-    .qty-input::placeholder {
-      color: #9aa7c7;
-      font-weight: 700;
-    }
-  
-    .qty-input::-webkit-outer-spin-button,
-    .qty-input::-webkit-inner-spin-button {
-      -webkit-appearance: none;
-      margin: 0;
-    }
-  
-    .order-setting-card {
-      padding: 18px 16px;
+    .preview-total-box {
+      margin-top: 4px;
+      padding: 12px 14px;
+      border: 1px solid #e3e9f6;
+      border-radius: 16px;
       background: linear-gradient(180deg, #ffffff, #fbfcff);
-      border: 1px solid #dfe6f5;
-      box-shadow: 0 8px 22px rgba(27, 39, 94, .06);
     }
   
-    .setting-group + .setting-group {
-      margin-top: 14px;
-    }
-  
-    .setting-label {
-      margin-bottom: 10px;
-      font-size: 14px;
-      font-weight: 800;
-      color: #4f5f84;
-      letter-spacing: .1px;
-    }
-  
-    .setting-divider {
-      height: 1px;
-      margin: 14px 0;
-      background: linear-gradient(
-        90deg,
-        rgba(210,220,242,0),
-        rgba(210,220,242,1),
-        rgba(210,220,242,0)
-      );
-    }
-  
-    .setting-pill-row {
-      gap: 10px;
-    }
-  
-    .setting-pill-row .pill {
-      min-height: 44px;
-      padding: 0 16px;
-      border: 1px solid #d8dfef;
-      background: #fff;
-      color: #4d5873;
-      font-size: 14px;
-      font-weight: 800;
-      box-shadow: 0 1px 0 rgba(255,255,255,.9) inset;
-    }
-  
-    .setting-pill-row .pill.active {
-      color: #fff;
-      border-color: transparent;
-      background: linear-gradient(135deg, #5b73f1, #7a8dff);
-      box-shadow: 0 10px 20px rgba(91, 115, 241, .16);
-    }
-  
-    .cart-item.clean-cart {
-      padding: 16px;
-      border: 1px solid #dfe5f2;
-      border-radius: 20px;
-      background: linear-gradient(180deg, #ffffff, #fbfcff);
-      box-shadow: 0 6px 18px rgba(27, 39, 94, .05);
-    }
-  
-    .cart-item.clean-cart .cart-top {
+    .preview-total-row {
       display: flex;
       justify-content: space-between;
       align-items: flex-start;
       gap: 12px;
+      padding: 8px 0;
     }
   
-    .cart-main {
-      flex: 1;
-      min-width: 0;
+    .preview-total-row + .preview-total-row {
+      border-top: 1px dashed #e8edf7;
     }
   
-    .cart-item.clean-cart .cart-name {
-      font-size: 15px;
+    .preview-total-label {
+      font-size: 14px;
+      font-weight: 700;
+      line-height: 1.45;
+      color: #5f6f91;
+    }
+  
+    .preview-total-value {
+      text-align: right;
+      font-size: 14px;
       font-weight: 800;
-      color: #1f2735;
-      line-height: 1.35;
-    }
-  
-    .cart-item.clean-cart .cart-meta {
-      margin-top: 4px;
-      font-size: 13px;
-      color: #6d7890;
-      line-height: 1.4;
-    }
-  
-    .cart-item.clean-cart .cart-subtotal {
-      font-size: 15px;
-      font-weight: 800;
-      color: #315bc8;
+      line-height: 1.45;
+      color: #24304f;
       white-space: nowrap;
     }
   
-    .cart-bottom {
-      margin-top: 12px;
-      display: flex;
-      justify-content: flex-end;
-    }
-  
-    .cart-qty-stepper {
-      display: grid;
-      grid-template-columns: 42px 42px 42px;
-      align-items: stretch;
-      justify-items: stretch;
-      border: 1px solid #d7e0f4;
-      border-radius: 999px;
-      overflow: hidden;
-      background: linear-gradient(180deg, #fbfcff, #f3f7ff);
-      height: 42px;
-      box-shadow: inset 0 1px 0 rgba(255,255,255,.9);
-    }
-  
-    .cart-qty-btn {
-      width: 42px;
-      height: 42px;
-      border: 0;
-      background: transparent;
-      color: #4f6fe8;
-      font-size: 24px;
+    .preview-total-row.grand .preview-total-label {
+      font-size: 15px;
       font-weight: 800;
-      line-height: 42px;
-      text-align: center;
-      cursor: pointer;
-      padding: 0;
+      color: #24304f;
     }
   
-    .cart-qty-btn:active {
-      background: rgba(79, 111, 232, 0.08);
-    }
-  
-    .cart-qty-btn.delete {
-      color: #d14848;
-      font-size: 14px;
-      font-weight: 800;
-      line-height: 42px;
-    }
-  
-    .cart-qty-value {
-      width: 42px;
-      height: 42px;
-      display: block;
-      line-height: 42px;
-      text-align: center;
+    .preview-total-row.grand .preview-total-value {
       font-size: 18px;
       font-weight: 800;
-      color: #355fc7;
-      padding: 0;
-      margin: 0;
+      color: #2f59c6;
+    }
+  
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      z-index: 99999;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      background: rgba(21, 29, 48, 0.42);
+      backdrop-filter: blur(4px);
+      -webkit-backdrop-filter: blur(4px);
+    }
+  
+    .modal-card {
+      width: min(460px, calc(100vw - 24px));
+      max-height: calc(100vh - 40px);
+      overflow-y: auto;
+      background: #fff;
+      border: 1px solid #dfe6f5;
+      border-radius: 24px;
+      box-shadow: 0 20px 44px rgba(27, 39, 94, 0.18);
+    }
+  
+    .success-modal-card {
+      position: relative;
+      padding: 22px 18px 18px;
+    }
+  
+    .modal-close-btn {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      width: 38px;
+      height: 38px;
+      border: 0;
+      border-radius: 999px;
+      background: #f3f6fc;
+      color: #4e5a77;
+      font-size: 24px;
+      line-height: 1;
+      cursor: pointer;
+    }
+  
+    .modal-close-btn:active {
+      background: #e8eef9;
+    }
+  
+    .success-modal-icon {
+      font-size: 42px;
+      line-height: 1;
+      text-align: center;
+      margin-top: 4px;
+    }
+  
+    .success-modal-title {
+      margin-top: 10px;
+      font-size: 22px;
+      font-weight: 800;
+      color: #24304f;
+      text-align: center;
+    }
+  
+    .success-modal-sub {
+      margin-top: 4px;
+      font-size: 14px;
+      color: #6e7890;
+      text-align: center;
+    }
+  
+    .success-modal-body {
+      margin-top: 16px;
+      padding: 14px;
+      border: 1px solid #dfe6f5;
+      border-radius: 18px;
+      background: linear-gradient(180deg, #fcfdff, #f8fbff);
+    }
+  
+    .success-modal-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 12px;
+      padding: 8px 0;
+    }
+  
+    .success-modal-row + .success-modal-row {
+      border-top: 1px dashed #e3eaf7;
+    }
+  
+    .success-modal-label {
+      font-size: 14px;
+      color: #6c7892;
+    }
+  
+    .success-modal-value {
+      font-size: 15px;
+      font-weight: 800;
+      color: #24304f;
+      text-align: right;
+      word-break: break-word;
+    }
+  
+    .success-modal-actions {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 10px;
+      margin-top: 16px;
+    }
+  
+    @media (min-width: 480px) {
+      .success-modal-actions {
+        grid-template-columns: 1fr 1fr;
+      }
     }
   
     @media (max-width: 560px) {
@@ -1034,64 +1216,14 @@
       .cart-qty-stepper {
         min-width: 126px;
       }
-
-      .preview-total-box {
-        margin-top: 4px;
-        padding: 12px 14px;
-        border: 1px solid #e3e9f6;
-        border-radius: 16px;
-        background: linear-gradient(180deg, #ffffff, #fbfcff);
-      }
-      
-      .preview-total-row {
-        display: flex;
-        justify-content: space-between;
-        align-items: flex-start;
-        gap: 12px;
-        padding: 8px 0;
-      }
-      
-      .preview-total-row + .preview-total-row {
-        border-top: 1px dashed #e8edf7;
-      }
-      
-      .preview-total-label {
-        font-size: 14px;
-        font-weight: 700;
-        line-height: 1.45;
-        color: #5f6f91;
-      }
-      
+  
+      .preview-total-label,
       .preview-total-value {
-        text-align: right;
         font-size: 14px;
-        font-weight: 800;
-        line-height: 1.45;
-        color: #24304f;
-        white-space: nowrap;
       }
-      
-      .preview-total-row.grand .preview-total-label {
-        font-size: 15px;
-        font-weight: 800;
-        color: #24304f;
-      }
-      
+  
       .preview-total-row.grand .preview-total-value {
-        font-size: 18px;
-        font-weight: 800;
-        color: #2f59c6;
-      }
-      
-      @media (max-width: 560px) {
-        .preview-total-label,
-        .preview-total-value {
-          font-size: 14px;
-        }
-      
-        .preview-total-row.grand .preview-total-value {
-          font-size: 17px;
-        }
+        font-size: 17px;
       }
     }
   </style>
@@ -1240,14 +1372,14 @@
       
         <div class="wizard-nav">
           <button id="backToStep1Btn" class="mini-btn" type="button">ย้อนกลับ</button>
-          <button id="toStep3Btn" class="submit-btn" type="button">ถัดไป: ตรวจทาน</button>
+          <button id="toStep3Btn" class="submit-btn" type="button">ตรวจสอบออเดอร์</button>
         </div>
       </div>
     
       <!-- STEP 3 -->
       <div id="stepPanel3" class="step-panel">
         <div class="section-card">
-          <div class="section-title">ตรวจทานก่อนสร้างเอกสาร</div>
+          <div class="section-title">ให้พี่พี่เช็คข้อมูลก่อนสร้างเอกสาร~</div>
           <div class="section-sub">ตรวจสอบลูกค้า รายการสินค้า ราคา ส่วนลด และยอดรวม</div>
     
           <div id="previewBox" class="preview-card"></div>
@@ -1256,11 +1388,23 @@
             <button id="backToStep2Btn" class="mini-btn" type="button">ย้อนกลับแก้ไข</button>
             <button id="submitOrderBtn" class="submit-btn" type="button">สร้างใบเสนอราคา</button>
           </div>
-        </div>
-    
-        <div class="section-card">
-          <div class="section-title">ผลลัพธ์ล่าสุด</div>
-          <div id="resultBox" class="empty-box">ยังไม่มีการสร้างใบเสนอราคา</div>
+        </div>       
+      </div>
+
+      <div id="successModal" class="modal-backdrop" style="display:none;">
+        <div class="modal-card success-modal-card">
+          <button id="successModalCloseBtn" class="modal-close-btn" type="button">×</button>
+      
+          <div class="success-modal-icon">✅</div>
+          <div class="success-modal-title">สร้างใบเสนอราคาแล้ว</div>
+          <div class="success-modal-sub">บันทึกข้อมูลเรียบร้อย</div>
+      
+          <div id="successModalBody" class="success-modal-body"></div>
+      
+          <div class="success-modal-actions">
+            <button id="successModalPdfBtn" class="mini-btn primary" type="button" style="display:none;">เปิด PDF</button>
+            <button id="successModalManageBtn" class="submit-btn" type="button">ไปหน้าออเดอร์รวม</button>
+          </div>
         </div>
       </div>
     
@@ -2125,40 +2269,93 @@
       state.cart.note = String(value || '');
     }
 
+    function closeSuccessModal() {
+      var modal = document.getElementById('successModal');
+      if (!modal) return;
+      modal.style.display = 'none';
+    }
+    
+    function openSuccessModal(res) {
+      var modal = document.getElementById('successModal');
+      var body = document.getElementById('successModalBody');
+      var pdfBtn = document.getElementById('successModalPdfBtn');
+      var manageBtn = document.getElementById('successModalManageBtn');
+    
+      if (!modal || !body) return;
+    
+      body.innerHTML =
+        '<div class="success-modal-row">' +
+          '<div class="success-modal-label">เลขที่ใบเสนอราคา</div>' +
+          '<div class="success-modal-value">' + escapeHtml(res.quoteNo || '-') + '</div>' +
+        '</div>' +
+        '<div class="success-modal-row">' +
+          '<div class="success-modal-label">ลูกค้า</div>' +
+          '<div class="success-modal-value">' + escapeHtml(res.customerName || '-') + '</div>' +
+        '</div>' +
+        '<div class="success-modal-row">' +
+          '<div class="success-modal-label">จำนวน</div>' +
+          '<div class="success-modal-value">' + fmtNumber(res.totalQty || 0) + ' เครื่อง</div>' +
+        '</div>' +
+        '<div class="success-modal-row">' +
+          '<div class="success-modal-label">ยอดรวมสุทธิ</div>' +
+          '<div class="success-modal-value">' + fmtNumber(res.grandTotal || 0) + ' บาท</div>' +
+        '</div>';
+    
+      if (pdfBtn) {
+        if (res.pdfUrl) {
+          pdfBtn.style.display = '';
+          pdfBtn.onclick = function () {
+            window.open(res.pdfUrl, '_blank');
+          };
+        } else {
+          pdfBtn.style.display = 'none';
+          pdfBtn.onclick = null;
+        }
+      }
+    
+      if (manageBtn) {
+        manageBtn.onclick = function () {
+          window.location.href = './index.html';
+        };
+      }
+    
+      modal.style.display = 'flex';
+    }
+
     async function submitCreateOrder() {
       var v = validateBeforeSubmit();
       if (!v.ok) {
         showToast(v.message, 'warn', 1800);
         return;
       }
-
+    
       if (state.page.submitting) return;
       state.page.submitting = true;
-
+    
       var btn = document.getElementById('submitOrderBtn');
       var oldText = btn.textContent;
       btn.textContent = 'Loading...';
       btn.disabled = true;
-
+    
       try {
         var payload = buildCreateOrderPayload();
-
+    
         var res = await loadJsonp('create_quote_from_liff', {
           lineUserId: state.auth.lineUserId,
           payload: JSON.stringify(payload)
         });
-
+    
         if (!res || res.ok !== true) {
           throw new Error((res && res.error) || 'สร้างใบเสนอราคาไม่สำเร็จ');
         }
-
+    
         state.result.quoteNo = res.quoteNo || '';
         state.result.pdfUrl = res.pdfUrl || '';
         state.result.flex = res.flex || null;
-
-        renderResult(res);
-        showToast('สร้างใบเสนอราคาแล้ว ✅', 'success', 1500);
-
+    
+        showToast('สร้างใบเสนอราคาแล้ว ✅', 'success', 1200);
+        openSuccessModal(res);
+    
       } catch (err) {
         console.error(err);
         debugLog('submitCreateOrder error: ' + (err && err.message ? err.message : err));
@@ -2569,44 +2766,6 @@
       if (grandEl) grandEl.textContent = fmtNumber(state.summary.grandTotal) + ' บาท';
     }
 
-    function renderResult(res) {
-      var box = document.getElementById('resultBox');
-
-      if (!res || !res.ok) {
-        box.innerHTML = '<div class="empty-box">ยังไม่มีการสร้างใบเสนอราคา</div>';
-        return;
-      }
-
-      box.innerHTML =
-        '<div class="success-card">' +
-          '<div class="success-title">สร้างใบเสนอราคาแล้ว ✅</div>' +
-          '<div class="success-meta">' +
-            'เลขที่ใบเสนอราคา: ' + escapeHtml(res.quoteNo || '-') + '\n' +
-            'ลูกค้า: ' + escapeHtml(res.customerName || '-') + '\n' +
-            'รวม: ' + fmtNumber(res.totalQty || 0) + ' เครื่อง | ' + fmtNumber(res.grandTotal || 0) + ' บาท' +
-          '</div>' +
-          '<div class="success-actions">' +
-            (res.pdfUrl ? '<button id="openPdfBtn" class="mini-btn primary" type="button">เปิด PDF</button>' : '') +
-            '<button id="goManageBtn" class="mini-btn" type="button">ไปหน้าออเดอร์รวม</button>' +
-          '</div>' +
-        '</div>';
-
-      var pdfBtn = document.getElementById('openPdfBtn');
-      var manageBtn = document.getElementById('goManageBtn');
-
-      if (pdfBtn && res.pdfUrl) {
-        pdfBtn.addEventListener('click', function () {
-          window.open(res.pdfUrl, '_blank');
-        });
-      }
-
-      if (manageBtn) {
-        manageBtn.addEventListener('click', function () {
-          window.location.href = './index.html';
-        });
-      }
-    }
-
     async function initOrdersNewPage() {
       setLoadingProgress(12, 'กำลังเปิดหน้าใหม่...');
       await ensureLiffReady();
@@ -2657,58 +2816,82 @@
       renderDiscountSection();
       renderCart();
       recomputeSummary();
-      renderResult(null);
       setStep(1);
     
       state.page.ready = true;
     }
 
     function bindEvents() {
-      document.getElementById('backBtn').addEventListener('click', function() {
-        if (state.wizard.currentStep > 1) {
-          goPrevStep();
-          return;
-        }
-        window.location.href = './index.html';
-      });
-    
-      document.getElementById('debugToggleBtn').addEventListener('click', function() {
-        setDebugVisible(!DEBUG_VISIBLE);
-      });
+      var backBtn = document.getElementById('backBtn');
+      var debugToggleBtn = document.getElementById('debugToggleBtn');
     
       var customerInput = document.getElementById('customerSearchBox');
       var clearCustomerBtn = document.getElementById('clearCustomerBtn');
     
-      customerInput.addEventListener('focus', function() {
-        if (String(this.value || '').trim()) {
+      var catalogSearchBox = document.getElementById('catalogSearchBox');
+      var orderNoteBox = document.getElementById('orderNoteBox');
+    
+      var addDiscountBtn = document.getElementById('addDiscountBtn');
+      var submitOrderBtn = document.getElementById('submitOrderBtn');
+    
+      var toStep2Btn = document.getElementById('toStep2Btn');
+      var backToStep1Btn = document.getElementById('backToStep1Btn');
+      var toStep3Btn = document.getElementById('toStep3Btn');
+      var backToStep2Btn = document.getElementById('backToStep2Btn');
+    
+      var successModal = document.getElementById('successModal');
+      var successModalCloseBtn = document.getElementById('successModalCloseBtn');
+    
+      if (backBtn) {
+        backBtn.addEventListener('click', function () {
+          if (state.wizard.currentStep > 1) {
+            goPrevStep();
+            return;
+          }
+          window.location.href = './index.html';
+        });
+      }
+    
+      if (debugToggleBtn) {
+        debugToggleBtn.addEventListener('click', function () {
+          setDebugVisible(!DEBUG_VISIBLE);
+        });
+      }
+    
+      if (customerInput) {
+        customerInput.addEventListener('focus', function () {
+          if (String(this.value || '').trim()) {
+            openCustomerDropdown();
+          }
+        });
+    
+        customerInput.addEventListener('input', function () {
+          var v = String(this.value || '');
+          state.customer.keyword = v;
+          toggleCustomerClearButton();
+    
+          if (!v.trim()) {
+            state.customer.options = [];
+            state.customer.selected = null;
+            renderSelectedCustomerMeta();
+            closeCustomerDropdown();
+            renderStepMiniSummary();
+            return;
+          }
+    
           openCustomerDropdown();
-        }
-      });
+          loadCustomers(v);
+        });
+      }
     
-      customerInput.addEventListener('input', function() {
-        var v = String(this.value || '');
-        state.customer.keyword = v;
-        toggleCustomerClearButton();
+      if (clearCustomerBtn) {
+        clearCustomerBtn.addEventListener('click', function () {
+          clearSelectedCustomer();
+          if (customerInput) customerInput.focus();
+        });
+      }
     
-        if (!v.trim()) {
-          state.customer.options = [];
-          state.customer.selected = null;
-          renderSelectedCustomerMeta();
-          closeCustomerDropdown();
-          renderStepMiniSummary();
-          return;
-        }
-    
-        openCustomerDropdown();
-        loadCustomers(v);
-      });
-    
-      clearCustomerBtn.addEventListener('click', function() {
-        clearSelectedCustomer();
-        customerInput.focus();
-      });
-    
-      document.addEventListener('click', function(e) {
+      document.addEventListener('click', function (e) {
         var picker = document.querySelector('.customer-picker');
         if (!picker) return;
     
@@ -2717,59 +2900,123 @@
         }
       });
     
-      document.getElementById('catalogSearchBox').addEventListener('input', function() {
-        state.catalog.keyword = String(this.value || '');
-        loadCatalog(state.catalog.keyword);
-      });
-    
-      document.getElementById('orderNoteBox').addEventListener('input', function() {
-        setOrderNote(this.value);
-        renderPreviewBox();
-      });
-    
-      document.getElementById('addDiscountBtn').addEventListener('click', addDiscountRow);
-      document.getElementById('submitOrderBtn').addEventListener('click', submitCreateOrder);
-    
-      document.getElementById('toStep2Btn').addEventListener('click', function() {
-        var v = validateStep1();
-        if (!v.ok) {
-          showToast(v.message, 'warn', 1800);
-          return;
-        }
-        setStep(2);
-      });
-    
-      document.getElementById('backToStep1Btn').addEventListener('click', function() {
-        setStep(1);
-      });
-    
-      document.getElementById('toStep3Btn').addEventListener('click', function() {
-        var v = validateStep2();
-        if (!v.ok) {
-          showToast(v.message, 'warn', 1800);
-          return;
-        }
-        setStep(3);
-      });
-    
-      document.getElementById('backToStep2Btn').addEventListener('click', function() {
-        setStep(2);
-      });
-    
-      Array.prototype.forEach.call(document.querySelectorAll('#warehousePills .pill'), function(el) {
-        el.addEventListener('click', function() {
-          var v = this.getAttribute('data-wh') || 'RemainQuota';
-          state.catalog.selectedWarehouseKey = v;
-    
-          Array.prototype.forEach.call(document.querySelectorAll('#warehousePills .pill'), function(x) {
-            x.classList.remove('active');
-          });
-          this.classList.add('active');
-    
-          applyCurrentDefaultsToCart();
-          loadCatalog(state.catalog.keyword || '');
+      if (catalogSearchBox) {
+        catalogSearchBox.addEventListener('input', function () {
+          state.catalog.keyword = String(this.value || '');
+          loadCatalog(state.catalog.keyword);
         });
-      });
+      }
+    
+      if (orderNoteBox) {
+        orderNoteBox.addEventListener('input', function () {
+          setOrderNote(this.value);
+          renderPreviewBox();
+        });
+      }
+    
+      if (addDiscountBtn) {
+        addDiscountBtn.addEventListener('click', addDiscountRow);
+      }
+    
+      if (submitOrderBtn) {
+        submitOrderBtn.addEventListener('click', submitCreateOrder);
+      }
+    
+      if (toStep2Btn) {
+        toStep2Btn.addEventListener('click', function () {
+          var v = validateStep1();
+          if (!v.ok) {
+            showToast(v.message, 'warn', 1800);
+            return;
+          }
+          setStep(2);
+        });
+      }
+    
+      if (backToStep1Btn) {
+        backToStep1Btn.addEventListener('click', function () {
+          setStep(1);
+        });
+      }
+    
+      if (toStep3Btn) {
+        toStep3Btn.addEventListener('click', function () {
+          var v = validateStep2();
+          if (!v.ok) {
+            showToast(v.message, 'warn', 1800);
+            return;
+          }
+          setStep(3);
+        });
+      }
+    
+      if (backToStep2Btn) {
+        backToStep2Btn.addEventListener('click', function () {
+          setStep(2);
+        });
+      }
+    
+      Array.prototype.forEach.call(
+        document.querySelectorAll('#warehousePills .pill'),
+        function (el) {
+          el.addEventListener('click', function () {
+            var v = this.getAttribute('data-wh') || 'RemainQuota';
+            state.catalog.selectedWarehouseKey = v;
+    
+            Array.prototype.forEach.call(
+              document.querySelectorAll('#warehousePills .pill'),
+              function (x) {
+                x.classList.remove('active');
+              }
+            );
+            this.classList.add('active');
+    
+            if (typeof applyCurrentDefaultsToCart === 'function') {
+              applyCurrentDefaultsToCart();
+            }
+    
+            loadCatalog(state.catalog.keyword || '');
+          });
+        }
+      );
+    
+      Array.prototype.forEach.call(
+        document.querySelectorAll('#priceModePills .pill'),
+        function (el) {
+          el.addEventListener('click', function () {
+            var v = this.getAttribute('data-price-mode') || 'wholesale';
+            state.catalog.selectedPriceMode = v;
+    
+            Array.prototype.forEach.call(
+              document.querySelectorAll('#priceModePills .pill'),
+              function (x) {
+                x.classList.remove('active');
+              }
+            );
+            this.classList.add('active');
+    
+            if (typeof applyCurrentDefaultsToCart === 'function') {
+              applyCurrentDefaultsToCart();
+            }
+    
+            renderCatalogResults();
+            renderCart();
+            recomputeSummary();
+          });
+        }
+      );
+    
+      if (successModalCloseBtn) {
+        successModalCloseBtn.addEventListener('click', closeSuccessModal);
+      }
+    
+      if (successModal) {
+        successModal.addEventListener('click', function (e) {
+          if (e.target === successModal) {
+            closeSuccessModal();
+          }
+        });
+      }
     }
 
   window.addEventListener('load', async function () {
