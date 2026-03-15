@@ -1034,6 +1034,65 @@
       .cart-qty-stepper {
         min-width: 126px;
       }
+
+      .preview-total-box {
+        margin-top: 4px;
+        padding: 12px 14px;
+        border: 1px solid #e3e9f6;
+        border-radius: 16px;
+        background: linear-gradient(180deg, #ffffff, #fbfcff);
+      }
+      
+      .preview-total-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        gap: 12px;
+        padding: 8px 0;
+      }
+      
+      .preview-total-row + .preview-total-row {
+        border-top: 1px dashed #e8edf7;
+      }
+      
+      .preview-total-label {
+        font-size: 14px;
+        font-weight: 700;
+        line-height: 1.45;
+        color: #5f6f91;
+      }
+      
+      .preview-total-value {
+        text-align: right;
+        font-size: 14px;
+        font-weight: 800;
+        line-height: 1.45;
+        color: #24304f;
+        white-space: nowrap;
+      }
+      
+      .preview-total-row.grand .preview-total-label {
+        font-size: 15px;
+        font-weight: 800;
+        color: #24304f;
+      }
+      
+      .preview-total-row.grand .preview-total-value {
+        font-size: 18px;
+        font-weight: 800;
+        color: #2f59c6;
+      }
+      
+      @media (max-width: 560px) {
+        .preview-total-label,
+        .preview-total-value {
+          font-size: 14px;
+        }
+      
+        .preview-total-row.grand .preview-total-value {
+          font-size: 17px;
+        }
+      }
     }
   </style>
 
@@ -1527,15 +1586,16 @@
       }
     
       var itemHtml = '';
-      items.forEach(function (it) {
+      items.forEach(function(it) {
         var subtotal = Number(it.qty || 0) * Number(it.price || 0);
+    
         itemHtml +=
           '<div class="preview-item">' +
             '<div class="preview-item-name">' +
               escapeHtml(it.modelBase || '-') +
               '<div class="preview-item-meta">' +
                 escapeHtml(it.warehouseLabel || '-') +
-                ' | ราคา ' + escapeHtml(it.priceMode || '-') +
+                ' | ราคา ' + escapeHtml(getPriceModeLabel(it.priceMode || '-') || '-') +
                 ' | ' + fmtNumber(it.qty || 0) + ' เครื่อง' +
               '</div>' +
             '</div>' +
@@ -1543,18 +1603,19 @@
           '</div>';
       });
     
-      var discountRows = discounts.filter(function (d) {
+      var discountRows = discounts.filter(function(d) {
         return String(d.type || 'discount') === 'discount';
       });
-      
-      var freebieRows = discounts.filter(function (d) {
+    
+      var freebieRows = discounts.filter(function(d) {
         return String(d.type || 'discount') === 'freebie';
       });
-      
+    
       var discountHtml = '';
       if (discountRows.length) {
-        discountRows.forEach(function (d) {
+        discountRows.forEach(function(d) {
           var amt = Number(d.amount || 0) * Number(d.count || 1);
+    
           discountHtml +=
             '<div class="preview-item">' +
               '<div class="preview-item-name">' +
@@ -1567,10 +1628,10 @@
       } else {
         discountHtml = '<div class="preview-sub">ไม่มีส่วนลด</div>';
       }
-      
+    
       var freebieHtml = '';
       if (freebieRows.length) {
-        freebieRows.forEach(function (d) {
+        freebieRows.forEach(function(d) {
           freebieHtml +=
             '<div class="preview-item">' +
               '<div class="preview-item-name">' +
@@ -1604,7 +1665,7 @@
           '<div class="preview-title">ส่วนลด</div>' +
           discountHtml +
         '</div>' +
-
+    
         '<div class="preview-block">' +
           '<div class="preview-title">ของแถม</div>' +
           freebieHtml +
@@ -1612,18 +1673,23 @@
     
         '<div class="preview-block">' +
           '<div class="preview-title">สรุปยอด</div>' +
-          '<div class="summary-grid" style="margin-bottom:0;">' +
-            '<div class="summary-label">รวมจำนวน</div>' +
-            '<div class="summary-value">' + fmtNumber(state.summary.totalQty || 0) + ' เครื่อง</div>' +
-    
-            '<div class="summary-label">รวมราคาสินค้า</div>' +
-            '<div class="summary-value">' + fmtNumber(state.summary.totalPrice || 0) + ' บาท</div>' +
-    
-            '<div class="summary-label">รวมส่วนลด</div>' +
-            '<div class="summary-value">' + fmtNumber(state.summary.totalDiscount || 0) + ' บาท</div>' +
-    
-            '<div class="summary-label"><b>รวมสุทธิ</b></div>' +
-            '<div class="summary-value total">' + fmtNumber(state.summary.grandTotal || 0) + ' บาท</div>' +
+          '<div class="preview-total-box">' +
+            '<div class="preview-total-row">' +
+              '<div class="preview-total-label">รวมจำนวน</div>' +
+              '<div class="preview-total-value">' + fmtNumber(state.summary.totalQty || 0) + ' เครื่อง</div>' +
+            '</div>' +
+            '<div class="preview-total-row">' +
+              '<div class="preview-total-label">รวมราคาสินค้า</div>' +
+              '<div class="preview-total-value">' + fmtNumber(state.summary.totalPrice || 0) + ' บาท</div>' +
+            '</div>' +
+            '<div class="preview-total-row">' +
+              '<div class="preview-total-label">รวมส่วนลด</div>' +
+              '<div class="preview-total-value">' + fmtNumber(state.summary.totalDiscount || 0) + ' บาท</div>' +
+            '</div>' +
+            '<div class="preview-total-row grand">' +
+              '<div class="preview-total-label">รวมสุทธิ</div>' +
+              '<div class="preview-total-value">' + fmtNumber(state.summary.grandTotal || 0) + ' บาท</div>' +
+            '</div>' +
           '</div>' +
         '</div>' +
     
