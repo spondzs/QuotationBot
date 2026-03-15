@@ -1889,10 +1889,12 @@
       var html = '';
       allowed.forEach(function(mode) {
         var active = state.catalog.selectedPriceMode === mode ? ' active' : '';
-        html +=
-          '<button class="pill' + active + '" data-price-mode="' + escapeHtml(mode) + '" type="button">' +
-            escapeHtml(getPriceModeLabel(mode)) +
-          '</button>';
+        html += ''
+          + '<button class="pill' + active + '"'
+          + ' data-price-mode="' + escapeHtml(mode) + '"'
+          + ' type="button">'
+          + escapeHtml(getPriceModeLabel(mode))
+          + '</button>';
       });
     
       box.innerHTML = html;
@@ -1907,8 +1909,13 @@
           });
           this.classList.add('active');
     
-          applyCurrentDefaultsToCart();
+          if (typeof applyCurrentDefaultsToCart === 'function') {
+            applyCurrentDefaultsToCart();
+          }
+    
           renderCatalogResults();
+          renderCart();
+          recomputeSummary();
         });
       });
     }
@@ -2330,40 +2337,71 @@
       }
     
       if (state.page.submitting) return;
+    
+      var lineUserId = String(
+        state.auth.lineUserId ||
+        LINE_USER_ID ||
+        ''
+      ).trim();
+    
+      if (!lineUserId) {
+        debugLog('submitCreateOrder blocked: missing lineUserId');
+        showToast('ไม่พบ LINE User ID', 'error', 2200);
+        return;
+      }
+    
       state.page.submitting = true;
     
       var btn = document.getElementById('submitOrderBtn');
-      var oldText = btn.textContent;
-      btn.textContent = 'Loading...';
-      btn.disabled = true;
+      var oldText = btn ? btn.textContent : '';
+      if (btn) {
+        btn.textContent = 'กำลังสร้าง...';
+        btn.disabled = true;
+      }
     
       try {
+        // sync auth lineUserId ให้ชัวร์ก่อนยิง
+        state.auth.lineUserId = lineUserId;
+    
         var payload = buildCreateOrderPayload();
     
+        debugLog('submitCreateOrder request lineUserId=' + lineUserId);
+        debugLog('submitCreateOrder payload=' + JSON.stringify(payload));
+    
         var res = await loadJsonp('create_quote_from_liff', {
-          lineUserId: state.auth.lineUserId,
+          lineUserId: lineUserId,
           payload: JSON.stringify(payload)
         });
+    
+        debugLog('submitCreateOrder response=' + JSON.stringify(res));
     
         if (!res || res.ok !== true) {
           throw new Error((res && res.error) || 'สร้างใบเสนอราคาไม่สำเร็จ');
         }
     
-        state.result.quoteNo = res.quoteNo || '';
-        state.result.pdfUrl = res.pdfUrl || '';
+        state.result.quoteNo = String(res.quoteNo || '');
+        state.result.pdfUrl = String(res.pdfUrl || '');
         state.result.flex = res.flex || null;
     
-        showToast('สร้างใบเสนอราคาแล้ว ✅', 'success', 1200);
-        openSuccessModal(res);
+        showToast('สร้างใบเสนอราคาแล้ว ✅', 'success', 1500);
+    
+        if (typeof openSuccessModal === 'function') {
+          openSuccessModal(res);
+        } else {
+          renderResult(res);
+        }
     
       } catch (err) {
         console.error(err);
-        debugLog('submitCreateOrder error: ' + (err && err.message ? err.message : err));
-        showToast(err.message || 'สร้างใบเสนอราคาไม่สำเร็จ', 'error', 2200);
+        var msg = err && err.message ? err.message : String(err);
+        debugLog('submitCreateOrder error: ' + msg);
+        showToast(msg || 'สร้างใบเสนอราคาไม่สำเร็จ', 'error', 2600);
       } finally {
         state.page.submitting = false;
-        btn.textContent = oldText;
-        btn.disabled = false;
+        if (btn) {
+          btn.textContent = oldText || 'สร้างใบเสนอราคา';
+          btn.disabled = false;
+        }
       }
     }
 
@@ -2843,7 +2881,7 @@
       var successModalCloseBtn = document.getElementById('successModalCloseBtn');
     
       if (backBtn) {
-        backBtn.addEventListener('click', function () {
+        backBtn.addEventListener('click', function() {
           if (state.wizard.currentStep > 1) {
             goPrevStep();
             return;
@@ -2853,19 +2891,19 @@
       }
     
       if (debugToggleBtn) {
-        debugToggleBtn.addEventListener('click', function () {
+        debugToggleBtn.addEventListener('click', function() {
           setDebugVisible(!DEBUG_VISIBLE);
         });
       }
     
       if (customerInput) {
-        customerInput.addEventListener('focus', function () {
+        customerInput.addEventListener('focus', function() {
           if (String(this.value || '').trim()) {
             openCustomerDropdown();
           }
         });
     
-        customerInput.addEventListener('input', function () {
+        customerInput.addEventListener('input', function() {
           var v = String(this.value || '');
           state.customer.keyword = v;
           toggleCustomerClearButton();
@@ -2885,13 +2923,13 @@
       }
     
       if (clearCustomerBtn) {
-        clearCustomerBtn.addEventListener('click', function () {
+        clearCustomerBtn.addEventListener('click', function() {
           clearSelectedCustomer();
           if (customerInput) customerInput.focus();
         });
       }
     
-      document.addEventListener('click', function (e) {
+      document.addEventListener('click', function(e) {
         var picker = document.querySelector('.customer-picker');
         if (!picker) return;
     
@@ -2901,14 +2939,14 @@
       });
     
       if (catalogSearchBox) {
-        catalogSearchBox.addEventListener('input', function () {
+        catalogSearchBox.addEventListener('input', function() {
           state.catalog.keyword = String(this.value || '');
           loadCatalog(state.catalog.keyword);
         });
       }
     
       if (orderNoteBox) {
-        orderNoteBox.addEventListener('input', function () {
+        orderNoteBox.addEventListener('input', function() {
           setOrderNote(this.value);
           renderPreviewBox();
         });
@@ -2923,7 +2961,7 @@
       }
     
       if (toStep2Btn) {
-        toStep2Btn.addEventListener('click', function () {
+        toStep2Btn.addEventListener('click', function() {
           var v = validateStep1();
           if (!v.ok) {
             showToast(v.message, 'warn', 1800);
@@ -2934,13 +2972,13 @@
       }
     
       if (backToStep1Btn) {
-        backToStep1Btn.addEventListener('click', function () {
+        backToStep1Btn.addEventListener('click', function() {
           setStep(1);
         });
       }
     
       if (toStep3Btn) {
-        toStep3Btn.addEventListener('click', function () {
+        toStep3Btn.addEventListener('click', function() {
           var v = validateStep2();
           if (!v.ok) {
             showToast(v.message, 'warn', 1800);
@@ -2951,67 +2989,35 @@
       }
     
       if (backToStep2Btn) {
-        backToStep2Btn.addEventListener('click', function () {
+        backToStep2Btn.addEventListener('click', function() {
           setStep(2);
         });
       }
     
-      Array.prototype.forEach.call(
-        document.querySelectorAll('#warehousePills .pill'),
-        function (el) {
-          el.addEventListener('click', function () {
-            var v = this.getAttribute('data-wh') || 'RemainQuota';
-            state.catalog.selectedWarehouseKey = v;
+      Array.prototype.forEach.call(document.querySelectorAll('#warehousePills .pill'), function(el) {
+        el.addEventListener('click', function() {
+          var v = this.getAttribute('data-wh') || 'RemainQuota';
+          state.catalog.selectedWarehouseKey = v;
     
-            Array.prototype.forEach.call(
-              document.querySelectorAll('#warehousePills .pill'),
-              function (x) {
-                x.classList.remove('active');
-              }
-            );
-            this.classList.add('active');
-    
-            if (typeof applyCurrentDefaultsToCart === 'function') {
-              applyCurrentDefaultsToCart();
-            }
-    
-            loadCatalog(state.catalog.keyword || '');
+          Array.prototype.forEach.call(document.querySelectorAll('#warehousePills .pill'), function(x) {
+            x.classList.remove('active');
           });
-        }
-      );
+          this.classList.add('active');
     
-      Array.prototype.forEach.call(
-        document.querySelectorAll('#priceModePills .pill'),
-        function (el) {
-          el.addEventListener('click', function () {
-            var v = this.getAttribute('data-price-mode') || 'wholesale';
-            state.catalog.selectedPriceMode = v;
+          if (typeof applyCurrentDefaultsToCart === 'function') {
+            applyCurrentDefaultsToCart();
+          }
     
-            Array.prototype.forEach.call(
-              document.querySelectorAll('#priceModePills .pill'),
-              function (x) {
-                x.classList.remove('active');
-              }
-            );
-            this.classList.add('active');
-    
-            if (typeof applyCurrentDefaultsToCart === 'function') {
-              applyCurrentDefaultsToCart();
-            }
-    
-            renderCatalogResults();
-            renderCart();
-            recomputeSummary();
-          });
-        }
-      );
+          loadCatalog(state.catalog.keyword || '');
+        });
+      });
     
       if (successModalCloseBtn) {
         successModalCloseBtn.addEventListener('click', closeSuccessModal);
       }
     
       if (successModal) {
-        successModal.addEventListener('click', function (e) {
+        successModal.addEventListener('click', function(e) {
           if (e.target === successModal) {
             closeSuccessModal();
           }
