@@ -2362,8 +2362,6 @@
         state.result.pdfUrl = String(res.pdfUrl || '');
         state.result.flex = res.flex || null;
     
-        renderResult(res);
-    
         if (typeof openSuccessModal === 'function') {
           openSuccessModal({
             quoteNo: String(res.quoteNo || '-'),
@@ -2375,11 +2373,8 @@
             pendingPdf: !!(res.pending && res.pending.pdf)
           });
         } else {
-          showToast('สร้างใบเสนอราคาแล้ว ✅', 'success', 1600);
+          showToast('สร้างใบเสนอราคาแล้ว ✅', 'success', 1800);
         }
-    
-        // ถ้าอยาก reset form หลังสร้างสำเร็จ ค่อยเปิดทีหลัง
-        // resetOrdersNewForm_();
     
       } catch (err) {
         console.error(err);
