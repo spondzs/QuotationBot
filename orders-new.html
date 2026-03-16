@@ -2282,42 +2282,70 @@
       modal.style.display = 'none';
     }
     
-    function openSuccessModal(data) {
+    function closeSuccessModal() {
       var modal = document.getElementById('successModal');
       if (!modal) return;
+      modal.style.display = 'none';
+    }
     
-      var quoteNoEl = document.getElementById('successQuoteNo');
-      var customerEl = document.getElementById('successCustomerName');
-      var qtyEl = document.getElementById('successTotalQty');
-      var totalEl = document.getElementById('successGrandTotal');
-      var pdfHintEl = document.getElementById('successPdfHint');
-      var openPdfBtn = document.getElementById('successOpenPdfBtn');
+    function openSuccessModal(data) {
+      var modal = document.getElementById('successModal');
+      var body = document.getElementById('successModalBody');
+      var pdfBtn = document.getElementById('successModalPdfBtn');
+      var manageBtn = document.getElementById('successModalManageBtn');
     
-      if (quoteNoEl) quoteNoEl.textContent = String(data.quoteNo || '-');
-      if (customerEl) customerEl.textContent = String(data.customerName || '-');
-      if (qtyEl) qtyEl.textContent = fmtNumber(data.totalQty || 0) + ' เครื่อง';
-      if (totalEl) totalEl.textContent = fmtNumber(data.grandTotal || 0) + ' บาท';
+      if (!modal || !body) return;
     
-      if (pdfHintEl) {
-        if (data.hasPdf) {
-          pdfHintEl.textContent = 'สร้าง PDF แล้ว';
-        } else if (data.pendingPdf) {
-          pdfHintEl.textContent = 'บันทึกออเดอร์สำเร็จแล้ว • PDF จะตามมาภายหลัง';
+      var quoteNo = String(data.quoteNo || '-');
+      var customerName = String(data.customerName || '-');
+      var totalQty = Number(data.totalQty || 0);
+      var grandTotal = Number(data.grandTotal || 0);
+      var pdfUrl = String(data.pdfUrl || '');
+      var hasPdf = !!pdfUrl;
+      var pendingPdf = !!data.pendingPdf;
+    
+      var pdfStatus = hasPdf
+        ? 'สร้าง PDF แล้ว'
+        : (pendingPdf ? 'บันทึกออเดอร์สำเร็จแล้ว • PDF จะตามมาภายหลัง' : 'ยังไม่มี PDF');
+    
+      body.innerHTML =
+        '<div class="success-modal-row">' +
+          '<div class="success-modal-label">เลขที่ใบเสนอราคา</div>' +
+          '<div class="success-modal-value">' + escapeHtml(quoteNo) + '</div>' +
+        '</div>' +
+        '<div class="success-modal-row">' +
+          '<div class="success-modal-label">ลูกค้า</div>' +
+          '<div class="success-modal-value">' + escapeHtml(customerName) + '</div>' +
+        '</div>' +
+        '<div class="success-modal-row">' +
+          '<div class="success-modal-label">จำนวนสินค้า</div>' +
+          '<div class="success-modal-value">' + fmtNumber(totalQty) + ' เครื่อง</div>' +
+        '</div>' +
+        '<div class="success-modal-row">' +
+          '<div class="success-modal-label">ยอดรวมสุทธิ</div>' +
+          '<div class="success-modal-value">' + fmtNumber(grandTotal) + ' บาท</div>' +
+        '</div>' +
+        '<div class="success-modal-row">' +
+          '<div class="success-modal-label">สถานะ PDF</div>' +
+          '<div class="success-modal-value">' + escapeHtml(pdfStatus) + '</div>' +
+        '</div>';
+    
+      if (pdfBtn) {
+        if (hasPdf) {
+          pdfBtn.style.display = '';
+          pdfBtn.onclick = function() {
+            window.open(pdfUrl, '_blank');
+          };
         } else {
-          pdfHintEl.textContent = 'ยังไม่มี PDF';
+          pdfBtn.style.display = 'none';
+          pdfBtn.onclick = null;
         }
       }
     
-      if (openPdfBtn) {
-        if (data.hasPdf && data.pdfUrl) {
-          openPdfBtn.style.display = '';
-          openPdfBtn.onclick = function() {
-            window.open(data.pdfUrl, '_blank');
-          };
-        } else {
-          openPdfBtn.style.display = 'none';
-          openPdfBtn.onclick = null;
-        }
+      if (manageBtn) {
+        manageBtn.onclick = function() {
+          window.location.href = './index.html';
+        };
       }
     
       modal.style.display = 'flex';
@@ -2362,19 +2390,16 @@
         state.result.pdfUrl = String(res.pdfUrl || '');
         state.result.flex = res.flex || null;
     
-        if (typeof openSuccessModal === 'function') {
-          openSuccessModal({
-            quoteNo: String(res.quoteNo || '-'),
-            customerName: String(res.customerName || (state.customer.selected && state.customer.selected.name) || '-'),
-            totalQty: Number(res.totalQty || 0),
-            grandTotal: Number(res.grandTotal || 0),
-            pdfUrl: String(res.pdfUrl || ''),
-            hasPdf: !!res.pdfUrl,
-            pendingPdf: !!(res.pending && res.pending.pdf)
-          });
-        } else {
-          showToast('สร้างใบเสนอราคาแล้ว ✅', 'success', 1800);
-        }
+        openSuccessModal({
+          quoteNo: String(res.quoteNo || '-'),
+          customerName: String(res.customerName || (state.customer.selected && state.customer.selected.name) || '-'),
+          totalQty: Number(res.totalQty || 0),
+          grandTotal: Number(res.grandTotal || 0),
+          pdfUrl: String(res.pdfUrl || ''),
+          pendingPdf: !!(res.pending && res.pending.pdf)
+        });
+    
+        showToast('สร้างใบเสนอราคาแล้ว ✅', 'success', 1600);
     
       } catch (err) {
         console.error(err);
@@ -2864,6 +2889,7 @@
     
       var successModal = document.getElementById('successModal');
       var successModalCloseBtn = document.getElementById('successModalCloseBtn');
+      var successModalManageBtn = document.getElementById('successModalManageBtn');
     
       if (backBtn) {
         backBtn.addEventListener('click', function() {
@@ -3006,6 +3032,12 @@
           if (e.target === successModal) {
             closeSuccessModal();
           }
+        });
+      }
+    
+      if (successModalManageBtn) {
+        successModalManageBtn.addEventListener('click', function() {
+          window.location.href = './index.html';
         });
       }
     }
