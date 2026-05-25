@@ -779,9 +779,9 @@
       setLoadingProgress(40, 'กำลังเข้าสู่ระบบ...');
     
       if (!liff.isLoggedIn()) {
-        liff.login();
-        return false;
-      }
+      liff.login({ redirectUri: window.location.href });
+      return false;
+    }
     
       var profile = await liff.getProfile();
       LINE_USER_ID = String((profile && profile.userId) || '').trim();
@@ -790,6 +790,87 @@
     
       setLoadingProgress(55, 'ตรวจสอบตัวตนสำเร็จ');
       return true;
+    }
+
+    function getQueryParam_(name, fallback) {
+      var u = new URL(window.location.href);
+      return u.searchParams.get(name) || fallback || '';
+    }
+    
+    function isQuoteDirectShareMode_() {
+      var mode = String(getQueryParam_('mode', '')).toLowerCase();
+      var quoteNo = String(getQueryParam_('quoteNo', '')).trim();
+      return mode === 'quote' && !!quoteNo;
+    }
+    
+    function hideMainAppForDirectShare_() {
+      var app = document.querySelector('.app');
+      if (app) app.style.display = 'none';
+    }
+    
+    function showMainApp_() {
+      var app = document.querySelector('.app');
+      if (app) app.style.display = '';
+    }
+    
+    async function directShareQuoteFromLiff_() {
+      var quoteNo = String(getQueryParam_('quoteNo', '')).trim();
+    
+      if (!quoteNo) {
+        throw new Error('ไม่พบเลขใบเสนอราคา quoteNo');
+      }
+    
+      hideMainAppForDirectShare_();
+    
+      setLoadingProgress(12, 'กำลังเตรียมใบเสนอราคา...');
+      debugLog('direct quote share mode');
+      debugLog('quoteNo = ' + quoteNo);
+    
+      await ensureLiffReady();
+    
+      if (!LINE_USER_ID) {
+        throw new Error('LINE userId not found');
+      }
+    
+      if (!liff.isInClient()) {
+        throw new Error('กรุณาเปิดผ่าน LINE');
+      }
+    
+      setLoadingProgress(45, 'กำลังโหลดใบเสนอราคา...');
+    
+      var msg = await loadJsonp('get_quote_share_payload', {
+        quoteNo: quoteNo,
+        lineUserId: LINE_USER_ID
+      });
+    
+      debugLog('quote payload = ' + JSON.stringify(msg).slice(0, 500));
+    
+      if (msg && msg.ok === false) {
+        throw new Error(msg.error || 'โหลด payload ไม่สำเร็จ');
+      }
+    
+      if (!liff.isApiAvailable('shareTargetPicker')) {
+        throw new Error('อุปกรณ์นี้ยังไม่รองรับการแชร์ผ่าน LINE');
+      }
+    
+      setLoadingProgress(75, 'กำลังเปิดรายชื่อผู้รับ...');
+    
+      var result = await liff.shareTargetPicker(msg);
+    
+      if (result) {
+        setLoadingProgress(100, 'แชร์ใบเสนอราคาเรียบร้อยครับ ✅');
+    
+        setTimeout(function () {
+          if (liff.isInClient()) {
+            liff.closeWindow();
+          }
+        }, 900);
+    
+        return;
+      }
+    
+      setLoadingProgress(100, 'ยกเลิกการแชร์แล้วครับ');
+      showToast('ยกเลิกการแชร์', 'warn', 1400);
     }
 
     function render() {
@@ -1007,6 +1088,16 @@
         debugLog('window load');
         setLoadingProgress(10, 'กำลังเปิดระบบ...');
     
+        // ✅ โหมดใหม่: แชร์ใบเสนอราคาโดยตรง
+        // URL ตัวอย่าง:
+        // index.html?mode=quote&quoteNo=POV-2026050165
+        if (isQuoteDirectShareMode_()) {
+          await directShareQuoteFromLiff_();
+          return;
+        }
+    
+        // ✅ โหมดเดิม: หน้า list รวมออเดอร์
+        showMainApp_();
         await loadData();
     
         setTimeout(function () {
@@ -1015,7 +1106,18 @@
     
       } catch (err) {
         console.error(err);
+    
         debugLog('window load error: ' + (err && err.message ? err.message : err));
+    
+        showLoadingError(err && err.message ? err.message : 'โหลดไม่สำเร็จ');
+        showToast('ดำเนินการไม่สำเร็จ', 'error', 1800);
+    
+        // ถ้าเป็น direct share แล้วพัง ให้ค้างหน้า loading ไว้ให้เห็น error
+        // ถ้าเป็นหน้า list ปกติ ให้โชว์ app กลับมา
+        if (!isQuoteDirectShareMode_()) {
+          showMainApp_();
+          hideLoadingScreen();
+        }
       }
     });
   </script>
