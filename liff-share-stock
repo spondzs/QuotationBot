@@ -1,1 +1,82 @@
+<!doctype html>
+<html lang="th">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>SpondFlow Stock Share</title>
+  <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
+  <style>
+    body {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+      padding: 24px;
+      color: #111827;
+      background: #f8fafc;
+    }
+    .card {
+      background: white;
+      border-radius: 16px;
+      padding: 18px;
+      box-shadow: 0 8px 24px rgba(15, 23, 42, .08);
+    }
+    .muted { color: #6b7280; font-size: 14px; }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <b>กำลังเตรียมสต็อกสำหรับแชร์...</b>
+    <p class="muted">กรุณารอสักครู่ ระบบจะเปิดหน้าต่างเลือกผู้รับให้อัตโนมัติ</p>
+  </div>
 
+  <script>
+    const LIFF_ID = "ใส่_LIFF_ID_ตรงนี้";
+    const GAS_URL = "ใส่_GAS_WEB_APP_URL_ตรงนี้";
+
+    function getParam(name, fallback) {
+      const u = new URL(window.location.href);
+      return u.searchParams.get(name) || fallback || "";
+    }
+
+    async function main() {
+      try {
+        await liff.init({ liffId: LIFF_ID });
+
+        if (!liff.isLoggedIn()) {
+          liff.login({ redirectUri: window.location.href });
+          return;
+        }
+
+        const brand = getParam("brand", "vivo");
+        const url = GAS_URL + "?action=stockSharePayload&brand=" + encodeURIComponent(brand);
+
+        const res = await fetch(url);
+        const data = await res.json();
+
+        if (!data.ok || !Array.isArray(data.messages)) {
+          throw new Error(data.message || "Invalid payload");
+        }
+
+        if (!liff.isApiAvailable("shareTargetPicker")) {
+          throw new Error("shareTargetPicker is not available");
+        }
+
+        const result = await liff.shareTargetPicker(data.messages);
+
+        document.body.innerHTML =
+          '<div class="card"><b>แชร์เรียบร้อยครับ</b><p class="muted">ปิดหน้านี้ได้เลย</p></div>';
+
+        setTimeout(function () {
+          if (liff.isInClient()) liff.closeWindow();
+        }, 800);
+
+      } catch (err) {
+        document.body.innerHTML =
+          '<div class="card"><b>เกิดข้อผิดพลาด</b><p class="muted">' +
+          String(err.message || err) +
+          '</p></div>';
+      }
+    }
+
+    main();
+  </script>
+</body>
+</html>
