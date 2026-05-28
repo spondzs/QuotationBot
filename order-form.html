@@ -709,9 +709,9 @@
     var MASCOT_URL = './Caffe.PNG';
 
     var ACTIONS = {
-      init: 'get_liff_order_form_init',
-      customers: 'search_liff_order_customers',
-      catalog: 'search_liff_order_catalog'
+      init: 'liff_order_form_init',
+      customers: 'liff_order_search_customers',
+      catalog: 'liff_order_search_stock'
     };
 
     /************************************************************
@@ -1009,7 +1009,7 @@
           throw new Error(data.error || 'โหลดสินค้าไม่สำเร็จ');
         }
 
-        var list = unwrapList(data, ['catalog', 'items', 'products', 'data', 'results']);
+        var list = unwrapList(data, ['stockItems', 'catalog', 'items', 'products', 'data', 'results']);
 
         state.catalog.items = list.map(normalizeProduct).filter(function(x) {
           return !!x.modelBase;
@@ -1029,39 +1029,74 @@
 
     function normalizeProduct(x) {
       x = x || {};
-
+    
       var quota = x.quota || x.stock || {};
       var priceModes = x.priceModes || x.prices || {};
-
+    
       var modelBase = String(x.modelBase || x.ModelBase || x.model || '').trim();
-      var orderLine = String(x.orderLine || x.OrderLine || '').trim();
-
+    
+      var rawOrderLine = String(
+        x.orderLine ||
+        x.OrderLine ||
+        x.orderLineTemplate ||
+        x.OrderLineTemplate ||
+        ''
+      ).trim();
+    
+      // กัน template ที่มาจาก GAS เป็น "Y31d 6+256 White x"
+      // เพราะฝั่ง buildOrderText จะเติม xจำนวน เองอีกที
+      rawOrderLine = rawOrderLine
+        .replace(/\s+x\s*$/i, '')
+        .replace(/\s+x1\s*$/i, '')
+        .replace(/\s+/g, ' ')
+        .trim();
+    
       return {
         modelBase: modelBase,
-        orderLine: orderLine || buildOrderLineFromModelBase(modelBase),
+        orderLine: rawOrderLine || buildOrderLineFromModelBase(modelBase),
         series: String(x.series || x.Series || '').trim(),
         color: String(x.color || x.ColorName || x.colorName || x.ColorTH || '').trim(),
         price: Number(x.price || x.PriceWholesale || priceModes.wholesale || 0),
         quota: {
-          RemainQuota: Number(quota.RemainQuota || x.RemainQuota || 0),
+          RemainQuota: Number(quota.RemainQuota || x.RemainQuota || x.remainQuota || 0),
           RemainQuota2: Number(quota.RemainQuota2 || x.RemainQuota2 || 0),
           RemainQuota3: Number(quota.RemainQuota3 || x.RemainQuota3 || 0)
         }
       };
     }
-
+    
     function buildOrderLineFromModelBase(modelBase) {
       var s = String(modelBase || '').trim();
-
+    
       s = s
         .replace(/^vivo\s*[-–]\s*/i, '')
         .replace(/^iqoo\s*[-–]\s*/i, 'iQOO ')
-        .replace(/$begin:math:text$\\s\*\(\\d\+\)\\s\*\[\+\\\/\]\\s\*\(\\d\+\)\\s\*GB\\s\*$end:math:text$/ig, '$1+$2')
-        .replace(/$begin:math:text$\\s\*\(\\d\+\)\\s\*\[\+\\\/\]\\s\*\(\\d\+\)\\s\*$end:math:text$/ig, '$1+$2')
         .replace(/\s+/g, ' ')
         .trim();
-
-      return s;
+    
+      var m = s.match(/\(?\s*(\d+)\s*[+\/]\s*(\d+)\s*(TB|GB)?\s*\)?/i);
+    
+      if (!m) return s;
+    
+      var ram = Number(m[1] || 0);
+      var romRaw = Number(m[2] || 0);
+      var unit = String(m[3] || 'GB').toUpperCase();
+      var rom = unit === 'TB' ? romRaw * 1024 : romRaw;
+    
+      var before = s.slice(0, m.index).trim();
+    
+      var after = s.slice(m.index + m[0].length)
+        .replace(/\(\s*demo\s*\)/ig, '')
+        .replace(/\bdemo\b/ig, '')
+        .replace(/[()]/g, ' ')
+        .replace(/\s+/g, ' ')
+        .trim();
+    
+      return [before, ram + '+' + rom, after]
+        .filter(Boolean)
+        .join(' ')
+        .replace(/\s+/g, ' ')
+        .trim();
     }
 
     /************************************************************
