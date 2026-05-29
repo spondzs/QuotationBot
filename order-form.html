@@ -807,8 +807,8 @@
 <body>
   <div id="loading" class="loading">
     <div class="loading-card">
-      <img id="loadingMascot" src="./Caffe.png" alt="NongCaffe">
-      <div class="loading-title">NongCaffe</div>
+      <img id="loadingMascot" src="./Caffe.PNG" alt="NongCaffe">
+      <div class="loading-title">น้องกาแฟ ☕️</div>
       <div id="loadingText" class="loading-text">กำลังเตรียมข้อมูลให้ครับ...</div>
       <div class="loading-bar">
         <div id="loadingFill" class="loading-fill"></div>
@@ -825,7 +825,7 @@
           <div class="title">สร้างรายการ #สั่งของ</div>
           <div class="subtitle">เลือกลูกค้า เลือกสินค้า แล้วส่งเข้ากลุ่มได้เลย</div>
         </div>
-        <img id="topMascot" class="mascot" src="./Caffe.png" alt="NongCaffe">
+        <img id="topMascot" class="mascot" src="./Caffe.PNG" alt="NongCaffe">
       </div>
     </header>
 
@@ -876,1605 +876,1063 @@
   <div id="toast" class="toast"></div>
 
   <script>
-    /************************************************************
-     * CONFIG
-     ************************************************************/
-    var API_BASE = 'https://script.google.com/macros/s/AKfycbw4jAzjWors_9dwQx1bI2RpVzm56icKOcTDYutQZIindgZb3f67MqoduccqgFnM6TzgaA/exec';
-    var LIFF_ID = '2009366271-alnowbyZ';
-    var MASCOT_URL = './Caffe.PNG';
-
-    var ACTIONS = {
-      init: 'liff_order_form_init',
-      customers: 'liff_order_search_customers',
-      catalog: 'liff_order_search_stock'
-    };
-
-    /************************************************************
-     * STATE
-     ************************************************************/
-    var LIFF_READY = false;
-    var TOAST_TIMER = null;
-    var CUSTOMER_TIMER = null;
-    var CATALOG_TIMER = null;
-
-    var state = {
-      auth: {
-        lineUserId: '',
-        displayName: '',
-        isInClient: false
-      },
-      customer: {
-        keyword: '',
-        selected: null,
-        options: [],
-        dropdownOpen: false,
-        loading: false
-      },
-      catalog: {
-        keyword: '',
-        items: [],
-        loading: false
-      },
-      order: {
-        warehouseKey: 'RemainQuota',
-        cart: {}
-      }
-    };
-
-    /************************************************************
-     * BASIC HELPERS
-     ************************************************************/
-    function $(id) {
-      return document.getElementById(id);
-    }
-
-    function escapeHtml(str) {
-      return String(str == null ? '' : str)
-        .replace(/&/g, '&amp;')
-        .replace(/</g, '&lt;')
-        .replace(/>/g, '&gt;')
-        .replace(/"/g, '&quot;')
-        .replace(/'/g, '&#39;');
-    }
-
-    function escapeAttr(str) {
-      return escapeHtml(str).replace(/`/g, '&#96;');
-    }
-
-    function fmt(n) {
-      try {
-        return Number(n || 0).toLocaleString('th-TH', {
-          maximumFractionDigits: 2
-        });
-      } catch (e) {
-        return String(n || 0);
-      }
-    }
-
-    function warehouseLabelOf(key) {
-      if (key === 'RemainQuota2') return 'คลังลำปาง';
-      if (key === 'RemainQuota3') return 'คลังลำพูน';
-      return 'คลังหลัก';
-    }
-
-    function warehouseTagOf(key) {
-      if (key === 'RemainQuota2') return '#คลังลำปาง';
-      if (key === 'RemainQuota3') return '#คลังลำพูน';
-      return '#คลังหลัก';
-    }
-
-    function showToast(message, type, ms) {
-      var el = $('toast');
-      if (!el) return;
-
-      el.textContent = String(message || '');
-      el.className = 'toast show';
-      if (type) el.classList.add(type);
-
-      clearTimeout(TOAST_TIMER);
-      TOAST_TIMER = setTimeout(function() {
-        el.className = 'toast';
-      }, ms || 1600);
-    }
-
-    function setLoading(percent, text) {
-      var p = Math.max(0, Math.min(100, Number(percent || 0)));
-      var fill = $('loadingFill');
-      var label = $('loadingPercent');
-      var txt = $('loadingText');
-
-      if (fill) fill.style.width = p + '%';
-      if (label) label.textContent = p + '%';
-      if (txt && text) txt.textContent = text;
-    }
-
-    function hideLoading() {
-      var el = $('loading');
-      if (el) el.classList.add('hide');
-    }
-
-    function debounce(fn, delay, bucketName) {
-      clearTimeout(bucketName === 'customer' ? CUSTOMER_TIMER : CATALOG_TIMER);
-
-      var timer = setTimeout(fn, delay || 260);
-
-      if (bucketName === 'customer') CUSTOMER_TIMER = timer;
-      else CATALOG_TIMER = timer;
-    }
-
-    /************************************************************
-     * JSONP API
-     ************************************************************/
-    function loadJsonp(action, params) {
-      params = params || {};
-
-      return new Promise(function(resolve, reject) {
-        var cbName = '__ncf_cb_' + Date.now() + '_' + Math.floor(Math.random() * 100000);
-        var script = document.createElement('script');
-        var qs = 'action=' + encodeURIComponent(action) + '&callback=' + encodeURIComponent(cbName);
-
-        Object.keys(params).forEach(function(key) {
-          var value = params[key];
-          if (value == null) value = '';
-          qs += '&' + encodeURIComponent(key) + '=' + encodeURIComponent(String(value));
-        });
-
-        var done = false;
-
-        function cleanup() {
-          try { delete window[cbName]; } catch (e) { window[cbName] = undefined; }
-          if (script.parentNode) script.parentNode.removeChild(script);
+      /************************************************************
+       * CONFIG
+       ************************************************************/
+      var API_BASE = 'https://script.google.com/macros/s/AKfycbw4jAzjWors_9dwQx1bI2RpVzm56icKOcTDYutQZIindgZb3f67MqoduccqgFnM6TzgaA/exec';
+      var LIFF_ID = '2009366271-alnowbyZ';
+      var MASCOT_URL = './Caffe.PNG';
+    
+      var ACTIONS = {
+        init: 'liff_order_form_init',
+        customers: 'liff_order_search_customers',
+        catalog: 'liff_order_search_stock'
+      };
+    
+      /************************************************************
+       * STATE
+       ************************************************************/
+      var LIFF_READY = false;
+      var TOAST_TIMER = null;
+      var CUSTOMER_TIMER = null;
+      var CATALOG_TIMER = null;
+    
+      var state = {
+        auth: {
+          lineUserId: '',
+          displayName: '',
+          isInClient: false,
+          role: '',
+          scopes: []
+        },
+        customer: {
+          keyword: '',
+          selected: null,
+          options: [],
+          dropdownOpen: false,
+          loading: false
+        },
+        catalog: {
+          keyword: '',
+          items: [],
+          loading: false
+        },
+        order: {
+          warehouseKey: 'RemainQuota',
+          cart: {}
         }
-
-        window[cbName] = function(data) {
-          if (done) return;
-          done = true;
-          cleanup();
-          resolve(data);
-        };
-
-        script.onerror = function() {
-          if (done) return;
-          done = true;
-          cleanup();
-          reject(new Error('โหลดข้อมูลไม่สำเร็จ: ' + action));
-        };
-
-        script.src = API_BASE + '?' + qs;
-        document.body.appendChild(script);
-
-        setTimeout(function() {
-          if (done) return;
-          done = true;
-          cleanup();
-          reject(new Error('เชื่อมต่อช้าเกินไป: ' + action));
-        }, 15000);
-      });
-    }
-
-    function unwrapList(data, keys) {
-      if (Array.isArray(data)) return data;
-
-      if (!data) return [];
-
-      for (var i = 0; i < keys.length; i++) {
-        var k = keys[i];
-        if (Array.isArray(data[k])) return data[k];
+      };
+    
+      /************************************************************
+       * BASIC HELPERS
+       ************************************************************/
+      function $(id) {
+        return document.getElementById(id);
       }
-
-      if (data.ok === true) {
-        if (Array.isArray(data.items)) return data.items;
-        if (Array.isArray(data.data)) return data.data;
+    
+      function escapeHtml(str) {
+        return String(str == null ? '' : str)
+          .replace(/&/g, '&amp;')
+          .replace(/</g, '&lt;')
+          .replace(/>/g, '&gt;')
+          .replace(/"/g, '&quot;')
+          .replace(/'/g, '&#39;');
       }
-
-      return [];
-    }
-
-    /************************************************************
-     * LIFF
-     ************************************************************/
-    async function ensureLiffReady() {
-      if (LIFF_READY) return true;
-
-      setLoading(15, 'กำลังเชื่อมต่อ LINE...');
-
-      if (!window.liff) {
-        throw new Error('ไม่พบ LIFF SDK');
-      }
-
-      await liff.init({
-        liffId: LIFF_ID,
-        withLoginOnExternalBrowser: true
-      });
-
-      state.auth.isInClient = !!liff.isInClient();
-
-      if (!liff.isLoggedIn()) {
-        liff.login();
-        return false;
-      }
-
-      setLoading(35, 'กำลังโหลดโปรไฟล์ LINE...');
-
-      var profile = await liff.getProfile();
-
-      state.auth.lineUserId = String((profile && profile.userId) || '');
-      state.auth.displayName = String((profile && profile.displayName) || '');
-
-      LIFF_READY = true;
-      return true;
-    }
-
-    /************************************************************
-     * DATA LOADERS
-     ************************************************************/
-    async function loadInit() {
-      try {
-        var data = await loadJsonp(ACTIONS.init, {
-          lineUserId: state.auth.lineUserId || ''
-        });
-
-        if (data && data.ok === false) {
-          throw new Error(data.error || 'โหลดข้อมูลเริ่มต้นไม่สำเร็จ');
+    
+      function fmt(n) {
+        try {
+          return Number(n || 0).toLocaleString('th-TH', {
+            maximumFractionDigits: 2
+          });
+        } catch (e) {
+          return String(n || 0);
         }
-
-        if (data && data.auth) {
-          state.auth.role = data.auth.role || '';
-          state.auth.scopes = data.auth.scopes || [];
-        }
-
-        return data || {};
-      } catch (e) {
-        console.warn(e);
-        return {};
       }
-    }
-
-    async function loadCustomers(keyword) {
-      state.customer.loading = true;
-      state.customer.keyword = String(keyword || '');
-
-      try {
-        var data = await loadJsonp(ACTIONS.customers, {
-          lineUserId: state.auth.lineUserId || '',
-          keyword: state.customer.keyword
-        });
-
-        if (data && data.ok === false) {
-          throw new Error(data.error || 'โหลดลูกค้าไม่สำเร็จ');
-        }
-
-        var list = unwrapList(data, ['customers', 'items', 'data', 'results']);
-
-        state.customer.options = list.map(function(x) {
-          return {
-            customerNo: String(x.customerNo || x.CustomerNo || x.no || x.code || '').trim(),
-            name: String(x.name || x.customerName || x.CustomerName || x.shopName || '').trim(),
-            phone: String(x.phone || x.tel || x.mobile || '').trim(),
-            address: String(x.address || x.Address || '').trim()
+    
+      function showToast(message, type, ms) {
+        var el = $('toast');
+        if (!el) return;
+    
+        el.textContent = String(message || '');
+        el.className = 'toast show';
+        if (type) el.classList.add(type);
+    
+        clearTimeout(TOAST_TIMER);
+        TOAST_TIMER = setTimeout(function() {
+          el.className = 'toast';
+        }, ms || 1600);
+      }
+    
+      function setLoading(percent, text) {
+        var p = Math.max(0, Math.min(100, Number(percent || 0)));
+        var fill = $('loadingFill');
+        var label = $('loadingPercent');
+        var txt = $('loadingText');
+    
+        if (fill) fill.style.width = p + '%';
+        if (label) label.textContent = p + '%';
+        if (txt && text) txt.textContent = text;
+      }
+    
+      function hideLoading() {
+        var el = $('loading');
+        if (el) el.classList.add('hide');
+      }
+    
+      function debounce(fn, delay, bucketName) {
+        clearTimeout(bucketName === 'customer' ? CUSTOMER_TIMER : CATALOG_TIMER);
+    
+        var timer = setTimeout(fn, delay || 260);
+    
+        if (bucketName === 'customer') CUSTOMER_TIMER = timer;
+        else CATALOG_TIMER = timer;
+      }
+    
+      function polishStaticText() {
+        var title = document.querySelector('.title');
+        var customerInput = $('customerSearch');
+        var catalogInput = $('catalogSearch');
+        var copyBtn = $('copyBtn');
+    
+        if (title) title.textContent = 'สร้างฟอร์ม #สั่งของ';
+        if (customerInput) customerInput.placeholder = 'ค้นหาลูกค้า';
+        if (catalogInput) catalogInput.placeholder = 'ค้นหารุ่น';
+        if (copyBtn) copyBtn.textContent = 'ตรวจสอบรายการ';
+      }
+    
+      function applyMascot() {
+        var loadingMascot = $('loadingMascot');
+        var topMascot = $('topMascot');
+    
+        [loadingMascot, topMascot].forEach(function(img) {
+          if (!img) return;
+          img.src = MASCOT_URL;
+          img.onerror = function() {
+            this.onerror = null;
+            this.src = './Caffe.png';
           };
-        }).filter(function(x) {
-          return x.customerNo || x.name;
         });
-
-        renderCustomerDropdown();
-
-      } catch (e) {
-        console.error(e);
-        showToast(e.message || 'โหลดลูกค้าไม่สำเร็จ', 'error', 2200);
-      } finally {
-        state.customer.loading = false;
       }
-    }
-
-    async function loadCatalog(keyword) {
-      state.catalog.loading = true;
-      state.catalog.keyword = String(keyword || '');
-
-      renderCatalog();
-
-      try {
-        var data = await loadJsonp(ACTIONS.catalog, {
-          lineUserId: state.auth.lineUserId || '',
-          keyword: state.catalog.keyword,
-          warehouseKey: state.order.warehouseKey || 'RemainQuota'
-        });
-
-        if (data && data.ok === false) {
-          throw new Error(data.error || 'โหลดสินค้าไม่สำเร็จ');
-        }
-
-        var list = unwrapList(data, ['stockItems', 'catalog', 'items', 'products', 'data', 'results']);
-
-        state.catalog.items = list.map(normalizeProduct).filter(function(x) {
-          return !!x.modelBase;
-        });
-
-        renderCatalog();
-
-      } catch (e) {
-        console.error(e);
-        showToast(e.message || 'โหลดสินค้าไม่สำเร็จ', 'error', 2400);
-        state.catalog.items = [];
-        renderCatalog();
-      } finally {
-        state.catalog.loading = false;
-      }
-    }
-
-    function normalizeProduct(x) {
-      x = x || {};
     
-      var quota = x.quota || x.stock || {};
-      var priceModes = x.priceModes || x.prices || {};
+      /************************************************************
+       * JSONP API
+       ************************************************************/
+      function loadJsonp(action, params) {
+        params = params || {};
     
-      var modelBase = String(x.modelBase || x.ModelBase || x.model || '').trim();
+        return new Promise(function(resolve, reject) {
+          var cbName = '__ncf_cb_' + Date.now() + '_' + Math.floor(Math.random() * 100000);
+          var script = document.createElement('script');
+          var qs = 'action=' + encodeURIComponent(action) + '&callback=' + encodeURIComponent(cbName);
     
-      var rawOrderLine = String(
-        x.orderLine ||
-        x.OrderLine ||
-        x.orderLineTemplate ||
-        x.OrderLineTemplate ||
-        ''
-      ).trim();
+          Object.keys(params).forEach(function(key) {
+            var value = params[key];
+            if (value == null) value = '';
+            qs += '&' + encodeURIComponent(key) + '=' + encodeURIComponent(String(value));
+          });
     
-      // กัน template ที่มาจาก GAS เป็น "Y31d 6+256 White x"
-      // เพราะฝั่ง buildOrderText จะเติม xจำนวน เองอีกที
-      rawOrderLine = rawOrderLine
-        .replace(/\s+x\s*$/i, '')
-        .replace(/\s+x1\s*$/i, '')
-        .replace(/\s+/g, ' ')
-        .trim();
+          var done = false;
     
-      return {
-        modelBase: modelBase,
-        orderLine: rawOrderLine || buildOrderLineFromModelBase(modelBase),
-        series: String(x.series || x.Series || '').trim(),
-        color: String(x.color || x.ColorName || x.colorName || x.ColorTH || '').trim(),
-        price: Number(x.price || x.PriceWholesale || priceModes.wholesale || 0),
-        quota: {
-          RemainQuota: Number(quota.RemainQuota || x.RemainQuota || x.remainQuota || 0),
-          RemainQuota2: Number(quota.RemainQuota2 || x.RemainQuota2 || 0),
-          RemainQuota3: Number(quota.RemainQuota3 || x.RemainQuota3 || 0)
-        }
-      };
-    }
-    
-    function buildOrderLineFromModelBase(modelBase) {
-      var s = String(modelBase || '').trim();
-    
-      s = s
-        .replace(/^vivo\s*[-–]\s*/i, '')
-        .replace(/^iqoo\s*[-–]\s*/i, 'iQOO ')
-        .replace(/\s+/g, ' ')
-        .trim();
-    
-      var m = s.match(/\(?\s*(\d+)\s*[+\/]\s*(\d+)\s*(TB|GB)?\s*\)?/i);
-    
-      if (!m) return s;
-    
-      var ram = Number(m[1] || 0);
-      var romRaw = Number(m[2] || 0);
-      var unit = String(m[3] || 'GB').toUpperCase();
-      var rom = unit === 'TB' ? romRaw * 1024 : romRaw;
-    
-      var before = s.slice(0, m.index).trim();
-    
-      var after = s.slice(m.index + m[0].length)
-        .replace(/\(\s*demo\s*\)/ig, '')
-        .replace(/\bdemo\b/ig, '')
-        .replace(/[()]/g, ' ')
-        .replace(/\s+/g, ' ')
-        .trim();
-    
-      return [before, ram + '+' + rom, after]
-        .filter(Boolean)
-        .join(' ')
-        .replace(/\s+/g, ' ')
-        .trim();
-    }
-
-    /************************************************************
-     * CART
-     ************************************************************/
-    function cartItems() {
-      return Object.keys(state.order.cart).map(function(k) {
-        return state.order.cart[k];
-      });
-    }
-
-    function availableQty(product) {
-      var q = product && product.quota ? product.quota : {};
-      return Number(q[state.order.warehouseKey] || 0);
-    }
-
-    function getCartQty(modelBase) {
-      var it = state.order.cart[String(modelBase || '')];
-      return it ? Number(it.qty || 0) : 0;
-    }
-
-    function setCartQty(product, qty) {
-      if (!product || !product.modelBase) return;
-
-      var modelBase = String(product.modelBase || '');
-      var nextQty = Math.max(0, Number(qty || 0));
-      var maxQty = availableQty(product);
-
-      if (maxQty <= 0 && nextQty > 0) {
-        showToast('รุ่นนี้ไม่มีโควต้าใน' + warehouseLabelOf(state.order.warehouseKey), 'warn', 1800);
-        return;
-      }
-
-      if (maxQty > 0 && nextQty > maxQty) {
-        nextQty = maxQty;
-        showToast('ปรับเป็นจำนวนสูงสุดที่มีแล้ว', 'warn', 1500);
-      }
-
-      if (nextQty <= 0) {
-        delete state.order.cart[modelBase];
-      } else {
-        state.order.cart[modelBase] = {
-          modelBase: product.modelBase,
-          orderLine: product.orderLine,
-          qty: nextQty,
-          price: Number(product.price || 0),
-          warehouseKey: state.order.warehouseKey,
-          warehouseLabel: warehouseLabelOf(state.order.warehouseKey)
-        };
-      }
-
-      renderAll();
-    }
-
-    function syncCartWarehouse() {
-      var whKey = state.order.warehouseKey;
-      Object.keys(state.order.cart).forEach(function(modelBase) {
-        state.order.cart[modelBase].warehouseKey = whKey;
-        state.order.cart[modelBase].warehouseLabel = warehouseLabelOf(whKey);
-      });
-    }
-
-    function totalQty() {
-      return cartItems().reduce(function(sum, x) {
-        return sum + Number(x.qty || 0);
-      }, 0);
-    }
-
-    /************************************************************
-     * BUILD #สั่งของ TEXT
-     ************************************************************/
-    function canBuildOrder() {
-      return !!(state.customer.selected && state.customer.selected.name && cartItems().length);
-    }
-
-    function buildOrderText() {
-      var customer = state.customer.selected || {};
-      var name = String(customer.name || customer.customerNo || '').trim();
-      var items = cartItems();
-    
-      var lines = [];
-    
-      lines.push('#สั่งของ ' + name);
-      lines.push('');
-    
-      items.forEach(function(it) {
-        lines.push(String(it.orderLine || it.modelBase || '').trim() + ' x' + Number(it.qty || 0));
-      });
-    
-      return lines.join('\n').trim();
-    }
-
-    /************************************************************
-     * RENDER
-     ************************************************************/
-    function renderAll() {
-      renderSelectedCustomer();
-      renderCatalog();
-      renderReview();
-      renderButtons();
-    }
-
-    function renderSelectedCustomer() {
-      var box = $('selectedCustomerBox');
-      var input = $('customerSearch');
-      var clearBtn = $('clearCustomerBtn');
-      var c = state.customer.selected;
-
-      if (clearBtn && input) {
-        clearBtn.style.display = String(input.value || '').trim() ? '' : 'none';
-      }
-
-      if (!box) return;
-<script>
-  /************************************************************
-   * CONFIG
-   ************************************************************/
-  var API_BASE = 'https://script.google.com/macros/s/AKfycbw4jAzjWors_9dwQx1bI2RpVzm56icKOcTDYutQZIindgZb3f67MqoduccqgFnM6TzgaA/exec';
-  var LIFF_ID = '2009366271-alnowbyZ';
-  var MASCOT_URL = './Caffe.png';
-
-  var ACTIONS = {
-    init: ['liff_order_form_init', 'get_liff_order_form_init'],
-    customers: ['liff_order_search_customers', 'search_liff_order_customers'],
-    catalog: ['liff_order_search_stock', 'search_liff_order_catalog']
-  };
-
-  /************************************************************
-   * STATE
-   ************************************************************/
-  var LIFF_READY = false;
-  var TOAST_TIMER = null;
-  var CUSTOMER_TIMER = null;
-  var CATALOG_TIMER = null;
-
-  var state = {
-    auth: {
-      lineUserId: '',
-      displayName: '',
-      isInClient: false,
-      role: '',
-      scopes: []
-    },
-    customer: {
-      keyword: '',
-      selected: null,
-      options: [],
-      dropdownOpen: false,
-      loading: false
-    },
-    catalog: {
-      keyword: '',
-      items: [],
-      loading: false
-    },
-    order: {
-      warehouseKey: 'RemainQuota',
-      cart: {}
-    }
-  };
-
-  /************************************************************
-   * BASIC HELPERS
-   ************************************************************/
-  function $(id) {
-    return document.getElementById(id);
-  }
-
-  function escapeHtml(str) {
-    return String(str == null ? '' : str)
-      .replace(/&/g, '&amp;')
-      .replace(/</g, '&lt;')
-      .replace(/>/g, '&gt;')
-      .replace(/"/g, '&quot;')
-      .replace(/'/g, '&#39;');
-  }
-
-  function fmt(n) {
-    try {
-      return Number(n || 0).toLocaleString('th-TH', {
-        maximumFractionDigits: 2
-      });
-    } catch (e) {
-      return String(n || 0);
-    }
-  }
-
-  function showToast(message, type, ms) {
-    var el = $('toast');
-    if (!el) return;
-
-    el.textContent = String(message || '');
-    el.className = 'toast show';
-    if (type) el.classList.add(type);
-
-    clearTimeout(TOAST_TIMER);
-    TOAST_TIMER = setTimeout(function() {
-      el.className = 'toast';
-    }, ms || 1600);
-  }
-
-  function setLoading(percent, text) {
-    var p = Math.max(0, Math.min(100, Number(percent || 0)));
-    var fill = $('loadingFill');
-    var label = $('loadingPercent');
-    var txt = $('loadingText');
-
-    if (fill) fill.style.width = p + '%';
-    if (label) label.textContent = p + '%';
-    if (txt && text) txt.textContent = text;
-  }
-
-  function hideLoading() {
-    var el = $('loading');
-    if (el) el.classList.add('hide');
-  }
-
-  function debounce(fn, delay, bucketName) {
-    clearTimeout(bucketName === 'customer' ? CUSTOMER_TIMER : CATALOG_TIMER);
-
-    var timer = setTimeout(fn, delay || 260);
-
-    if (bucketName === 'customer') CUSTOMER_TIMER = timer;
-    else CATALOG_TIMER = timer;
-  }
-
-  function safeSetText(selectorOrId, text) {
-    var el = document.querySelector(selectorOrId) || $(selectorOrId);
-    if (el) el.textContent = text;
-  }
-
-  function applyMascotWithFallback() {
-    var urls = ['./Caffe.png', './Caffe.PNG', './Caffe.jpg', './Caffe.jpeg'];
-    var targets = [$('topMascot'), $('loadingMascot')].filter(Boolean);
-
-    targets.forEach(function(img) {
-      var i = 0;
-
-      function tryNext() {
-        if (i >= urls.length) return;
-        img.src = urls[i++];
-      }
-
-      img.onerror = tryNext;
-      tryNext();
-    });
-  }
-
-  function polishStaticText() {
-    safeSetText('.title', 'สร้างฟอร์ม #สั่งของ');
-
-    var customerInput = $('customerSearch');
-    var catalogInput = $('catalogSearch');
-    var copyBtn = $('copyBtn');
-
-    if (customerInput) customerInput.placeholder = 'ค้นหาลูกค้า';
-    if (catalogInput) catalogInput.placeholder = 'ค้นหารุ่น';
-    if (copyBtn) copyBtn.textContent = 'ตรวจสอบรายการ';
-  }
-
-  /************************************************************
-   * JSONP API
-   ************************************************************/
-  function loadJsonp(action, params) {
-    params = params || {};
-
-    return new Promise(function(resolve, reject) {
-      var cbName = '__ncf_cb_' + Date.now() + '_' + Math.floor(Math.random() * 100000);
-      var script = document.createElement('script');
-      var qs = 'action=' + encodeURIComponent(action) + '&callback=' + encodeURIComponent(cbName);
-
-      Object.keys(params).forEach(function(key) {
-        var value = params[key];
-        if (value == null) value = '';
-        qs += '&' + encodeURIComponent(key) + '=' + encodeURIComponent(String(value));
-      });
-
-      var done = false;
-
-      function cleanup() {
-        try { delete window[cbName]; } catch (e) { window[cbName] = undefined; }
-        if (script.parentNode) script.parentNode.removeChild(script);
-      }
-
-      window[cbName] = function(data) {
-        if (done) return;
-        done = true;
-        cleanup();
-        resolve(data);
-      };
-
-      script.onerror = function() {
-        if (done) return;
-        done = true;
-        cleanup();
-        reject(new Error('โหลดข้อมูลไม่สำเร็จ: ' + action));
-      };
-
-      script.src = API_BASE + '?' + qs;
-      document.body.appendChild(script);
-
-      setTimeout(function() {
-        if (done) return;
-        done = true;
-        cleanup();
-        reject(new Error('เชื่อมต่อช้าเกินไป: ' + action));
-      }, 15000);
-    });
-  }
-
-  async function loadJsonpAny(actionList, params) {
-    var list = Array.isArray(actionList) ? actionList : [actionList];
-    var lastErr = null;
-
-    for (var i = 0; i < list.length; i++) {
-      var action = list[i];
-
-      try {
-        var data = await loadJsonp(action, params);
-
-        if (data && data.ok === false) {
-          var errText = String(data.error || '').toLowerCase();
-
-          if (errText.indexOf('unknown action') > -1 && i < list.length - 1) {
-            lastErr = new Error(data.error || 'unknown action');
-            continue;
+          function cleanup() {
+            try { delete window[cbName]; } catch (e) { window[cbName] = undefined; }
+            if (script.parentNode) script.parentNode.removeChild(script);
           }
+    
+          window[cbName] = function(data) {
+            if (done) return;
+            done = true;
+            cleanup();
+            resolve(data);
+          };
+    
+          script.onerror = function() {
+            if (done) return;
+            done = true;
+            cleanup();
+            reject(new Error('โหลดข้อมูลไม่สำเร็จ: ' + action));
+          };
+    
+          script.src = API_BASE + '?' + qs;
+          document.body.appendChild(script);
+    
+          setTimeout(function() {
+            if (done) return;
+            done = true;
+            cleanup();
+            reject(new Error('เชื่อมต่อช้าเกินไป: ' + action));
+          }, 15000);
+        });
+      }
+    
+      function unwrapList(data, keys) {
+        if (Array.isArray(data)) return data;
+        if (!data) return [];
+    
+        for (var i = 0; i < keys.length; i++) {
+          var k = keys[i];
+          if (Array.isArray(data[k])) return data[k];
         }
-
-        return data;
-
-      } catch (e) {
-        lastErr = e;
-        if (i >= list.length - 1) throw e;
+    
+        if (data.ok === true) {
+          if (Array.isArray(data.items)) return data.items;
+          if (Array.isArray(data.data)) return data.data;
+        }
+    
+        return [];
       }
-    }
-
-    throw lastErr || new Error('โหลดข้อมูลไม่สำเร็จ');
-  }
-
-  function unwrapList(data, keys) {
-    if (Array.isArray(data)) return data;
-    if (!data) return [];
-
-    for (var i = 0; i < keys.length; i++) {
-      var k = keys[i];
-      if (Array.isArray(data[k])) return data[k];
-    }
-
-    if (data.ok === true) {
-      if (Array.isArray(data.items)) return data.items;
-      if (Array.isArray(data.data)) return data.data;
-    }
-
-    return [];
-  }
-
-  /************************************************************
-   * LIFF
-   ************************************************************/
-  async function ensureLiffReady() {
-    if (LIFF_READY) return true;
-
-    setLoading(15, 'กำลังเชื่อมต่อ LINE...');
-
-    if (!window.liff) {
-      throw new Error('ไม่พบ LIFF SDK');
-    }
-
-    await liff.init({
-      liffId: LIFF_ID,
-      withLoginOnExternalBrowser: true
-    });
-
-    state.auth.isInClient = !!liff.isInClient();
-
-    if (!liff.isLoggedIn()) {
-      liff.login();
-      return false;
-    }
-
-    setLoading(35, 'กำลังโหลดโปรไฟล์ LINE...');
-
-    var profile = await liff.getProfile();
-
-    state.auth.lineUserId = String((profile && profile.userId) || '');
-    state.auth.displayName = String((profile && profile.displayName) || '');
-
-    LIFF_READY = true;
-    return true;
-  }
-
-  /************************************************************
-   * DATA LOADERS
-   ************************************************************/
-  async function loadInit() {
-    try {
-      var data = await loadJsonpAny(ACTIONS.init, {
-        lineUserId: state.auth.lineUserId || ''
-      });
-
-      if (data && data.ok === false) {
-        throw new Error(data.error || 'โหลดข้อมูลเริ่มต้นไม่สำเร็จ');
+    
+      /************************************************************
+       * LIFF
+       ************************************************************/
+      async function ensureLiffReady() {
+        if (LIFF_READY) return true;
+    
+        setLoading(15, 'กำลังเชื่อมต่อ LINE...');
+    
+        if (!window.liff) {
+          throw new Error('ไม่พบ LIFF SDK');
+        }
+    
+        await liff.init({
+          liffId: LIFF_ID,
+          withLoginOnExternalBrowser: true
+        });
+    
+        state.auth.isInClient = !!liff.isInClient();
+    
+        if (!liff.isLoggedIn()) {
+          liff.login();
+          return false;
+        }
+    
+        setLoading(35, 'กำลังโหลดโปรไฟล์ LINE...');
+    
+        var profile = await liff.getProfile();
+    
+        state.auth.lineUserId = String((profile && profile.userId) || '');
+        state.auth.displayName = String((profile && profile.displayName) || '');
+    
+        LIFF_READY = true;
+        return true;
       }
-
-      if (data && data.auth) {
-        state.auth.role = data.auth.role || '';
-        state.auth.scopes = data.auth.scopes || [];
+    
+      /************************************************************
+       * DATA LOADERS
+       ************************************************************/
+      async function loadInit() {
+        try {
+          var data = await loadJsonp(ACTIONS.init, {
+            lineUserId: state.auth.lineUserId || '',
+            brand: 'vivo',
+            warehouseKey: state.order.warehouseKey || 'RemainQuota'
+          });
+    
+          if (data && data.ok === false) {
+            throw new Error(data.error || 'โหลดข้อมูลเริ่มต้นไม่สำเร็จ');
+          }
+    
+          if (data && data.employee) {
+            state.auth.role = data.employee.role || '';
+          }
+    
+          if (data && Array.isArray(data.stockItems)) {
+            state.catalog.items = data.stockItems
+              .map(normalizeProduct)
+              .filter(function(x) {
+                return !!(x && x.modelBase);
+              });
+          }
+    
+          return data || {};
+        } catch (e) {
+          console.warn(e);
+          return {};
+        }
       }
-
-      return data || {};
-    } catch (e) {
-      console.warn(e);
-      return {};
-    }
-  }
-
-  async function loadCustomers(keyword) {
-    state.customer.loading = true;
-    state.customer.keyword = String(keyword || '');
-
-    try {
-      var data = await loadJsonpAny(ACTIONS.customers, {
-        lineUserId: state.auth.lineUserId || '',
-        keyword: state.customer.keyword
-      });
-
-      if (data && data.ok === false) {
-        throw new Error(data.error || 'โหลดลูกค้าไม่สำเร็จ');
+    
+      async function loadCustomers(keyword) {
+        state.customer.loading = true;
+        state.customer.keyword = String(keyword || '');
+    
+        try {
+          var data = await loadJsonp(ACTIONS.customers, {
+            lineUserId: state.auth.lineUserId || '',
+            keyword: state.customer.keyword,
+            limit: 80
+          });
+    
+          if (data && data.ok === false) {
+            throw new Error(data.error || 'โหลดลูกค้าไม่สำเร็จ');
+          }
+    
+          var list = unwrapList(data, ['customers', 'items', 'data', 'results']);
+    
+          state.customer.options = list.map(function(x) {
+            return {
+              customerNo: String(x.customerNo || x.CustomerNo || x.no || x.code || '').trim(),
+              name: String(x.name || x.customerName || x.CustomerName || x.shopName || x.label || '').trim(),
+              phone: String(x.phone || x.tel || x.mobile || '').trim(),
+              address: String(x.address || x.Address || '').trim()
+            };
+          }).filter(function(x) {
+            return x.customerNo || x.name;
+          });
+    
+          renderCustomerDropdown();
+    
+        } catch (e) {
+          console.error(e);
+          showToast(e.message || 'โหลดลูกค้าไม่สำเร็จ', 'error', 2200);
+        } finally {
+          state.customer.loading = false;
+        }
       }
-
-      var list = unwrapList(data, ['customers', 'items', 'data', 'results']);
-
-      state.customer.options = list.map(function(x) {
+    
+      async function loadCatalog(keyword) {
+        state.catalog.loading = true;
+        state.catalog.keyword = String(keyword || '');
+    
+        renderCatalog();
+    
+        try {
+          var data = await loadJsonp(ACTIONS.catalog, {
+            lineUserId: state.auth.lineUserId || '',
+            keyword: state.catalog.keyword,
+            warehouseKey: state.order.warehouseKey || 'RemainQuota',
+            brand: 'vivo',
+            limit: 120
+          });
+    
+          if (data && data.ok === false) {
+            throw new Error(data.error || 'โหลดสินค้าไม่สำเร็จ');
+          }
+    
+          var list = unwrapList(data, ['stockItems', 'catalog', 'items', 'products', 'data', 'results']);
+    
+          state.catalog.items = list
+            .map(normalizeProduct)
+            .filter(function(x) {
+              return !!(x && x.modelBase);
+            });
+    
+          renderCatalog();
+    
+        } catch (e) {
+          console.error(e);
+          showToast(e.message || 'โหลดสินค้าไม่สำเร็จ', 'error', 2400);
+          state.catalog.items = [];
+          renderCatalog();
+        } finally {
+          state.catalog.loading = false;
+        }
+      }
+    
+      function normalizeProduct(x) {
+        x = x || {};
+    
+        var quota = x.quota || x.stock || {};
+        var priceModes = x.priceModes || x.prices || {};
+    
+        var modelBase = String(x.modelBase || x.ModelBase || x.model || '').trim();
+        var series = String(x.series || x.Series || '').trim();
+        var displayName = String(x.displayName || x.name || modelBase).trim();
+    
+        // กัน DEMO โผล่ในหน้าสั่งของจริงก่อน
+        if (/demo|เดโม|สาธิต/i.test(modelBase + ' ' + series + ' ' + displayName)) {
+          return null;
+        }
+    
+        var orderLine = String(
+          x.orderLine ||
+          x.OrderLine ||
+          x.orderLineTemplate ||
+          x.commandLine ||
+          ''
+        ).trim();
+    
+        var remainQuota = Number(
+          x.remainQuota ||
+          x.available ||
+          x.qtyAvailable ||
+          quota.RemainQuota ||
+          x.RemainQuota ||
+          0
+        );
+    
         return {
-          customerNo: String(x.customerNo || x.CustomerNo || x.no || x.code || '').trim(),
-          name: String(x.name || x.customerName || x.CustomerName || x.shopName || x.label || '').trim(),
-          phone: String(x.phone || x.tel || x.mobile || '').trim(),
-          address: String(x.address || x.Address || '').trim()
-        };
-      }).filter(function(x) {
-        return x.customerNo || x.name;
-      });
-
-      renderCustomerDropdown();
-
-    } catch (e) {
-      console.error(e);
-      showToast(e.message || 'โหลดลูกค้าไม่สำเร็จ', 'error', 2200);
-    } finally {
-      state.customer.loading = false;
-    }
-  }
-
-  async function loadCatalog(keyword) {
-    state.catalog.loading = true;
-    state.catalog.keyword = String(keyword || '');
-
-    renderCatalog();
-
-    try {
-      var data = await loadJsonpAny(ACTIONS.catalog, {
-        lineUserId: state.auth.lineUserId || '',
-        keyword: state.catalog.keyword,
-        warehouseKey: state.order.warehouseKey || 'RemainQuota',
-        brand: 'vivo'
-      });
-
-      if (data && data.ok === false) {
-        throw new Error(data.error || 'โหลดสินค้าไม่สำเร็จ');
-      }
-
-      var list = unwrapList(data, ['stockItems', 'catalog', 'items', 'products', 'data', 'results']);
-
-      state.catalog.items = list
-        .map(normalizeProduct)
-        .filter(function(x) {
-          return !!(x && x.modelBase);
-        });
-
-      renderCatalog();
-
-    } catch (e) {
-      console.error(e);
-      showToast(e.message || 'โหลดสินค้าไม่สำเร็จ', 'error', 2400);
-      state.catalog.items = [];
-      renderCatalog();
-    } finally {
-      state.catalog.loading = false;
-    }
-  }
-
-  function normalizeProduct(x) {
-    x = x || {};
-
-    var quota = x.quota || x.stock || {};
-    var priceModes = x.priceModes || x.prices || {};
-
-    var modelBase = String(x.modelBase || x.ModelBase || x.model || '').trim();
-    var series = String(x.series || x.Series || '').trim();
-
-    // กัน DEMO โผล่ในหน้าสั่งของจริงก่อน
-    if (/demo|เดโม|สาธิต/i.test(modelBase + ' ' + series)) {
-      return null;
-    }
-
-    var displayName = String(x.displayName || x.name || modelBase).trim();
-    var orderLine = String(
-      x.orderLine ||
-      x.OrderLine ||
-      x.orderLineTemplate ||
-      x.commandLine ||
-      ''
-    ).trim();
-
-    var remainQuota = Number(
-      x.remainQuota ||
-      x.available ||
-      x.qtyAvailable ||
-      quota.RemainQuota ||
-      x.RemainQuota ||
-      0
-    );
-
-    return {
-      modelBase: modelBase,
-      displayName: displayName || modelBase,
-      orderLine: normalizeOrderLineBase(orderLine || buildOrderLineFromModelBase(modelBase)),
-      series: series,
-      color: String(x.color || x.ColorName || x.colorName || x.ColorTH || '').trim(),
-      price: Number(x.price || x.priceWholesale || x.PriceWholesale || priceModes.wholesale || 0),
-      quota: {
-        RemainQuota: remainQuota,
-        RemainQuota2: Number(quota.RemainQuota2 || x.RemainQuota2 || 0),
-        RemainQuota3: Number(quota.RemainQuota3 || x.RemainQuota3 || 0)
-      }
-    };
-  }
-
-  function normalizeOrderLineBase(line) {
-    var s = String(line || '').trim();
-
-    // backend บางตัวส่งมาเป็น "... x" เพื่อให้เติมเลขเอง
-    s = s.replace(/\s+x\s*$/i, '').trim();
-
-    // ถ้าหลุด x1 มาจาก template ให้ตัดออกก่อน
-    s = s.replace(/\s+x\s*\d+\s*$/i, '').trim();
-
-    return s;
-  }
-
-  function buildOrderLineFromModelBase(modelBase) {
-    var s = String(modelBase || '').trim();
-
-    s = s
-      .replace(/^vivo\s*[-–]\s*/i, '')
-      .replace(/^iqoo\s*[-–]\s*/i, 'iQOO ')
-      .replace(/\(\s*(\d+)\s*[+\/]\s*(\d+)\s*GB\s*\)/ig, '$1+$2')
-      .replace(/\(\s*(\d+)\s*[+\/]\s*(\d+)\s*\)/ig, '$1+$2')
-      .replace(/\(\s*demo\s*\)/ig, '')
-      .replace(/\bdemo\b/ig, '')
-      .replace(/\s+/g, ' ')
-      .trim();
-
-    return s;
-  }
-
-  /************************************************************
-   * CART
-   ************************************************************/
-  function cartItems() {
-    return Object.keys(state.order.cart).map(function(k) {
-      return state.order.cart[k];
-    });
-  }
-
-  function availableQty(product) {
-    var q = product && product.quota ? product.quota : {};
-    return Number(q[state.order.warehouseKey] || 0);
-  }
-
-  function getCartQty(modelBase) {
-    var it = state.order.cart[String(modelBase || '')];
-    return it ? Number(it.qty || 0) : 0;
-  }
-
-  function setCartQty(product, qty) {
-    if (!product || !product.modelBase) return;
-
-    var modelBase = String(product.modelBase || '');
-    var nextQty = Math.max(0, Number(qty || 0));
-    var maxQty = availableQty(product);
-
-    if (maxQty <= 0 && nextQty > 0) {
-      showToast('รุ่นนี้ไม่มีโควต้าพร้อมขาย', 'warn', 1800);
-      return;
-    }
-
-    if (maxQty > 0 && nextQty > maxQty) {
-      nextQty = maxQty;
-      showToast('ปรับเป็นจำนวนสูงสุดที่มีแล้ว', 'warn', 1500);
-    }
-
-    if (nextQty <= 0) {
-      delete state.order.cart[modelBase];
-    } else {
-      state.order.cart[modelBase] = {
-        modelBase: product.modelBase,
-        displayName: product.displayName || product.modelBase,
-        orderLine: normalizeOrderLineBase(product.orderLine || product.modelBase),
-        qty: nextQty,
-        price: Number(product.price || 0),
-        warehouseKey: state.order.warehouseKey
-      };
-    }
-
-    renderAll();
-  }
-
-  function totalQty() {
-    return cartItems().reduce(function(sum, x) {
-      return sum + Number(x.qty || 0);
-    }, 0);
-  }
-
-  /************************************************************
-   * BUILD #สั่งของ TEXT
-   ************************************************************/
-  function customerLabel() {
-    var c = state.customer.selected || {};
-    return String(c.name || c.customerNo || '').trim();
-  }
-
-  function canBuildOrder() {
-    return !!(customerLabel() && cartItems().length);
-  }
-
-  function buildOrderText() {
-    var name = customerLabel();
-    var items = cartItems();
-
-    var lines = [];
-
-    lines.push('#สั่งของ ' + name);
-    lines.push('');
-
-    items.forEach(function(it) {
-      var baseLine = normalizeOrderLineBase(it.orderLine || it.modelBase || '');
-      lines.push(baseLine + ' x' + Number(it.qty || 0));
-    });
-
-    return lines.join('\n').replace(/\n{3,}/g, '\n\n').trim();
-  }
-
-  /************************************************************
-   * RENDER
-   ************************************************************/
-  function renderAll() {
-    renderSelectedCustomer();
-    renderCatalog();
-    renderReview();
-    renderButtons();
-  }
-
-  function renderSelectedCustomer() {
-    var box = $('selectedCustomerBox');
-    var input = $('customerSearch');
-    var clearBtn = $('clearCustomerBtn');
-    var c = state.customer.selected;
-
-    if (clearBtn && input) {
-      clearBtn.style.display = String(input.value || '').trim() ? '' : 'none';
-    }
-
-    if (!box) return;
-
-    if (!c) {
-      box.style.display = 'none';
-      box.innerHTML = '';
-      return;
-    }
-
-    box.style.display = '';
-    box.innerHTML =
-      '<b>' + escapeHtml(c.name || '-') + '</b><br>' +
-      'รหัสลูกค้า: ' + escapeHtml(c.customerNo || '-') +
-      (c.phone ? ' | โทร: ' + escapeHtml(c.phone) : '');
-  }
-
-  function renderCustomerDropdown() {
-    var box = $('customerDropdown');
-    if (!box) return;
-
-    var keyword = String(state.customer.keyword || '').trim();
-    var options = state.customer.options || [];
-
-    if (!state.customer.dropdownOpen || !keyword) {
-      box.style.display = 'none';
-      box.innerHTML = '';
-      return;
-    }
-
-    box.style.display = '';
-
-    if (state.customer.loading) {
-      box.innerHTML = '<div class="customer-option"><div class="customer-meta">กำลังค้นหา...</div></div>';
-      return;
-    }
-
-    if (!options.length) {
-      box.innerHTML = '<div class="customer-option"><div class="customer-meta">ไม่พบลูกค้าที่ค้นหา</div></div>';
-      return;
-    }
-
-    var html = '';
-
-    options.forEach(function(c, idx) {
-      html +=
-        '<div class="customer-option" data-idx="' + idx + '">' +
-          '<div class="customer-name">' + escapeHtml(c.name || '-') + '</div>' +
-          '<div class="customer-meta">' +
-            'รหัสลูกค้า: ' + escapeHtml(c.customerNo || '-') +
-            (c.phone ? ' | โทร: ' + escapeHtml(c.phone) : '') +
-          '</div>' +
-        '</div>';
-    });
-
-    box.innerHTML = html;
-
-    Array.prototype.forEach.call(box.querySelectorAll('.customer-option'), function(el) {
-      el.addEventListener('click', function() {
-        var idx = Number(this.getAttribute('data-idx'));
-        var c = state.customer.options[idx];
-        if (!c) return;
-
-        state.customer.selected = c;
-        state.customer.keyword = c.name || '';
-
-        var input = $('customerSearch');
-        if (input) input.value = c.name || '';
-
-        state.customer.dropdownOpen = false;
-
-        renderAll();
-        renderCustomerDropdown();
-        showToast('เลือกลูกค้าแล้ว', 'success', 1000);
-      });
-    });
-  }
-
-  function renderCatalog() {
-    var box = $('catalogList');
-    if (!box) return;
-
-    if (state.catalog.loading) {
-      box.innerHTML = '<div class="empty">กำลังโหลดสินค้า...</div>';
-      return;
-    }
-
-    var items = state.catalog.items || [];
-
-    if (!items.length) {
-      box.innerHTML = '<div class="empty">ค้นหารุ่นสินค้าเพื่อเริ่มเลือกของได้เลยครับ</div>';
-      return;
-    }
-
-    var html = '';
-
-    items.forEach(function(p, idx) {
-      var q = getCartQty(p.modelBase);
-      var available = availableQty(p);
-      var selected = q > 0 ? ' selected' : '';
-      var minusDisabled = q <= 0 ? ' disabled' : '';
-      var plusDisabled = available <= 0 || q >= available ? ' disabled' : '';
-
-      html +=
-        '<div class="product-card' + selected + '" data-idx="' + idx + '">' +
-          '<div class="product-head">' +
-            '<div class="product-main">' +
-              '<div class="product-name">' + escapeHtml(p.displayName || p.modelBase || '-') + '</div>' +
-            '</div>' +
-            '<div class="product-price">' + (p.price ? fmt(p.price) + ' ฿' : '') + '</div>' +
-          '</div>' +
-
-          '<div class="product-foot">' +
-            '<div class="stock-meta">' +
-              'พร้อมขาย: <b>' + fmt(available) + '</b>' +
-            '</div>' +
-
-            '<div class="qty-stepper">' +
-              '<button class="qty-btn minus-btn" type="button"' + minusDisabled + '>−</button>' +
-              '<span class="qty-num">' + fmt(q) + '</span>' +
-              '<button class="qty-btn plus-btn" type="button"' + plusDisabled + '>+</button>' +
-            '</div>' +
-          '</div>' +
-        '</div>';
-    });
-
-    box.innerHTML = html;
-
-    Array.prototype.forEach.call(box.querySelectorAll('.product-card'), function(el) {
-      var idx = Number(el.getAttribute('data-idx'));
-      var product = state.catalog.items[idx];
-      if (!product) return;
-
-      var minus = el.querySelector('.minus-btn');
-      var plus = el.querySelector('.plus-btn');
-
-      if (minus) {
-        minus.addEventListener('click', function() {
-          setCartQty(product, getCartQty(product.modelBase) - 1);
-        });
-      }
-
-      if (plus) {
-        plus.addEventListener('click', function() {
-          setCartQty(product, getCartQty(product.modelBase) + 1);
-        });
-      }
-    });
-  }
-
-  function renderReview() {
-    var box = $('reviewBox');
-    var preview = $('commandPreview');
-    if (!box) return;
-
-    var c = state.customer.selected;
-    var items = cartItems();
-
-    var customerHtml = c
-      ? '<div class="review-main">' + escapeHtml(c.name || '-') + '</div>' +
-        '<div class="review-sub">รหัสลูกค้า: ' + escapeHtml(c.customerNo || '-') + '</div>'
-      : '<div class="review-sub">ยังไม่ได้เลือกลูกค้า</div>';
-
-    var itemHtml = '';
-
-    if (!items.length) {
-      itemHtml = '<div class="review-sub">ยังไม่มีรายการสินค้า</div>';
-    } else {
-      items.slice(0, 4).forEach(function(it) {
-        itemHtml +=
-          '<div class="review-item">' +
-            '<div class="review-item-name">' + escapeHtml(it.orderLine || it.modelBase || '-') + '</div>' +
-            '<div class="review-item-right">x' + fmt(it.qty || 0) + '</div>' +
-          '</div>';
-      });
-
-      if (items.length > 4) {
-        itemHtml +=
-          '<div class="review-sub">และอีก ' + fmt(items.length - 4) + ' รายการ</div>';
-      }
-    }
-
-    box.innerHTML =
-      '<div class="review-section">' +
-        '<div class="review-label">ลูกค้า</div>' +
-        customerHtml +
-      '</div>' +
-
-      '<div class="review-section">' +
-        '<div class="review-label">รายการที่เลือก</div>' +
-        itemHtml +
-      '</div>' +
-
-      '<div class="review-section">' +
-        '<div class="review-label">รวม</div>' +
-        '<div class="review-main">' + fmt(totalQty()) + ' เครื่อง</div>' +
-      '</div>';
-
-    if (preview) {
-      preview.style.display = 'none';
-      preview.textContent = canBuildOrder() ? buildOrderText() : '';
-    }
-  }
-
-  function renderButtons() {
-    var ok = canBuildOrder();
-    var copyBtn = $('copyBtn');
-    var sendBtn = $('sendBtn');
-
-    if (copyBtn) {
-      copyBtn.disabled = !ok;
-      copyBtn.textContent = 'ตรวจสอบรายการ';
-    }
-
-    if (sendBtn) {
-      sendBtn.disabled = !ok;
-      sendBtn.style.display = 'none';
-    }
-  }
-
-  /************************************************************
-   * REVIEW MODAL
-   ************************************************************/
-  function ensureReviewModal() {
-    if ($('reviewModalBackdrop')) return;
-
-    var wrap = document.createElement('div');
-    wrap.id = 'reviewModalBackdrop';
-    wrap.className = 'review-modal-backdrop';
-
-    wrap.innerHTML =
-      '<div class="review-modal">' +
-        '<div class="modal-head">' +
-          '<div class="modal-icon">📋</div>' +
-          '<div class="modal-title-wrap">' +
-            '<div class="modal-title">ตรวจสอบก่อนส่ง</div>' +
-            '<div class="modal-sub">ข้อความที่จะส่งเข้ากลุ่ม</div>' +
-          '</div>' +
-          '<button id="modalCloseBtn" class="modal-close" type="button">×</button>' +
-        '</div>' +
-
-        '<div id="modalCommandText" class="modal-command"></div>' +
-
-        '<div class="modal-summary">' +
-          '<div class="modal-summary-card">' +
-            '<div class="modal-summary-label">ลูกค้า</div>' +
-            '<div id="modalCustomerName" class="modal-summary-value">-</div>' +
-          '</div>' +
-          '<div class="modal-summary-card">' +
-            '<div class="modal-summary-label">รวม</div>' +
-            '<div id="modalTotalQty" class="modal-summary-value">0 เครื่อง</div>' +
-          '</div>' +
-        '</div>' +
-
-        '<div class="modal-actions">' +
-          '<button id="modalCopyBtn" class="modal-btn copy" type="button">คัดลอก</button>' +
-          '<button id="modalSendBtn" class="modal-btn send" type="button">ส่งเข้ากลุ่ม</button>' +
-        '</div>' +
-      '</div>';
-
-    document.body.appendChild(wrap);
-
-    $('modalCloseBtn').addEventListener('click', closeReviewModal);
-    $('modalCopyBtn').addEventListener('click', copyOrderText);
-    $('modalSendBtn').addEventListener('click', sendOrderToChat);
-
-    wrap.addEventListener('click', function(e) {
-      if (e.target === wrap) closeReviewModal();
-    });
-  }
-
-  function openReviewModal() {
-    if (!canBuildOrder()) {
-      showToast('เลือกลูกค้าและสินค้าให้ครบก่อนครับ', 'warn', 1600);
-      return;
-    }
-
-    ensureReviewModal();
-
-    $('modalCommandText').textContent = buildOrderText();
-    $('modalCustomerName').textContent = customerLabel() || '-';
-    $('modalTotalQty').textContent = fmt(totalQty()) + ' เครื่อง';
-
-    $('reviewModalBackdrop').classList.add('show');
-  }
-
-  function closeReviewModal() {
-    var el = $('reviewModalBackdrop');
-    if (el) el.classList.remove('show');
-  }
-
-  /************************************************************
-   * COPY / SEND
-   ************************************************************/
-  function fallbackCopy(text) {
-    var ta = document.createElement('textarea');
-    ta.value = text;
-    ta.setAttribute('readonly', '');
-    ta.style.position = 'fixed';
-    ta.style.left = '-9999px';
-    document.body.appendChild(ta);
-    ta.select();
-
-    var ok = false;
-    try {
-      ok = document.execCommand('copy');
-    } catch (e) {
-      ok = false;
-    }
-
-    document.body.removeChild(ta);
-    return ok;
-  }
-
-  async function copyOrderText() {
-    if (!canBuildOrder()) {
-      showToast('เลือกลูกค้าและสินค้าให้ครบก่อนครับ', 'warn', 1600);
-      return;
-    }
-
-    var text = buildOrderText();
-
-    try {
-      if (navigator.clipboard && navigator.clipboard.writeText) {
-        await navigator.clipboard.writeText(text);
-      } else {
-        var ok = fallbackCopy(text);
-        if (!ok) throw new Error('copy failed');
-      }
-
-      showToast('คัดลอกแล้วครับ', 'success', 1200);
-
-    } catch (e) {
-      var ok2 = fallbackCopy(text);
-      if (ok2) {
-        showToast('คัดลอกแล้วครับ', 'success', 1200);
-      } else {
-        showToast('คัดลอกไม่สำเร็จ กดค้างที่ข้อความเพื่อคัดลอกแทนครับ', 'error', 2400);
-      }
-    }
-  }
-
-  async function sendOrderToChat() {
-    if (!canBuildOrder()) {
-      showToast('เลือกลูกค้าและสินค้าให้ครบก่อนครับ', 'warn', 1600);
-      return;
-    }
-
-    var text = buildOrderText();
-
-    if (!window.liff || !LIFF_READY || !liff.isInClient()) {
-      await copyOrderText();
-      showToast('ส่งเข้ากลุ่มไม่ได้ในเบราว์เซอร์ จึงคัดลอกให้แทนครับ', 'warn', 2200);
-      return;
-    }
-
-    var modalSendBtn = $('modalSendBtn');
-    var oldText = modalSendBtn ? modalSendBtn.textContent : '';
-
-    try {
-      if (modalSendBtn) {
-        modalSendBtn.disabled = true;
-        modalSendBtn.textContent = 'กำลังส่ง...';
-      }
-
-      await liff.sendMessages([
-        {
-          type: 'text',
-          text: text
-        }
-      ]);
-
-      showToast('ส่งเข้ากลุ่มแล้วครับ', 'success', 1400);
-
-      setTimeout(function() {
-        try {
-          liff.closeWindow();
-        } catch (e) {}
-      }, 700);
-
-    } catch (e) {
-      console.error(e);
-      await copyOrderText();
-      showToast('ส่งไม่สำเร็จ เลยคัดลอกข้อความให้แทนครับ', 'warn', 2400);
-
-    } finally {
-      if (modalSendBtn) {
-        modalSendBtn.disabled = false;
-        modalSendBtn.textContent = oldText || 'ส่งเข้ากลุ่ม';
-      }
-    }
-  }
-
-  /************************************************************
-   * EVENTS
-   ************************************************************/
-  function bindEvents() {
-    var backBtn = $('backBtn');
-    var customerInput = $('customerSearch');
-    var clearCustomerBtn = $('clearCustomerBtn');
-    var catalogInput = $('catalogSearch');
-    var copyBtn = $('copyBtn');
-
-    if (backBtn) {
-      backBtn.addEventListener('click', function() {
-        try {
-          if (window.liff && LIFF_READY && liff.isInClient()) {
-            liff.closeWindow();
-            return;
+          modelBase: modelBase,
+          displayName: displayName || modelBase,
+          orderLine: normalizeOrderLineBase(orderLine || buildOrderLineFromModelBase(modelBase)),
+          series: series,
+          color: String(x.color || x.ColorName || x.colorName || x.ColorTH || '').trim(),
+          price: Number(x.price || x.priceWholesale || x.PriceWholesale || priceModes.wholesale || 0),
+          quota: {
+            RemainQuota: remainQuota,
+            RemainQuota2: Number(quota.RemainQuota2 || x.RemainQuota2 || 0),
+            RemainQuota3: Number(quota.RemainQuota3 || x.RemainQuota3 || 0)
           }
-        } catch (e) {}
-
-        window.history.back();
-      });
-    }
-
-    if (customerInput) {
-      customerInput.addEventListener('focus', function() {
-        var v = String(this.value || '').trim();
-        if (v) {
-          state.customer.dropdownOpen = true;
-          renderCustomerDropdown();
-        }
-      });
-
-      customerInput.addEventListener('input', function() {
-        var v = String(this.value || '');
-        state.customer.keyword = v;
-
-        if (!v.trim()) {
-          state.customer.selected = null;
-          state.customer.options = [];
-          state.customer.dropdownOpen = false;
-          renderAll();
-          renderCustomerDropdown();
+        };
+      }
+    
+      function normalizeOrderLineBase(line) {
+        return String(line || '')
+          .replace(/\s+x\s*$/i, '')
+          .replace(/\s+x\s*\d+\s*$/i, '')
+          .replace(/\s+/g, ' ')
+          .trim();
+      }
+    
+      function buildOrderLineFromModelBase(modelBase) {
+        var s = String(modelBase || '').trim();
+    
+        s = s
+          .replace(/^vivo\s*[-–]\s*/i, '')
+          .replace(/^iqoo\s*[-–]\s*/i, 'iQOO ')
+          .replace(/\(\s*(\d+)\s*[+\/]\s*(\d+)\s*GB\s*\)/ig, '$1+$2')
+          .replace(/\(\s*(\d+)\s*[+\/]\s*(\d+)\s*\)/ig, '$1+$2')
+          .replace(/\(\s*demo\s*\)/ig, '')
+          .replace(/\bdemo\b/ig, '')
+          .replace(/\s+/g, ' ')
+          .trim();
+    
+        return s;
+      }
+    
+      /************************************************************
+       * CART
+       ************************************************************/
+      function cartItems() {
+        return Object.keys(state.order.cart).map(function(k) {
+          return state.order.cart[k];
+        });
+      }
+    
+      function availableQty(product) {
+        var q = product && product.quota ? product.quota : {};
+        return Number(q[state.order.warehouseKey] || 0);
+      }
+    
+      function getCartQty(modelBase) {
+        var it = state.order.cart[String(modelBase || '')];
+        return it ? Number(it.qty || 0) : 0;
+      }
+    
+      function setCartQty(product, qty) {
+        if (!product || !product.modelBase) return;
+    
+        var modelBase = String(product.modelBase || '');
+        var nextQty = Math.max(0, Number(qty || 0));
+        var maxQty = availableQty(product);
+    
+        if (maxQty <= 0 && nextQty > 0) {
+          showToast('รุ่นนี้ไม่มีโควต้าพร้อมขาย', 'warn', 1800);
           return;
         }
-
-        state.customer.selected = null;
-        state.customer.dropdownOpen = true;
-        renderAll();
-
-        debounce(function() {
-          loadCustomers(v);
-        }, 260, 'customer');
-      });
-    }
-
-    if (clearCustomerBtn) {
-      clearCustomerBtn.addEventListener('click', function() {
-        state.customer.keyword = '';
-        state.customer.selected = null;
-        state.customer.options = [];
-        state.customer.dropdownOpen = false;
-
-        if (customerInput) {
-          customerInput.value = '';
-          customerInput.focus();
+    
+        if (maxQty > 0 && nextQty > maxQty) {
+          nextQty = maxQty;
+          showToast('ปรับเป็นจำนวนสูงสุดที่มีแล้ว', 'warn', 1500);
         }
-
+    
+        if (nextQty <= 0) {
+          delete state.order.cart[modelBase];
+        } else {
+          state.order.cart[modelBase] = {
+            modelBase: product.modelBase,
+            displayName: product.displayName || product.modelBase,
+            orderLine: normalizeOrderLineBase(product.orderLine || product.modelBase),
+            qty: nextQty,
+            price: Number(product.price || 0),
+            warehouseKey: state.order.warehouseKey
+          };
+        }
+    
         renderAll();
-        renderCustomerDropdown();
-      });
-    }
-
-    document.addEventListener('click', function(e) {
-      var picker = document.querySelector('.customer-picker');
-      if (!picker) return;
-
-      if (!picker.contains(e.target)) {
-        state.customer.dropdownOpen = false;
-        renderCustomerDropdown();
       }
-    });
-
-    if (catalogInput) {
-      catalogInput.addEventListener('input', function() {
-        var v = String(this.value || '');
-        state.catalog.keyword = v;
-
-        debounce(function() {
-          loadCatalog(v);
-        }, 260, 'catalog');
+    
+      function totalQty() {
+        return cartItems().reduce(function(sum, x) {
+          return sum + Number(x.qty || 0);
+        }, 0);
+      }
+    
+      /************************************************************
+       * BUILD #สั่งของ TEXT
+       ************************************************************/
+      function customerLabel() {
+        var c = state.customer.selected || {};
+        return String(c.name || c.customerNo || '').trim();
+      }
+    
+      function canBuildOrder() {
+        return !!(customerLabel() && cartItems().length);
+      }
+    
+      function buildOrderText() {
+        var name = customerLabel();
+        var items = cartItems();
+    
+        var lines = [];
+    
+        lines.push('#สั่งของ ' + name);
+        lines.push('');
+    
+        items.forEach(function(it) {
+          var baseLine = normalizeOrderLineBase(it.orderLine || it.modelBase || '');
+          lines.push(baseLine + ' x' + Number(it.qty || 0));
+        });
+    
+        return lines.join('\n').replace(/\n{3,}/g, '\n\n').trim();
+      }
+    
+      /************************************************************
+       * RENDER
+       ************************************************************/
+      function renderAll() {
+        renderSelectedCustomer();
+        renderCatalog();
+        renderReview();
+        renderButtons();
+      }
+    
+      function renderSelectedCustomer() {
+        var box = $('selectedCustomerBox');
+        var input = $('customerSearch');
+        var clearBtn = $('clearCustomerBtn');
+        var c = state.customer.selected;
+    
+        if (clearBtn && input) {
+          clearBtn.style.display = String(input.value || '').trim() ? '' : 'none';
+        }
+    
+        if (!box) return;
+    
+        if (!c) {
+          box.style.display = 'none';
+          box.innerHTML = '';
+          return;
+        }
+    
+        box.style.display = '';
+        box.innerHTML =
+          '<b>' + escapeHtml(c.name || '-') + '</b><br>' +
+          'รหัสลูกค้า: ' + escapeHtml(c.customerNo || '-') +
+          (c.phone ? ' | โทร: ' + escapeHtml(c.phone) : '');
+      }
+    
+      function renderCustomerDropdown() {
+        var box = $('customerDropdown');
+        if (!box) return;
+    
+        var keyword = String(state.customer.keyword || '').trim();
+        var options = state.customer.options || [];
+    
+        if (!state.customer.dropdownOpen || !keyword) {
+          box.style.display = 'none';
+          box.innerHTML = '';
+          return;
+        }
+    
+        box.style.display = '';
+    
+        if (state.customer.loading) {
+          box.innerHTML = '<div class="customer-option"><div class="customer-meta">กำลังค้นหา...</div></div>';
+          return;
+        }
+    
+        if (!options.length) {
+          box.innerHTML = '<div class="customer-option"><div class="customer-meta">ไม่พบลูกค้าที่ค้นหา</div></div>';
+          return;
+        }
+    
+        var html = '';
+    
+        options.forEach(function(c, idx) {
+          html +=
+            '<div class="customer-option" data-idx="' + idx + '">' +
+              '<div class="customer-name">' + escapeHtml(c.name || '-') + '</div>' +
+              '<div class="customer-meta">' +
+                'รหัสลูกค้า: ' + escapeHtml(c.customerNo || '-') +
+                (c.phone ? ' | โทร: ' + escapeHtml(c.phone) : '') +
+              '</div>' +
+            '</div>';
+        });
+    
+        box.innerHTML = html;
+    
+        Array.prototype.forEach.call(box.querySelectorAll('.customer-option'), function(el) {
+          el.addEventListener('click', function() {
+            var idx = Number(this.getAttribute('data-idx'));
+            var c = state.customer.options[idx];
+            if (!c) return;
+    
+            state.customer.selected = c;
+            state.customer.keyword = c.name || '';
+    
+            var input = $('customerSearch');
+            if (input) input.value = c.name || '';
+    
+            state.customer.dropdownOpen = false;
+    
+            renderAll();
+            renderCustomerDropdown();
+            showToast('เลือกลูกค้าแล้ว', 'success', 1000);
+          });
+        });
+      }
+    
+      function renderCatalog() {
+        var box = $('catalogList');
+        if (!box) return;
+    
+        if (state.catalog.loading) {
+          box.innerHTML = '<div class="empty">กำลังโหลดสินค้า...</div>';
+          return;
+        }
+    
+        var items = state.catalog.items || [];
+    
+        if (!items.length) {
+          box.innerHTML = '<div class="empty">ค้นหารุ่นสินค้าเพื่อเริ่มเลือกของได้เลยครับ</div>';
+          return;
+        }
+    
+        var html = '';
+    
+        items.forEach(function(p, idx) {
+          var q = getCartQty(p.modelBase);
+          var available = availableQty(p);
+          var selected = q > 0 ? ' selected' : '';
+          var minusDisabled = q <= 0 ? ' disabled' : '';
+          var plusDisabled = available <= 0 || q >= available ? ' disabled' : '';
+    
+          html +=
+            '<div class="product-card' + selected + '" data-idx="' + idx + '">' +
+              '<div class="product-head">' +
+                '<div class="product-main">' +
+                  '<div class="product-name">' + escapeHtml(p.displayName || p.modelBase || '-') + '</div>' +
+                '</div>' +
+                '<div class="product-price">' + (p.price ? fmt(p.price) + ' ฿' : '') + '</div>' +
+              '</div>' +
+    
+              '<div class="product-foot">' +
+                '<div class="stock-meta">' +
+                  'พร้อมขาย: <b>' + fmt(available) + '</b>' +
+                '</div>' +
+    
+                '<div class="qty-stepper">' +
+                  '<button class="qty-btn minus-btn" type="button"' + minusDisabled + '>−</button>' +
+                  '<span class="qty-num">' + fmt(q) + '</span>' +
+                  '<button class="qty-btn plus-btn" type="button"' + plusDisabled + '>+</button>' +
+                '</div>' +
+              '</div>' +
+            '</div>';
+        });
+    
+        box.innerHTML = html;
+    
+        Array.prototype.forEach.call(box.querySelectorAll('.product-card'), function(el) {
+          var idx = Number(el.getAttribute('data-idx'));
+          var product = state.catalog.items[idx];
+          if (!product) return;
+    
+          var minus = el.querySelector('.minus-btn');
+          var plus = el.querySelector('.plus-btn');
+    
+          if (minus) {
+            minus.addEventListener('click', function() {
+              setCartQty(product, getCartQty(product.modelBase) - 1);
+            });
+          }
+    
+          if (plus) {
+            plus.addEventListener('click', function() {
+              setCartQty(product, getCartQty(product.modelBase) + 1);
+            });
+          }
+        });
+      }
+    
+      function renderReview() {
+        var box = $('reviewBox');
+        var preview = $('commandPreview');
+        if (!box) return;
+    
+        var c = state.customer.selected;
+        var items = cartItems();
+    
+        var customerHtml = c
+          ? '<div class="review-main">' + escapeHtml(c.name || '-') + '</div>' +
+            '<div class="review-sub">รหัสลูกค้า: ' + escapeHtml(c.customerNo || '-') + '</div>'
+          : '<div class="review-sub">ยังไม่ได้เลือกลูกค้า</div>';
+    
+        var itemHtml = '';
+    
+        if (!items.length) {
+          itemHtml = '<div class="review-sub">ยังไม่มีรายการสินค้า</div>';
+        } else {
+          items.slice(0, 4).forEach(function(it) {
+            itemHtml +=
+              '<div class="review-item">' +
+                '<div class="review-item-name">' + escapeHtml(it.orderLine || it.modelBase || '-') + '</div>' +
+                '<div class="review-item-right">x' + fmt(it.qty || 0) + '</div>' +
+              '</div>';
+          });
+    
+          if (items.length > 4) {
+            itemHtml += '<div class="review-sub">และอีก ' + fmt(items.length - 4) + ' รายการ</div>';
+          }
+        }
+    
+        box.innerHTML =
+          '<div class="review-section">' +
+            '<div class="review-label">ลูกค้า</div>' +
+            customerHtml +
+          '</div>' +
+    
+          '<div class="review-section">' +
+            '<div class="review-label">รายการที่เลือก</div>' +
+            itemHtml +
+          '</div>' +
+    
+          '<div class="review-section">' +
+            '<div class="review-label">รวม</div>' +
+            '<div class="review-main">' + fmt(totalQty()) + ' เครื่อง</div>' +
+          '</div>';
+    
+        if (preview) {
+          preview.style.display = 'none';
+          preview.textContent = canBuildOrder() ? buildOrderText() : '';
+        }
+      }
+    
+      function renderButtons() {
+        var ok = canBuildOrder();
+        var copyBtn = $('copyBtn');
+        var sendBtn = $('sendBtn');
+    
+        if (copyBtn) {
+          copyBtn.disabled = !ok;
+          copyBtn.textContent = 'ตรวจสอบรายการ';
+        }
+    
+        if (sendBtn) {
+          sendBtn.disabled = !ok;
+          sendBtn.style.display = 'none';
+        }
+      }
+    
+      /************************************************************
+       * REVIEW MODAL
+       ************************************************************/
+      function ensureReviewModal() {
+        if ($('reviewModalBackdrop')) return;
+    
+        var wrap = document.createElement('div');
+        wrap.id = 'reviewModalBackdrop';
+        wrap.className = 'review-modal-backdrop';
+    
+        wrap.innerHTML =
+          '<div class="review-modal">' +
+            '<div class="modal-head">' +
+              '<div class="modal-icon">📋</div>' +
+              '<div class="modal-title-wrap">' +
+                '<div class="modal-title">ตรวจสอบก่อนส่ง</div>' +
+                '<div class="modal-sub">ข้อความที่จะส่งเข้ากลุ่ม</div>' +
+              '</div>' +
+              '<button id="modalCloseBtn" class="modal-close" type="button">×</button>' +
+            '</div>' +
+    
+            '<div id="modalCommandText" class="modal-command"></div>' +
+    
+            '<div class="modal-summary">' +
+              '<div class="modal-summary-card">' +
+                '<div class="modal-summary-label">ลูกค้า</div>' +
+                '<div id="modalCustomerName" class="modal-summary-value">-</div>' +
+              '</div>' +
+              '<div class="modal-summary-card">' +
+                '<div class="modal-summary-label">รวม</div>' +
+                '<div id="modalTotalQty" class="modal-summary-value">0 เครื่อง</div>' +
+              '</div>' +
+            '</div>' +
+    
+            '<div class="modal-actions">' +
+              '<button id="modalCopyBtn" class="modal-btn copy" type="button">คัดลอก</button>' +
+              '<button id="modalSendBtn" class="modal-btn send" type="button">ส่งเข้ากลุ่ม</button>' +
+            '</div>' +
+          '</div>';
+    
+        document.body.appendChild(wrap);
+    
+        $('modalCloseBtn').addEventListener('click', closeReviewModal);
+        $('modalCopyBtn').addEventListener('click', copyOrderText);
+        $('modalSendBtn').addEventListener('click', sendOrderToChat);
+    
+        wrap.addEventListener('click', function(e) {
+          if (e.target === wrap) closeReviewModal();
+        });
+      }
+    
+      function openReviewModal() {
+        if (!canBuildOrder()) {
+          showToast('เลือกลูกค้าและสินค้าให้ครบก่อนครับ', 'warn', 1600);
+          return;
+        }
+    
+        ensureReviewModal();
+    
+        $('modalCommandText').textContent = buildOrderText();
+        $('modalCustomerName').textContent = customerLabel() || '-';
+        $('modalTotalQty').textContent = fmt(totalQty()) + ' เครื่อง';
+    
+        $('reviewModalBackdrop').classList.add('show');
+      }
+    
+      function closeReviewModal() {
+        var el = $('reviewModalBackdrop');
+        if (el) el.classList.remove('show');
+      }
+    
+      /************************************************************
+       * COPY / SEND
+       ************************************************************/
+      function fallbackCopy(text) {
+        var ta = document.createElement('textarea');
+        ta.value = text;
+        ta.setAttribute('readonly', '');
+        ta.style.position = 'fixed';
+        ta.style.left = '-9999px';
+        document.body.appendChild(ta);
+        ta.select();
+    
+        var ok = false;
+        try {
+          ok = document.execCommand('copy');
+        } catch (e) {
+          ok = false;
+        }
+    
+        document.body.removeChild(ta);
+        return ok;
+      }
+    
+      async function copyOrderText() {
+        if (!canBuildOrder()) {
+          showToast('เลือกลูกค้าและสินค้าให้ครบก่อนครับ', 'warn', 1600);
+          return;
+        }
+    
+        var text = buildOrderText();
+    
+        try {
+          if (navigator.clipboard && navigator.clipboard.writeText) {
+            await navigator.clipboard.writeText(text);
+          } else {
+            var ok = fallbackCopy(text);
+            if (!ok) throw new Error('copy failed');
+          }
+    
+          showToast('คัดลอกแล้วครับ', 'success', 1200);
+    
+        } catch (e) {
+          var ok2 = fallbackCopy(text);
+          if (ok2) {
+            showToast('คัดลอกแล้วครับ', 'success', 1200);
+          } else {
+            showToast('คัดลอกไม่สำเร็จ กดค้างที่ข้อความเพื่อคัดลอกแทนครับ', 'error', 2400);
+          }
+        }
+      }
+    
+      async function sendOrderToChat() {
+        if (!canBuildOrder()) {
+          showToast('เลือกลูกค้าและสินค้าให้ครบก่อนครับ', 'warn', 1600);
+          return;
+        }
+    
+        var text = buildOrderText();
+    
+        if (!window.liff || !LIFF_READY || !liff.isInClient()) {
+          await copyOrderText();
+          showToast('ส่งเข้ากลุ่มไม่ได้ในเบราว์เซอร์ จึงคัดลอกให้แทนครับ', 'warn', 2200);
+          return;
+        }
+    
+        var modalSendBtn = $('modalSendBtn');
+        var oldText = modalSendBtn ? modalSendBtn.textContent : '';
+    
+        try {
+          if (modalSendBtn) {
+            modalSendBtn.disabled = true;
+            modalSendBtn.textContent = 'กำลังส่ง...';
+          }
+    
+          await liff.sendMessages([
+            {
+              type: 'text',
+              text: text
+            }
+          ]);
+    
+          showToast('ส่งเข้ากลุ่มแล้วครับ', 'success', 1400);
+    
+          setTimeout(function() {
+            try {
+              liff.closeWindow();
+            } catch (e) {}
+          }, 700);
+    
+        } catch (e) {
+          console.error(e);
+          await copyOrderText();
+          showToast('ส่งไม่สำเร็จ เลยคัดลอกข้อความให้แทนครับ', 'warn', 2400);
+    
+        } finally {
+          if (modalSendBtn) {
+            modalSendBtn.disabled = false;
+            modalSendBtn.textContent = oldText || 'ส่งเข้ากลุ่ม';
+          }
+        }
+      }
+    
+      /************************************************************
+       * EVENTS
+       ************************************************************/
+      function bindEvents() {
+        var backBtn = $('backBtn');
+        var customerInput = $('customerSearch');
+        var clearCustomerBtn = $('clearCustomerBtn');
+        var catalogInput = $('catalogSearch');
+        var copyBtn = $('copyBtn');
+    
+        if (backBtn) {
+          backBtn.addEventListener('click', function() {
+            try {
+              if (window.liff && LIFF_READY && liff.isInClient()) {
+                liff.closeWindow();
+                return;
+              }
+            } catch (e) {}
+    
+            window.history.back();
+          });
+        }
+    
+        if (customerInput) {
+          customerInput.addEventListener('focus', function() {
+            var v = String(this.value || '').trim();
+            if (v) {
+              state.customer.dropdownOpen = true;
+              renderCustomerDropdown();
+            }
+          });
+    
+          customerInput.addEventListener('input', function() {
+            var v = String(this.value || '');
+            state.customer.keyword = v;
+    
+            if (!v.trim()) {
+              state.customer.selected = null;
+              state.customer.options = [];
+              state.customer.dropdownOpen = false;
+              renderAll();
+              renderCustomerDropdown();
+              return;
+            }
+    
+            state.customer.selected = null;
+            state.customer.dropdownOpen = true;
+            renderAll();
+    
+            debounce(function() {
+              loadCustomers(v);
+            }, 260, 'customer');
+          });
+        }
+    
+        if (clearCustomerBtn) {
+          clearCustomerBtn.addEventListener('click', function() {
+            state.customer.keyword = '';
+            state.customer.selected = null;
+            state.customer.options = [];
+            state.customer.dropdownOpen = false;
+    
+            if (customerInput) {
+              customerInput.value = '';
+              customerInput.focus();
+            }
+    
+            renderAll();
+            renderCustomerDropdown();
+          });
+        }
+    
+        document.addEventListener('click', function(e) {
+          var picker = document.querySelector('.customer-picker');
+          if (!picker) return;
+    
+          if (!picker.contains(e.target)) {
+            state.customer.dropdownOpen = false;
+            renderCustomerDropdown();
+          }
+        });
+    
+        if (catalogInput) {
+          catalogInput.addEventListener('input', function() {
+            var v = String(this.value || '');
+            state.catalog.keyword = v;
+    
+            debounce(function() {
+              loadCatalog(v);
+            }, 260, 'catalog');
+          });
+        }
+    
+        if (copyBtn) {
+          copyBtn.addEventListener('click', openReviewModal);
+        }
+      }
+    
+      /************************************************************
+       * INIT
+       ************************************************************/
+      async function initPage() {
+        setLoading(8, 'กำลังเปิดหน้า...');
+        bindEvents();
+        polishStaticText();
+        applyMascot();
+        ensureReviewModal();
+    
+        try {
+          await ensureLiffReady();
+        } catch (e) {
+          console.warn(e);
+          showToast('LIFF ไม่พร้อม ใช้โหมดคัดลอกแทนได้ครับ', 'warn', 2200);
+        }
+    
+        setLoading(48, 'กำลังโหลดข้อมูลเริ่มต้น...');
+        await loadInit();
+    
+        setLoading(70, 'กำลังโหลดรายการสินค้า...');
+        await loadCatalog('');
+    
+        setLoading(100, 'พร้อมใช้งานแล้ว');
+    
+        renderAll();
+    
+        setTimeout(function() {
+          hideLoading();
+        }, 250);
+      }
+    
+      window.addEventListener('load', function() {
+        initPage().catch(function(e) {
+          console.error(e);
+          showToast(e.message || 'เปิดหน้าไม่สำเร็จ', 'error', 2400);
+          hideLoading();
+          renderAll();
+        });
       });
-    }
-
-    if (copyBtn) {
-      copyBtn.addEventListener('click', openReviewModal);
-    }
-  }
-
-  /************************************************************
-   * INIT
-   ************************************************************/
-  async function initPage() {
-    setLoading(8, 'กำลังเปิดหน้า...');
-    bindEvents();
-    polishStaticText();
-    applyMascotWithFallback();
-    ensureReviewModal();
-
-    try {
-      await ensureLiffReady();
-    } catch (e) {
-      console.warn(e);
-      showToast('LIFF ไม่พร้อม ใช้โหมดคัดลอกแทนได้ครับ', 'warn', 2200);
-    }
-
-    setLoading(48, 'กำลังโหลดข้อมูลเริ่มต้น...');
-    await loadInit();
-
-    setLoading(70, 'กำลังโหลดรายการสินค้า...');
-    await loadCatalog('');
-
-    setLoading(100, 'พร้อมใช้งานแล้ว');
-
-    renderAll();
-
-    setTimeout(function() {
-      hideLoading();
-    }, 250);
-  }
-
-  window.addEventListener('load', function() {
-    initPage().catch(function(e) {
-      console.error(e);
-      showToast(e.message || 'เปิดหน้าไม่สำเร็จ', 'error', 2400);
-      hideLoading();
-      renderAll();
-    });
-  });
-</script>
+    </script>
 </body>
 </html>
