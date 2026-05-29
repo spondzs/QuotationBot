@@ -1123,7 +1123,7 @@
         try {
           var data = await loadJsonp(ACTIONS.init, {
             lineUserId: state.auth.lineUserId || '',
-            brand: 'vivo',
+            brand: 'all',
             warehouseKey: state.order.warehouseKey || 'RemainQuota'
           });
     
@@ -1199,7 +1199,7 @@
             lineUserId: state.auth.lineUserId || '',
             keyword: state.catalog.keyword,
             warehouseKey: state.order.warehouseKey || 'RemainQuota',
-            brand: 'vivo',
+            brand: 'all',
             limit: 120
           });
     
