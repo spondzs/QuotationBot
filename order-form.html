@@ -1236,12 +1236,7 @@
         var modelBase = String(x.modelBase || x.ModelBase || x.model || '').trim();
         var series = String(x.series || x.Series || '').trim();
         var displayName = String(x.displayName || x.name || modelBase).trim();
-    
-        // กัน DEMO โผล่ในหน้าสั่งของจริงก่อน
-        if (/demo|เดโม|สาธิต/i.test(modelBase + ' ' + series + ' ' + displayName)) {
-          return null;
-        }
-    
+     
         var orderLine = String(
           x.orderLine ||
           x.OrderLine ||
